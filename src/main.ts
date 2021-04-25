@@ -2,7 +2,7 @@ import * as THREE from "three";
 import "./main.css";
 
 // game engine modules
-import InputSystem, { KeyboardInputProcessor } from "./engine/Input/Input";
+import InputSystem, { KeyboardInput, MouseInput } from "./engine/Input";
 
 function init() {
   const scene = new THREE.Scene();
@@ -34,12 +34,18 @@ function init() {
 }
 
 function setupInput() {
-  const keyboard = new KeyboardInputProcessor();
-  InputSystem.bindControl("left", keyboard.useKeyBinding("keyA"));
-  InputSystem.bindControl("right", keyboard.useKeyBinding("keyD"));
-  InputSystem.bindControl("up", keyboard.useKeyBinding("keyW"));
-  InputSystem.bindControl("down", keyboard.useKeyBinding("keyS"));
-  InputSystem.bindControl("attack", keyboard.useKeyBinding("space"));
+  const keyboard = new KeyboardInput();
+  const mouse = new MouseInput();
+
+  InputSystem.bindAction("left", keyboard.createKeyBinding("KeyA"));
+  InputSystem.bindAction("right", keyboard.createKeyBinding("KeyD"));
+  InputSystem.bindAction("up", keyboard.createKeyBinding("KeyW"));
+  InputSystem.bindAction("down", keyboard.createKeyBinding("KeyS"));
+
+  InputSystem.bindAction("attack", keyboard.createKeyBinding("space"));
+
+  InputSystem.bindAxis("x", keyboard.createAxisBinding("KeyA|KeyD"));
+  InputSystem.bindAxis("y", keyboard.createAxisBinding("KeyW|KeyS"));
 }
 
 function update(
@@ -47,8 +53,8 @@ function update(
   scene: THREE.Scene,
   camera: THREE.Camera
 ) {
-  if (InputSystem.isActive("left")) {
-    console.log("left");
+  if (InputSystem.getAxis("x") !== 0) {
+    console.log("test " + InputSystem.getAxis("x"));
   }
 
   // render the scene
