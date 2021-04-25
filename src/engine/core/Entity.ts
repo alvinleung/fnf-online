@@ -1,8 +1,10 @@
 import { Vector3 } from "three";
+import Game from "../Game";
+import GameScene from "../GameScene";
 
 let __entityCounter__ = 0;
 
-class Entity {
+abstract class Entity {
   public readonly id: string;
   protected position: Vector3 = new Vector3(0, 0, 0);
 
@@ -12,13 +14,13 @@ class Entity {
   }
 
   // init here
-  public onEntityDidMount() {}
+  public abstract onEntityDidMount(game: Game, scene: GameScene);
 
   // destroy here
-  public onEntityWillUnmount() {}
+  public abstract onEntityWillUnmount(game: Game, scene: GameScene);
 
-  public onUpdate() {}
-  public onRender() {}
+  public abstract onUpdate(game: Game, scene: GameScene);
+  public abstract onRender(game: Game, scene: GameScene);
 }
 
 export default Entity;

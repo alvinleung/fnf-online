@@ -1,8 +1,14 @@
+import DemoScene from "./DemoScene";
 import { AssetManager, ImageLoader } from "./engine/Assets/";
 import Game from "./engine/Game";
 import InputSystem, { KeyboardInput, MouseInput } from "./engine/Input";
 
 class MyGame extends Game {
+  constructor() {
+    super();
+    this.setScene(new DemoScene(this));
+  }
+
   // @override
   protected setupInput(): InputSystem {
     const inputSystem = new InputSystem();

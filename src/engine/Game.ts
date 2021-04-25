@@ -1,22 +1,39 @@
-import * as THREE from "three";
+// import * as THREE from "three";
+// import REGL from "regl";
+import twgl from "twgl.js";
 
 // game engine modules
 import InputSystem, { KeyboardInput, MouseInput } from "./Input";
 import GameScene from "./GameScene";
-import { AssetManager } from "./Assets/";
+import { AssetManager } from "./assets";
 
 abstract class Game {
   protected scene: GameScene;
-  protected renderer: THREE.WebGLRenderer;
-  public input: InputSystem;
-  public assets: AssetManager;
+  public readonly input: InputSystem;
+  public readonly assets: AssetManager;
+
+  private canvasElement: HTMLCanvasElement;
 
   constructor() {
-    this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.canvasElement = this.setupCanvas();
 
+    // this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.input = this.setupInput();
     this.assets = this.setupAssets();
+
+    // init the game
+    this.tick();
+  }
+
+  private setupCanvas(): HTMLCanvasElement {
+    const canvasElement = document.createElement("canvas");
+    // set the size
+    canvasElement.width = window.innerWidth * window.devicePixelRatio;
+    canvasElement.width = window.innerHeight * window.devicePixelRatio;
+    const gl = canvasElement.getContext("webgl");
+    const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
+
+    return canvasElement;
   }
 
   // facotry function for binding input controls
@@ -24,19 +41,20 @@ abstract class Game {
   protected abstract setupAssets(): AssetManager;
 
   public setScene(scene: GameScene) {
-    if (this.scene) this.scene.onSceneWillUnmount();
+    if (this.scene) this.scene.onSceneWillUnmount(this);
     this.scene = scene;
-    this.scene.onSceneDidMount();
+    this.scene.onSceneDidMount(this);
   }
 
   public getCanvas(): HTMLCanvasElement {
-    return this.renderer.domElement;
+    // return this.renderer.domElement;
+    return this.canvasElement;
   }
 
   private tick() {
     if (this.scene) {
       this.scene.onUpdate();
-      this.scene.onRender(this.renderer);
+      // this.scene.onRender(this.renderer);
     }
 
     // get ready for next update
