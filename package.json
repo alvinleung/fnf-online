@@ -1,0 +1,17 @@
+{
+  "name": "fnf-online",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Alvin Leung",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel ./src/index.html"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "@types/three": "^0.127.1",
+    "three": "^0.128.0"
+  }
+}
