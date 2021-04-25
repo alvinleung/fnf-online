@@ -1,6 +1,6 @@
-class AssetManager {
-  private assets;
+import ImageLoader from "./ImageLoader";
 
-  constructor() {}
+interface AssetManager {
+  image: ImageLoader;
 }
 export default AssetManager;

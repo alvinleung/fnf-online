@@ -1,4 +1,4 @@
-import { AssetManager } from "./engine/Assets/";
+import { AssetManager, ImageLoader } from "./engine/Assets/";
 import Game from "./engine/Game";
 import InputSystem, { KeyboardInput, MouseInput } from "./engine/Input";
 
@@ -25,9 +25,11 @@ class MyGame extends Game {
   }
 
   protected setupAssets(): AssetManager {
-    const assets = new AssetManager();
+    const imageLoader = new ImageLoader();
 
-    return assets;
+    return {
+      image: imageLoader,
+    };
   }
 }
 
