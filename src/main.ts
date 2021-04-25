@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import "./main.css";
-import initGame from "./engine/Game";
+import MyGame from "./MyGame";
 
-const canvasElm = initGame();
-document.body.appendChild(canvasElm);
+const game = new MyGame();
+document.body.appendChild(game.getCanvas());

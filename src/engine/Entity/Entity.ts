@@ -17,8 +17,8 @@ class Entity {
   // destroy here
   public onEntityWillUnmount() {}
 
-  public update() {}
-  public draw() {}
+  public onUpdate() {}
+  public onRender() {}
 }
 
 export default Entity;

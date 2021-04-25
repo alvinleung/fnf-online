@@ -74,4 +74,4 @@ class InputSystem {
 }
 
 export { KeyBinding, AxisBinding, InputSourceFactory };
-export default new InputSystem();
+export default InputSystem;

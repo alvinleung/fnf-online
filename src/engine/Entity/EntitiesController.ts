@@ -16,14 +16,14 @@ class EntitiesController {
     delete this.entitiesLookup[entity.id];
   }
 
-  public update() {
+  public onUpdate() {
     for (let i = 0; i < this.entities.length; i++) {
-      this.entities[i].update();
+      this.entities[i].onUpdate();
     }
   }
-  public draw() {
+  public onRender() {
     for (let i = 0; i < this.entities.length; i++) {
-      this.entities[i].draw();
+      this.entities[i].onRender();
     }
   }
 }
