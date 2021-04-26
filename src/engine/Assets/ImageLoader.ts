@@ -1,6 +1,7 @@
+import Image from "../rendering/Image";
 import AssetLoader from "./AssetLoader";
 
-class ImageLoader extends AssetLoader<HTMLImageElement> {
+class ImageLoader extends AssetLoader<Image> {
   // implements loading function
   protected loadItem(path: string, onLoad: Function) {
     const image = document.createElement("img");
@@ -8,7 +9,7 @@ class ImageLoader extends AssetLoader<HTMLImageElement> {
     image.addEventListener("load", onLoad.bind(this));
 
     // return the factory instance
-    return image;
+    return new Image(image);
   }
 }
 

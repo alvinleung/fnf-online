@@ -1,25 +1,30 @@
 // import * as THREE from "three";
 // import REGL from "regl";
 import twgl from "twgl.js";
+import { Engine } from "./ecs";
 
 // game engine modules
-import InputSystem, { KeyboardInput, MouseInput } from "./Input";
-import GameScene from "./GameScene";
+import InputSystem, { KeyboardInput, MouseInput } from "./input";
 import { AssetManager } from "./assets";
 
-abstract class Game {
-  protected scene: GameScene;
-  public readonly input: InputSystem;
+abstract class Game extends Engine {
   public readonly assets: AssetManager;
-
+  public readonly input: InputSystem;
   private canvasElement: HTMLCanvasElement;
 
   constructor() {
+    super();
+
     this.canvasElement = this.setupCanvas();
 
-    // this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.input = this.setupInput();
     this.assets = this.setupAssets();
+
+    // setup other game systems
+    this.setupSystems();
+
+    // finished setup
+    this.gameDidInit();
 
     // init the game
     this.tick();
@@ -29,21 +34,27 @@ abstract class Game {
     const canvasElement = document.createElement("canvas");
     // set the size
     canvasElement.width = window.innerWidth * window.devicePixelRatio;
-    canvasElement.width = window.innerHeight * window.devicePixelRatio;
-    const gl = canvasElement.getContext("webgl");
-    const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
+    canvasElement.height = window.innerHeight * window.devicePixelRatio;
+    canvasElement.style.width = "100vw";
+    canvasElement.style.height = "100vh";
+    window.addEventListener("resize", () => {
+      canvasElement.width = window.innerWidth * window.devicePixelRatio;
+      canvasElement.height = window.innerHeight * window.devicePixelRatio;
+    });
 
     return canvasElement;
   }
+
+  // create a system pipeline
+  protected abstract setupSystems();
 
   // facotry function for binding input controls
   protected abstract setupInput(): InputSystem;
   protected abstract setupAssets(): AssetManager;
 
-  public setScene(scene: GameScene) {
-    if (this.scene) this.scene.onSceneWillUnmount(this);
-    this.scene = scene;
-    this.scene.onSceneDidMount(this);
+  protected gameDidInit() {
+    // finished initialisation
+    // can probably do some
   }
 
   public getCanvas(): HTMLCanvasElement {
@@ -52,10 +63,7 @@ abstract class Game {
   }
 
   private tick() {
-    if (this.scene) {
-      this.scene.onUpdate();
-      // this.scene.onRender(this.renderer);
-    }
+    // update here
 
     // get ready for next update
     requestAnimationFrame(() => {
