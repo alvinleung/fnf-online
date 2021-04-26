@@ -1,5 +1,5 @@
 abstract class AssetLoader<T> {
-  private assetsDict: { [name: string]: Asset };
+  private assetsDict: { [name: string]: Asset } = {};
   private loadedCount: number = 0;
   private totalCount: number = 0;
   private isDone: boolean = false;
@@ -14,12 +14,19 @@ abstract class AssetLoader<T> {
   }
 
   public get(name: string): T {
-    return this.assetsDict[name].reference;
+    const ref = this.assetsDict[name].reference as T;
+    if (!ref) console.warn(`Asset "${name}" not found`);
+    return ref;
   }
 
   public loadAll() {
     Object.keys(this.assetsDict).forEach((key) => {
-      this.loadItem(this.assetsDict[key].path, this.onLoad.bind(this));
+      this.assetsDict[key].reference = this.loadItem(
+        this.assetsDict[key].path,
+        () => {
+          this.onLoad(key);
+        }
+      );
     });
   }
 
@@ -27,7 +34,6 @@ abstract class AssetLoader<T> {
   protected onLoad(name: string) {
     this.assetsDict[name].loaded = true;
     this.loadedCount++;
-
     this.onProgress();
   }
 
