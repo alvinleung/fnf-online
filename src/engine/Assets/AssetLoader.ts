@@ -4,10 +4,13 @@ abstract class AssetLoader<T> {
   private totalCount: number = 0;
   private isDone: boolean = false;
 
+  private loadedCallback: Function = () => {};
+  private progressCallback: Function = () => {};
+
   public add(name: string, path: string) {
     this.assetsDict[name] = {
       path: path,
-      loaded: false,
+      isLoaded: false,
       reference: null,
     };
     this.totalCount++;
@@ -17,6 +20,10 @@ abstract class AssetLoader<T> {
     const ref = this.assetsDict[name].reference as T;
     if (!ref) console.warn(`Asset "${name}" not found`);
     return ref;
+  }
+
+  public getAssetDictionary(): { [name: string]: Asset } {
+    return this.assetsDict;
   }
 
   public loadAll() {
@@ -32,12 +39,14 @@ abstract class AssetLoader<T> {
 
   protected abstract loadItem(path: string, callback: Function): T;
   protected onLoad(name: string) {
-    this.assetsDict[name].loaded = true;
+    this.assetsDict[name].isLoaded = true;
     this.loadedCount++;
     this.onProgress();
   }
 
   protected onProgress() {
+    this.progressCallback(this.getProgress);
+
     if (this.loadedCount === this.totalCount) {
       this.isDone = true;
       this.onComplete();
@@ -46,6 +55,7 @@ abstract class AssetLoader<T> {
 
   protected onComplete() {
     // when loaded
+    this.loadedCallback();
   }
 
   public getProgress(): number {
@@ -55,11 +65,19 @@ abstract class AssetLoader<T> {
   public isLoaded(): boolean {
     return this.isDone;
   }
+
+  public addLoadedListener(callback = () => {}) {
+    this.loadedCallback = callback;
+  }
+
+  public addProgressListener(callback = (progress: number) => {}) {
+    this.progressCallback = callback;
+  }
 }
 
 interface Asset {
   path: string;
-  loaded: boolean;
+  isLoaded: boolean;
   reference: any;
 }
 
