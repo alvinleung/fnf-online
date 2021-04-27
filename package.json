@@ -1,7 +1,7 @@
 {
   "name": "fnf-online",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.html",
   "author": "Alvin Leung",
   "license": "MIT",
   "scripts": {
