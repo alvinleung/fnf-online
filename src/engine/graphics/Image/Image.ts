@@ -1,6 +1,6 @@
 import Asset from "../../Assets/Asset";
 
-export default class Image implements Asset {
+export class Image implements Asset {
   public readonly elm: HTMLImageElement;
   public readonly path: string;
   public readonly name: string;

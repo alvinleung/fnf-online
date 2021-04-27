@@ -1,8 +1,8 @@
-import GraphicBuffer from "./GraphicBufffer";
+import { GraphicBuffer } from "./GraphicBufffer";
 
 const twgl = require("twgl.js");
 
-export default class ShaderProgram {
+export class ShaderProgram {
   private shaderProgram: WebGLProgram;
   private gl: WebGLRenderingContext;
 

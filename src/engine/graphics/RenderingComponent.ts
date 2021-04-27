@@ -3,10 +3,9 @@
  */
 
 import { Component, Entity } from "../ecs";
-import Game from "../Game";
-import Renderer from "./Renderer";
+import { Renderer } from "./Renderer";
 
-export default class RenderingComponent implements Component {
+export class RenderingComponent implements Component {
   private renderer: Renderer;
   public setRenderer(renderer: Renderer) {
     this.renderer = renderer;

@@ -1,4 +1,4 @@
-export default class GraphicBuffer {
+export class GraphicBuffer {
   private gl: WebGLRenderingContext;
   private buffer: WebGLBuffer;
   private bufferSize: number;

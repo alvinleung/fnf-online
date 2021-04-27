@@ -51,7 +51,7 @@ export abstract class Game extends Engine {
 
   private setupCanvas(): HTMLCanvasElement {
     const canvasElement = document.createElement("canvas");
-    const scaleForRetina = false;
+    const scaleForRetina = true;
     const scaleFactor = scaleForRetina ? window.devicePixelRatio : 1;
 
     // set the size
@@ -87,7 +87,8 @@ export abstract class Game extends Engine {
   private tick() {
     // update here
     const currentTick = Date.now();
-    this.update(currentTick - this.previousTick);
+    const deltaTimeInSeconds = (currentTick - this.previousTick) * 0.001;
+    this.update(deltaTimeInSeconds);
     this.previousTick = currentTick;
 
     // get ready for next update

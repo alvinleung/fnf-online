@@ -4,10 +4,10 @@
  * A Renderer is responsible for carrying out actual rendering for the
  * rendering component
  */
-import RenderingSystem from "./RenderingSystem";
+import { RenderingSystem } from "./RenderingSystem";
 import { m4 } from "twgl.js";
 
-export default abstract class Renderer {
+export abstract class Renderer {
   // renderer
   public abstract render(
     gl: WebGLRenderingContext,

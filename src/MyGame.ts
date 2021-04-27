@@ -6,8 +6,8 @@ import {
   ImageRenderer,
   ImageRendererSetup,
 } from "./engine/graphics/Image/ImageRenderer";
-import RenderingComponent from "./engine/graphics/RenderingComponent";
-import RenderingSystem from "./engine/graphics/RenderingSystem";
+import { RenderingComponent } from "./engine/graphics/RenderingComponent";
+import { RenderingSystem } from "./engine/graphics/RenderingSystem";
 import { PositionComponent } from "./engine/core/PositionComponent";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";

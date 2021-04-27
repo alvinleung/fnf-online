@@ -52,4 +52,4 @@ class MatrixStack {
   };
 }
 
-export default MatrixStack;
+export { MatrixStack };

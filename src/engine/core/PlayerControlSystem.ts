@@ -3,8 +3,7 @@ import { Game } from "../Game";
 import { PlayerControlComponent } from "./PlayerControlComponent";
 import { PositionComponent } from "./PositionComponent";
 
-const SPEED = 10;
-
+const SPEED = 100;
 export default class PlayerControlSystem extends System {
   private playerEntity: Family;
 
@@ -21,7 +20,7 @@ export default class PlayerControlSystem extends System {
     const pos = playerEntity.getComponent(PositionComponent);
 
     // mutate the player speed state
-    pos.x += game.input.getAxis("horizontal") * SPEED;
-    pos.y += game.input.getAxis("vertical") * SPEED;
+    pos.x += game.input.getAxis("horizontal") * SPEED * delta;
+    pos.y += game.input.getAxis("vertical") * SPEED * delta;
   }
 }

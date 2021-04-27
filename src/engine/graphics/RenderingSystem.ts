@@ -1,15 +1,14 @@
 import { Family, FamilyBuilder, System } from "../ecs";
 import { Game } from "../Game";
-import RenderingComponent from "./RenderingComponent";
-import Image from "./Image/Image";
-import ShaderProgram from "./ShaderProgram";
-import Renderer, { RendererSetup } from "./Renderer";
-import GraphicBuffer from "./GraphicBufffer";
-import { m4 } from "twgl.js";
-import MatrixStack from "./MatrixStack";
+import { RenderingComponent } from "./RenderingComponent";
+import { Image } from "./Image/Image";
+import { ShaderProgram } from "./ShaderProgram";
+import { RendererSetup } from "./Renderer";
+import { GraphicBuffer } from "./GraphicBufffer";
+import { MatrixStack } from "./MatrixStack";
 import { PositionComponent } from "../core/PositionComponent";
 
-export default class RenderingSystem extends System {
+export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
   private texturesDict: { [name: string]: WebGLTexture } = {};
   private shaderProgram: { [name: string]: ShaderProgram } = {};
@@ -30,7 +29,7 @@ export default class RenderingSystem extends System {
 
   onAttach(game: Game) {
     // initialise webgl here
-    this.gl = game.getCanvas().getContext("webgl");
+    this.gl = game.getCanvas().getContext("webgl", { antialias: false }); // disable AA for pixel art
     this.texturesDict = this.convertAllImagesToTextures(this.gl, game);
 
     // initialise all the renderers here
@@ -166,6 +165,7 @@ export default class RenderingSystem extends System {
 
       const matrixStack = new MatrixStack();
       matrixStack.translate(positionComponent.x, positionComponent.y, 0);
+      matrixStack.scale(10, 10, 0);
 
       renderComponent
         .getRenderer()
