@@ -51,14 +51,17 @@ export abstract class Game extends Engine {
 
   private setupCanvas(): HTMLCanvasElement {
     const canvasElement = document.createElement("canvas");
+    const scaleForRetina = false;
+    const scaleFactor = scaleForRetina ? window.devicePixelRatio : 1;
+
     // set the size
-    canvasElement.width = window.innerWidth * window.devicePixelRatio;
-    canvasElement.height = window.innerHeight * window.devicePixelRatio;
+    canvasElement.width = window.innerWidth * scaleFactor;
+    canvasElement.height = window.innerHeight * scaleFactor;
     canvasElement.style.width = "100vw";
     canvasElement.style.height = "100vh";
     window.addEventListener("resize", () => {
-      canvasElement.width = window.innerWidth * window.devicePixelRatio;
-      canvasElement.height = window.innerHeight * window.devicePixelRatio;
+      canvasElement.width = window.innerWidth * scaleFactor;
+      canvasElement.height = window.innerHeight * scaleFactor;
     });
 
     return canvasElement;
