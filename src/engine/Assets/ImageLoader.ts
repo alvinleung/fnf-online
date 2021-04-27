@@ -1,7 +1,7 @@
-import Image from "../graphics/Image/Image";
-import AssetLoader from "./AssetLoader";
+import { Image } from "../graphics/Image/Image";
+import { AssetLoader } from "./AssetLoader";
 
-class ImageLoader extends AssetLoader<Image> {
+export class ImageLoader extends AssetLoader<Image> {
   // implements loading function
   protected loadItem(name: string, path: string, onLoad: Function) {
     const image = document.createElement("img");
@@ -12,5 +12,3 @@ class ImageLoader extends AssetLoader<Image> {
     return new Image(name, path, image);
   }
 }
-
-export default ImageLoader;

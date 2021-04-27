@@ -1,6 +1,6 @@
-import Asset from "./Asset";
+import { Asset } from "./Asset";
 
-abstract class AssetLoader<T extends Asset> {
+export abstract class AssetLoader<T extends Asset> {
   private assetsDict: { [name: string]: AssetEntry } = {};
   private loadedCount: number = 0;
   private totalCount: number = 0;
@@ -90,5 +90,3 @@ interface AssetEntry {
   isLoaded: boolean;
   reference: any;
 }
-
-export default AssetLoader;

@@ -165,7 +165,7 @@ export class RenderingSystem extends System {
 
       const matrixStack = new MatrixStack();
       matrixStack.translate(positionComponent.x, positionComponent.y, 0);
-      matrixStack.scale(10, 10, 0);
+      // matrixStack.scale(10, 10, 0);
 
       renderComponent
         .getRenderer()

@@ -1,4 +1,4 @@
-export default interface Asset {
+export interface Asset {
   path: string;
   name: string;
   isLoaded: boolean;

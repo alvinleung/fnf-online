@@ -1,6 +1,5 @@
-import ImageLoader from "./ImageLoader";
+import { ImageLoader } from "./ImageLoader";
 
-interface AssetManager {
+export interface AssetManager {
   image: ImageLoader;
 }
-export default AssetManager;
