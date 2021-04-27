@@ -1,7 +1,14 @@
-export default class Image {
+import Asset from "../Assets/Asset";
+
+export default class Image implements Asset {
   public readonly elm: HTMLImageElement;
-  constructor(elm: HTMLImageElement) {
+  public readonly path: string;
+  public readonly name: string;
+
+  constructor(name: string, path: string, elm: HTMLImageElement) {
     this.elm = elm;
+    this.path = path;
+    this.name = name;
   }
 
   public get width() {
@@ -18,5 +25,9 @@ export default class Image {
 
   public set height(val: number) {
     this.elm.width = val;
+  }
+
+  public get isLoaded(): boolean {
+    return this.elm.complete;
   }
 }

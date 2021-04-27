@@ -1,33 +1,52 @@
 // import * as THREE from "three";
 // import REGL from "regl";
-import twgl from "twgl.js";
 import { Engine } from "./ecs";
 
 // game engine modules
 import InputSystem, { KeyboardInput, MouseInput } from "./input";
-import { AssetManager } from "./assets";
+import { AssetLoader, AssetManager } from "./assets";
 
 abstract class Game extends Engine {
   public readonly assets: AssetManager;
   public readonly input: InputSystem;
   private canvasElement: HTMLCanvasElement;
 
+  private previousTick = Date.now();
+
   constructor() {
     super();
 
     this.canvasElement = this.setupCanvas();
-
     this.input = this.setupInput();
+
+    // setup load all assets
     this.assets = this.setupAssets();
+    Object.values(this.assets).forEach((assetLoader: AssetLoader<any>) => {
+      assetLoader.loadAll();
+      assetLoader.addLoadedListener(handleLoadProgress);
+    });
 
-    // setup other game systems
-    this.setupSystems();
+    let that = this;
 
-    // finished setup
-    this.gameDidInit();
+    function handleLoadProgress() {
+      if (!that.isAllAssetAloaded()) return;
+      // continue the rest of initialisation after all the assets loaded
 
-    // init the game
-    this.tick();
+      // setup other game systems
+      that.setupSystems();
+
+      // finished setup
+      that.gameDidInit();
+
+      // init the game
+      that.tick();
+    }
+  }
+  private isAllAssetAloaded() {
+    const isUnfinish = Object.values(this.assets).some(
+      (assetLoader: AssetLoader<any>) => assetLoader.isLoaded() === false
+    );
+    return !isUnfinish;
   }
 
   private setupCanvas(): HTMLCanvasElement {
@@ -64,6 +83,9 @@ abstract class Game extends Engine {
 
   private tick() {
     // update here
+    const currentTick = Date.now();
+    this.update(currentTick - this.previousTick);
+    this.previousTick = currentTick;
 
     // get ready for next update
     requestAnimationFrame(() => {

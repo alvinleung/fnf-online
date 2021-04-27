@@ -4,14 +4,14 @@
 
 import { Component, Entity } from "../ecs";
 import Game from "../Game";
-import ObjectRenderer from "./ObjectRenderer";
+import Renderer from "./Renderer";
 
 export default class RenderingComponent implements Component {
-  // renderering function
-  public render(
-    gl: WebGLRenderingContext,
-    entity: Entity,
-    engine: Game,
-    delta: number
-  ) {}
+  private renderer: Renderer;
+  public setRenderer(renderer: Renderer) {
+    this.renderer = renderer;
+  }
+  public getRenderer() {
+    return this.renderer;
+  }
 }

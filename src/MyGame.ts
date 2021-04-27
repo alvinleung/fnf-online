@@ -2,18 +2,26 @@ import { Entity } from "./engine/ecs";
 import { AssetManager, ImageLoader } from "./engine/Assets/";
 import Game from "./engine/Game";
 import InputSystem, { KeyboardInput, MouseInput } from "./engine/input";
-import Image from "./engine/rendering/Image";
-import ImageRenderer from "./engine/rendering/ImageRenderer";
+import {
+  ImageRenderer,
+  ImageRendererSetup,
+} from "./engine/rendering/ImageRenderer";
 import RenderingComponent from "./engine/rendering/RenderingComponent";
 import RenderingSystem from "./engine/rendering/RenderingSystem";
+import PositionComponent from "./engine/core/PositionComponent";
 
 class MyGame extends Game {
   protected gameDidInit() {
     // ready to go! do some crazy shit here
     const testEntity = new Entity();
     // insert and configure component
-    const imageRenderer = testEntity.useComponent(ImageRenderer);
-    imageRenderer.setImage(this.assets.image.get("test"));
+    const positionComponent = testEntity.useComponent(PositionComponent);
+    const renderingComponent = testEntity.useComponent(RenderingComponent);
+
+    const imageResource = this.assets.image.get("test");
+    renderingComponent.setRenderer(new ImageRenderer(imageResource));
+
+    this.addEntity(testEntity);
   }
 
   // @override
@@ -45,15 +53,15 @@ class MyGame extends Game {
       require("../assets/spritesheets/Adventurer/adventurer-Sheet.png")
     );
 
-    imageLoader.loadAll();
-
     return {
       image: imageLoader,
     };
   }
 
   protected setupSystems() {
-    this.addSystem(new RenderingSystem());
+    // add renderers here
+    const rendererSetups = [new ImageRendererSetup()];
+    this.addSystem(new RenderingSystem(rendererSetups));
   }
 }
 

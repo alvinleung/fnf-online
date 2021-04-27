@@ -1,5 +1,7 @@
-abstract class AssetLoader<T> {
-  private assetsDict: { [name: string]: Asset } = {};
+import Asset from "./Asset";
+
+abstract class AssetLoader<T extends Asset> {
+  private assetsDict: { [name: string]: AssetEntry } = {};
   private loadedCount: number = 0;
   private totalCount: number = 0;
   private isDone: boolean = false;
@@ -12,6 +14,7 @@ abstract class AssetLoader<T> {
       path: path,
       isLoaded: false,
       reference: null,
+      name: name,
     };
     this.totalCount++;
   }
@@ -22,13 +25,14 @@ abstract class AssetLoader<T> {
     return ref;
   }
 
-  public getAssetDictionary(): { [name: string]: Asset } {
+  public getAssetDictionary(): { [name: string]: AssetEntry } {
     return this.assetsDict;
   }
 
   public loadAll() {
     Object.keys(this.assetsDict).forEach((key) => {
       this.assetsDict[key].reference = this.loadItem(
+        this.assetsDict[key].name,
         this.assetsDict[key].path,
         () => {
           this.onLoad(key);
@@ -37,7 +41,12 @@ abstract class AssetLoader<T> {
     });
   }
 
-  protected abstract loadItem(path: string, callback: Function): T;
+  protected abstract loadItem(
+    name: string,
+    path: string,
+    callback: Function
+  ): T;
+
   protected onLoad(name: string) {
     this.assetsDict[name].isLoaded = true;
     this.loadedCount++;
@@ -75,8 +84,9 @@ abstract class AssetLoader<T> {
   }
 }
 
-interface Asset {
+interface AssetEntry {
   path: string;
+  name: string;
   isLoaded: boolean;
   reference: any;
 }
