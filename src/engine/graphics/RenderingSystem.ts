@@ -7,7 +7,7 @@ import Renderer, { RendererSetup } from "./Renderer";
 import GraphicBuffer from "./GraphicBufffer";
 import { m4 } from "twgl.js";
 import MatrixStack from "./MatrixStack";
-import PositionComponent from "../core/PositionComponent";
+import { PositionComponent } from "../core/PositionComponent";
 
 export default class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
