@@ -1,12 +1,11 @@
 {
   "name": "fnf-online",
   "version": "1.0.0",
-  "main": "index.html",
   "author": "Alvin Leung",
   "license": "MIT",
   "scripts": {
     "start": "parcel ./src/index.html",
-    "build": "parcel build ./src/index.html"
+    "build": "parcel build ./src/index.html --dist-dir ./dist"
   },
   "devDependencies": {
     "@parcel/transformer-glsl": "^2.0.0-beta.2",
