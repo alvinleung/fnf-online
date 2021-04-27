@@ -3,8 +3,8 @@
 import { Engine } from "./ecs";
 
 // game engine modules
-import InputSystem, { KeyboardInput, MouseInput } from "./input";
-import { AssetLoader, AssetManager } from "./assets";
+import InputSystem, { KeyboardInput, MouseInput } from "./Input";
+import { AssetLoader, AssetManager } from "./_assets";
 
 export abstract class Game extends Engine {
   public readonly assets: AssetManager;

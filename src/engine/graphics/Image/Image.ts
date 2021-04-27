@@ -1,4 +1,4 @@
-import { Asset } from "../../Assets";
+import { Asset } from "../../_assets";
 
 export class Image implements Asset {
   public readonly elm: HTMLImageElement;
