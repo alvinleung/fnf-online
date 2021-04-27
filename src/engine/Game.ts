@@ -11,6 +11,11 @@ export abstract class Game extends Engine {
   public readonly input: InputSystem;
   private canvasElement: HTMLCanvasElement;
 
+  // when enabled, it will render more pixels to make things
+  // look cleaner in retina display, but it will increase
+  // rendering cost
+  public readonly SCALE_FOR_RETINA_DISPLAY: boolean = true;
+
   private previousTick = Date.now();
 
   constructor() {
@@ -51,8 +56,9 @@ export abstract class Game extends Engine {
 
   private setupCanvas(): HTMLCanvasElement {
     const canvasElement = document.createElement("canvas");
-    const scaleForRetina = true;
-    const scaleFactor = scaleForRetina ? window.devicePixelRatio : 1;
+    const scaleFactor = this.SCALE_FOR_RETINA_DISPLAY
+      ? window.devicePixelRatio
+      : 1;
 
     // set the size
     canvasElement.width = window.innerWidth * scaleFactor;
