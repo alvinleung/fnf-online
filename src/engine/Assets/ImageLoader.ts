@@ -1,4 +1,4 @@
-import Image from "../rendering/Image";
+import Image from "../graphics/Image/Image";
 import AssetLoader from "./AssetLoader";
 
 class ImageLoader extends AssetLoader<Image> {

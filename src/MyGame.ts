@@ -1,14 +1,15 @@
 import { Entity } from "./engine/ecs";
 import { AssetManager, ImageLoader } from "./engine/Assets/";
-import Game from "./engine/Game";
+import { Game } from "./engine/Game";
 import InputSystem, { KeyboardInput, MouseInput } from "./engine/input";
 import {
   ImageRenderer,
   ImageRendererSetup,
-} from "./engine/rendering/ImageRenderer";
-import RenderingComponent from "./engine/rendering/RenderingComponent";
-import RenderingSystem from "./engine/rendering/RenderingSystem";
-import PositionComponent from "./engine/core/PositionComponent";
+} from "./engine/graphics/Image/ImageRenderer";
+import RenderingComponent from "./engine/graphics/RenderingComponent";
+import RenderingSystem from "./engine/graphics/RenderingSystem";
+import { PositionComponent } from "./engine/core/PositionComponent";
+import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -39,8 +40,8 @@ class MyGame extends Game {
 
     input.bindAction("attack", keyboard.createKeyBinding("space"));
 
-    input.bindAxis("x", keyboard.createAxisBinding("KeyA|KeyD"));
-    input.bindAxis("y", keyboard.createAxisBinding("KeyW|KeyS"));
+    input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
+    input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
 
     return input;
   }
@@ -59,6 +60,9 @@ class MyGame extends Game {
   }
 
   protected setupSystems() {
+    // setup game logic
+    this.addSystem(new PlayerControlSystem());
+
     // add renderers here
     const rendererSetups = [new ImageRendererSetup()];
     this.addSystem(new RenderingSystem(rendererSetups));

@@ -6,7 +6,7 @@ import { Engine } from "./ecs";
 import InputSystem, { KeyboardInput, MouseInput } from "./input";
 import { AssetLoader, AssetManager } from "./assets";
 
-abstract class Game extends Engine {
+export abstract class Game extends Engine {
   public readonly assets: AssetManager;
   public readonly input: InputSystem;
   private canvasElement: HTMLCanvasElement;
@@ -138,5 +138,3 @@ abstract class Game extends Engine {
 //     update(renderer, scene, camera);
 //   });
 // }
-
-export default Game;

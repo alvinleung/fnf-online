@@ -1,7 +1,7 @@
-import { System } from "../ecs";
-import Game from "../Game";
+import { Family, FamilyBuilder, System } from "../ecs";
+import { Game } from "../Game";
 import RenderingComponent from "./RenderingComponent";
-import Image from "./Image";
+import Image from "./Image/Image";
 import ShaderProgram from "./ShaderProgram";
 import Renderer, { RendererSetup } from "./Renderer";
 import GraphicBuffer from "./GraphicBufffer";
@@ -16,6 +16,9 @@ export default class RenderingSystem extends System {
   private graphicBuffers: { [name: string]: GraphicBuffer } = {};
 
   private rendererConfigurators: RendererSetup[] = [];
+
+  private renderList: Family;
+
   constructor(rendererConfigurators: RendererSetup[]) {
     super();
     this.rendererConfigurators = rendererConfigurators;
@@ -34,6 +37,10 @@ export default class RenderingSystem extends System {
     this.rendererConfigurators.forEach((renderer) => {
       renderer.setup(this.gl, this);
     });
+
+    this.renderList = new FamilyBuilder(game)
+      .include(PositionComponent, RenderingComponent)
+      .build();
   }
 
   /**
@@ -119,10 +126,6 @@ export default class RenderingSystem extends System {
   }
 
   /**
-   * For managing buffer
-   */
-
-  /**
    * For compiling and managing shader program
    */
 
@@ -140,6 +143,11 @@ export default class RenderingSystem extends System {
     return this.shaderProgram[name];
   }
 
+  /**
+   * Update loop
+   * @param game
+   * @param delta
+   */
   update(game: Game, delta: number): void {
     const gl = this.gl;
 
@@ -150,8 +158,8 @@ export default class RenderingSystem extends System {
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // update engine
-    game.entities.forEach((e) => {
+    // render all the entitites in the family
+    this.renderList.entities.forEach((e) => {
       // render the entitites base on their
       const renderComponent = e.getComponent(RenderingComponent);
       const positionComponent = e.getComponent(PositionComponent);

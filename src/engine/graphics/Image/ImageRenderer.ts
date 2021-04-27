@@ -1,8 +1,8 @@
 import Image from "./Image";
-import Renderer, { RendererSetup } from "./Renderer";
-import RenderingSystem from "./RenderingSystem";
+import Renderer, { RendererSetup } from "../Renderer";
+import RenderingSystem from "../RenderingSystem";
 import { m4, v3 } from "twgl.js";
-import ShaderProgram from "./ShaderProgram";
+import ShaderProgram from "../ShaderProgram";
 
 const TEXTURE_SHADER_FRAG = require("./shaders/2DImageShader.frag");
 const TEXTURE_SHADER_VERT = require("./shaders/2DImageShader.vert");
