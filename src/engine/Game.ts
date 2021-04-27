@@ -14,7 +14,7 @@ export abstract class Game extends Engine {
   // when enabled, it will render more pixels to make things
   // look cleaner in retina display, but it will increase
   // rendering cost
-  public readonly SCALE_FOR_RETINA_DISPLAY: boolean = true;
+  public readonly SCALE_FOR_RETINA_DISPLAY: boolean = false;
 
   private previousTick = Date.now();
 

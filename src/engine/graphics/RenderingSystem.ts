@@ -37,6 +37,7 @@ export class RenderingSystem extends System {
       renderer.setup(this.gl, this);
     });
 
+    // create a cached sub list of entitites that are going to be rendered
     this.renderList = new FamilyBuilder(game)
       .include(PositionComponent, RenderingComponent)
       .build();
@@ -175,7 +176,7 @@ export class RenderingSystem extends System {
 
       const matrixStack = new MatrixStack();
       matrixStack.translate(positionComponent.x, positionComponent.y, 0);
-      matrixStack.scale(10, 10, 0);
+      // matrixStack.scale(10, 10, 0);
 
       renderComponent
         .getRenderer()
