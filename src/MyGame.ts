@@ -10,13 +10,15 @@ import RenderingComponent from "./engine/graphics/RenderingComponent";
 import RenderingSystem from "./engine/graphics/RenderingSystem";
 import { PositionComponent } from "./engine/core/PositionComponent";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
+import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
 
 class MyGame extends Game {
   protected gameDidInit() {
     // ready to go! do some crazy shit here
     const testEntity = new Entity();
     // insert and configure component
-    const positionComponent = testEntity.useComponent(PositionComponent);
+    testEntity.useComponent(PositionComponent);
+    testEntity.useComponent(PlayerControlComponent);
     const renderingComponent = testEntity.useComponent(RenderingComponent);
 
     const imageResource = this.assets.image.get("test");
