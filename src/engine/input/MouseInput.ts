@@ -1,4 +1,4 @@
-import { InputSourceFactory } from "./InputSystem";
+import {InputSourceFactory} from "./InputSystem";
 
 class MouseInput extends InputSourceFactory {
   private isMouseDown = false;

@@ -1,5 +1,5 @@
 import { Entity } from "./engine/ecs";
-import { AssetManager, ImageLoader } from "./engine/_assets";
+import { AssetManager, ImageLoader } from "./engine/assets";
 import { Game } from "./engine/Game";
 import InputSystem, { KeyboardInput, MouseInput } from "./engine/Input";
 import {
