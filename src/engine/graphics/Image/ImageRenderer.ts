@@ -54,7 +54,6 @@ export class ImageRenderer extends Renderer {
     system: RenderingSystem,
     transformMatrix: m4.Mat4
   ) {
-    //TODO: render an image
     const imageRendererShader = system.getShaderProgram("imageRendererShader");
     const tex = system.getTexture(this.image.name);
     gl.bindTexture(gl.TEXTURE_2D, tex);
