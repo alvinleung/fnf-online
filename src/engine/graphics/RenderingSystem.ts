@@ -114,7 +114,17 @@ export class RenderingSystem extends System {
       // wrapping to clamp to edge
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    }
+
+    // For scaling pixel art, we want to use gl.NEAREST for scaling
+    // to preserve the crisp pixel look when magnifying. gl.LINEAR will
+    // yeild a muddy result when scale up.
+    if (image.useSmoothScaling) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    } else {
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     }
 
     return texture;
@@ -165,7 +175,7 @@ export class RenderingSystem extends System {
 
       const matrixStack = new MatrixStack();
       matrixStack.translate(positionComponent.x, positionComponent.y, 0);
-      // matrixStack.scale(10, 10, 0);
+      matrixStack.scale(10, 10, 0);
 
       renderComponent
         .getRenderer()

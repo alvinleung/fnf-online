@@ -4,11 +4,18 @@ export class Image implements Asset {
   public readonly elm: HTMLImageElement;
   public readonly path: string;
   public readonly name: string;
+  public readonly useSmoothScaling: boolean;
 
-  constructor(name: string, path: string, elm: HTMLImageElement) {
+  constructor(
+    name: string,
+    path: string,
+    elm: HTMLImageElement,
+    useSmoothScaling = false
+  ) {
     this.elm = elm;
     this.path = path;
     this.name = name;
+    this.useSmoothScaling = useSmoothScaling;
   }
 
   public get width() {
