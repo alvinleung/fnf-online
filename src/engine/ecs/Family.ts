@@ -141,7 +141,7 @@ class FamilyBuilder {
   private readonly _include: ComponentClass<Component>[];
   private readonly _exclude: ComponentClass<Component>[];
 
-  constructor(engine?: Engine) {
+  constructor(engine: Engine) {
     this._engine = engine || null;
     this._include = [];
     this._exclude = [];
