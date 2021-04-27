@@ -53,7 +53,7 @@ class MyGame extends Game {
 
     imageLoader.add(
       "test",
-      require("../assets/spritesheets/Adventurer/adventurer-Sheet.png")
+      require("url:../assets/spritesheets/Adventurer/adventurer-Sheet.png")
     );
 
     return {
@@ -72,3 +72,4 @@ class MyGame extends Game {
 }
 
 export default MyGame;
+
