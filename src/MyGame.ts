@@ -17,6 +17,9 @@ import {
   SpriteSheetRendererSetup,
 } from "./engine/graphics/SpriteSheet/SpriteSheetRenderer";
 import { TransformComponent } from "./engine/core/TransformComponent";
+import { SoundLoader } from "./engine/assets/SoundLoader";
+
+import ASSET_DECLARATION from "./MyGameAssets";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -53,6 +56,8 @@ class MyGame extends Game {
     animatingEntity.useComponent(PlayerControlComponent);
 
     this.addEntity(animatingEntity);
+
+    this.assets.sound.get("action-theme").play();
   }
 
   // @override
@@ -76,16 +81,22 @@ class MyGame extends Game {
     return input;
   }
 
+  // @override
   protected setupAssets(): AssetManager {
     const imageLoader = new ImageLoader();
+    const soundLoader = new SoundLoader();
 
-    imageLoader.add({
-      name: "test",
-      path: require("url:../assets/spritesheets/Adventurer/adventurer-Sheet.png"),
+    ASSET_DECLARATION.images.forEach((imageAsset) => {
+      imageLoader.add(imageAsset);
+    });
+
+    ASSET_DECLARATION.sounds.forEach((soundAsset) => {
+      soundLoader.add(soundAsset);
     });
 
     return {
       image: imageLoader,
+      sound: soundLoader,
     };
   }
 
