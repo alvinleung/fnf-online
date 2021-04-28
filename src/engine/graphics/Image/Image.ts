@@ -1,4 +1,4 @@
-import { Asset } from "../../_assets";
+import { Asset } from "../../assets";
 
 export class Image implements Asset {
   public readonly elm: HTMLImageElement;
@@ -32,9 +32,5 @@ export class Image implements Asset {
 
   public set height(val: number) {
     this.elm.width = val;
-  }
-
-  public get isLoaded(): boolean {
-    return this.elm.complete;
   }
 }
