@@ -6,7 +6,8 @@ import { ShaderProgram } from "./ShaderProgram";
 import { RendererSetup } from "./Renderer";
 import { GraphicBuffer } from "./GraphicBufffer";
 import { MatrixStack } from "./MatrixStack";
-import { PositionComponent } from "../core/PositionComponent";
+import { TransformComponent } from "../core/TransformComponent";
+
 // designing for 1920x1080
 const BASE_VIEWPORT_WIDTH = 1920;
 const CLIENT_WIDTH = window.innerWidth;
@@ -54,7 +55,7 @@ export class RenderingSystem extends System {
 
     // create a cached sub list of entitites that are going to be rendered
     this.renderList = new FamilyBuilder(game)
-      .include(PositionComponent, RenderingComponent)
+      .include(TransformComponent, RenderingComponent)
       .build();
   }
 
@@ -162,11 +163,12 @@ export class RenderingSystem extends System {
     this.renderList.entities.forEach((e) => {
       // render the entitites base on their
       const renderComponent = e.getComponent(RenderingComponent);
-      const positionComponent = e.getComponent(PositionComponent);
+      const transformComponent = e.getComponent(TransformComponent);
 
       const matrixStack = new MatrixStack();
+
+      matrixStack.setCurrentMatrix(transformComponent.getMatrix());
       matrixStack.scale(WORLD_SCALING, WORLD_SCALING, 0);
-      // matrixStack.scale(10, 10, 0);
 
       renderComponent
         .getRenderer()

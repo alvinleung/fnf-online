@@ -16,13 +16,14 @@ import {
   SpriteSheetRenderer,
   SpriteSheetRendererSetup,
 } from "./engine/graphics/SpriteSheet/SpriteSheetRenderer";
+import { TransformComponent } from "./engine/core/TransformComponent";
 
 class MyGame extends Game {
   protected gameDidInit() {
     // ready to go! do some crazy shit here
     const testEntity = new Entity();
     // insert and configure component
-    testEntity.useComponent(PositionComponent);
+    testEntity.useComponent(TransformComponent);
     const renderingComponent = testEntity.useComponent(RenderingComponent);
     const imageResource = this.assets.image.get("test");
     renderingComponent.setRenderer(new ImageRenderer(imageResource));
@@ -36,12 +37,16 @@ class MyGame extends Game {
       37
     );
     spriteSheetAnimator.defineAnimation("idle", 0, 3);
-    spriteSheetAnimator.loop("idle");
+    spriteSheetAnimator.defineAnimation("crouch", 4, 7);
+    spriteSheetAnimator.defineAnimation("run", 8, 13);
+    spriteSheetAnimator.defineAnimation("jump", 14, 23);
+
+    spriteSheetAnimator.loop("run");
 
     const animatingEntity = new Entity();
 
     // insert and configure component
-    animatingEntity.useComponent(PositionComponent);
+    animatingEntity.useComponent(TransformComponent);
     animatingEntity
       .useComponent(RenderingComponent)
       .setRenderer(new SpriteSheetRenderer(spriteSheetAnimator));
@@ -63,7 +68,7 @@ class MyGame extends Game {
     input.bindAction("up", keyboard.createKeyBinding("KeyW"));
     input.bindAction("down", keyboard.createKeyBinding("KeyS"));
 
-    input.bindAction("attack", keyboard.createKeyBinding("space"));
+    input.bindAction("attack", keyboard.createKeyBinding("Space"));
 
     input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
     input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
