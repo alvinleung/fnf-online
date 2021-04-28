@@ -142,11 +142,13 @@ export class SpriteSheetAnimator {
       !this.loopAnimation
     ) {
       this.stop();
-      return this.currentAnimation.endFrame - this.currentAnimation.beginFrame;
+      return this.currentAnimation.endFrame;
     }
 
     // return the playhead of the animation
-    const currentFrame = elapsedFrames % this.currentAnimation.totalFrames;
+    const currentFrame =
+      this.currentAnimation.beginFrame +
+      (elapsedFrames % this.currentAnimation.totalFrames);
     return currentFrame;
   }
 }
