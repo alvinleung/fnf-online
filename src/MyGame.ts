@@ -11,6 +11,11 @@ import { RenderingSystem } from "./engine/graphics/RenderingSystem";
 import { PositionComponent } from "./engine/core/PositionComponent";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
+import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheet";
+import {
+  SpriteSheetRenderer,
+  SpriteSheetRendererSetup,
+} from "./engine/graphics/SpriteSheet/SpriteSheetRenderer";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -25,6 +30,25 @@ class MyGame extends Game {
     renderingComponent.setRenderer(new ImageRenderer(imageResource));
 
     this.addEntity(testEntity);
+
+    const spriteSheetAnimator = new SpriteSheetAnimator(
+      imageResource,
+      12,
+      50,
+      37
+    );
+    spriteSheetAnimator.defineAnimation("idle", 0, 10);
+    spriteSheetAnimator.loop("idle");
+
+    const animatingEntity = new Entity();
+
+    // insert and configure component
+    animatingEntity.useComponent(PositionComponent);
+    animatingEntity
+      .useComponent(RenderingComponent)
+      .setRenderer(new SpriteSheetRenderer(spriteSheetAnimator));
+
+    this.addEntity(animatingEntity);
   }
 
   // @override
@@ -51,10 +75,10 @@ class MyGame extends Game {
   protected setupAssets(): AssetManager {
     const imageLoader = new ImageLoader();
 
-    imageLoader.add(
-      "test",
-      require("url:../assets/spritesheets/Adventurer/adventurer-Sheet.png")
-    );
+    imageLoader.add({
+      name: "test",
+      path: require("url:../assets/spritesheets/Adventurer/adventurer-Sheet.png"),
+    });
 
     return {
       image: imageLoader,
@@ -66,10 +90,12 @@ class MyGame extends Game {
     this.addSystem(new PlayerControlSystem());
 
     // add renderers here
-    const rendererSetups = [new ImageRendererSetup()];
+    const rendererSetups = [
+      new ImageRendererSetup(),
+      new SpriteSheetRendererSetup(),
+    ];
     this.addSystem(new RenderingSystem(rendererSetups));
   }
 }
 
 export default MyGame;
-
