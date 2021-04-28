@@ -90,6 +90,46 @@ export class ShaderProgram {
     }
   }
 
+  public writeUniformVec2Float(uniformName: string, vec) {
+    this.gl.uniform2fv(
+      this.getUniformLocation(uniformName),
+      new Float32Array(vec)
+    );
+  }
+  public writeUniformVec3Float(uniformName: string, vec) {
+    this.gl.uniform3fv(
+      this.getUniformLocation(uniformName),
+      new Float32Array(vec)
+    );
+  }
+
+  public writeUniformVec4Float(uniformName: string, vec) {
+    this.gl.uniform4fv(
+      this.getUniformLocation(uniformName),
+      new Float32Array(vec)
+    );
+  }
+
+  public writeUniformVec2Int(uniformName: string, vec) {
+    this.gl.uniform2iv(
+      this.getUniformLocation(uniformName),
+      new Float32Array(vec)
+    );
+  }
+
+  public writeUniformVec3Int(uniformName: string, vec) {
+    this.gl.uniform3iv(
+      this.getUniformLocation(uniformName),
+      new Float32Array(vec)
+    );
+  }
+  public writeUniformVec4Int(uniformName: string, vec) {
+    this.gl.uniform4iv(
+      this.getUniformLocation(uniformName),
+      new Float32Array(vec)
+    );
+  }
+
   public writeUniformMat4(uniformName: string, matrix) {
     this.gl.uniformMatrix4fv(
       this.getUniformLocation(uniformName),
