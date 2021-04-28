@@ -29,8 +29,17 @@ export class RenderingSystem extends System {
 
   onAttach(game: Game) {
     // initialise webgl here
-    this.gl = game.getCanvas().getContext("webgl", { antialias: false }); // disable AA for pixel art
+    const gl = game
+      .getCanvas()
+      .getContext("webgl", { antialias: false, alpha: false }); // disable AA for pixel art
+    this.gl = gl;
+
     this.texturesDict = this.convertAllImagesToTextures(this.gl, game);
+
+    // Allow different texture blend together when overlap.
+    // to support png texture transparency
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     // initialise all the renderers here
     this.rendererConfigurators.forEach((renderer) => {
@@ -140,7 +149,7 @@ export class RenderingSystem extends System {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     // Clear the canvas
-    gl.clearColor(0, 0, 0, 0);
+    gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // render all the entitites in the family
