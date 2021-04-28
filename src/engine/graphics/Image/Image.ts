@@ -27,7 +27,7 @@ export class Image implements Asset {
   }
 
   public get height() {
-    return this.elm.width;
+    return this.elm.height;
   }
 
   public set height(val: number) {
