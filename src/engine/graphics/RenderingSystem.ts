@@ -7,6 +7,12 @@ import { RendererSetup } from "./Renderer";
 import { GraphicBuffer } from "./GraphicBufffer";
 import { MatrixStack } from "./MatrixStack";
 import { PositionComponent } from "../core/PositionComponent";
+// designing for 1920x1080
+const BASE_VIEWPORT_WIDTH = 1920;
+const CLIENT_WIDTH = window.innerWidth;
+const DEFAULT_MAGNIFICAITON = 4;
+const WORLD_SCALING =
+  (CLIENT_WIDTH / BASE_VIEWPORT_WIDTH) * DEFAULT_MAGNIFICAITON;
 
 export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
@@ -159,7 +165,7 @@ export class RenderingSystem extends System {
       const positionComponent = e.getComponent(PositionComponent);
 
       const matrixStack = new MatrixStack();
-      matrixStack.translate(positionComponent.x, positionComponent.y, 0);
+      matrixStack.scale(WORLD_SCALING, WORLD_SCALING, 0);
       // matrixStack.scale(10, 10, 0);
 
       renderComponent
