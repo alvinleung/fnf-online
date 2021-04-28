@@ -23,9 +23,7 @@ class MyGame extends Game {
     const testEntity = new Entity();
     // insert and configure component
     testEntity.useComponent(PositionComponent);
-    testEntity.useComponent(PlayerControlComponent);
     const renderingComponent = testEntity.useComponent(RenderingComponent);
-
     const imageResource = this.assets.image.get("test");
     renderingComponent.setRenderer(new ImageRenderer(imageResource));
 
@@ -47,6 +45,7 @@ class MyGame extends Game {
     animatingEntity
       .useComponent(RenderingComponent)
       .setRenderer(new SpriteSheetRenderer(spriteSheetAnimator));
+    animatingEntity.useComponent(PlayerControlComponent);
 
     this.addEntity(animatingEntity);
   }
