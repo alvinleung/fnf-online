@@ -1,52 +1,179 @@
-import Asset from "../../Assets/Asset";
+import { AssetConfig } from "../../assets/AssetLoader";
+import { Image } from "../Image";
 
-interface SpriteSheetConfig {
-  frameRate: number;
-  frameWidth: number;
-  frameHeight: number;
-}
-
-export default class SpriteSheet implements Asset, SpriteSheetConfig {
-  public readonly elm: HTMLImageElement;
-  public readonly path: string;
-  public readonly name: string;
-
+export class SpriteSheet {
   public readonly frameRate: number;
   public readonly frameWidth: number;
   public readonly frameHeight: number;
+  public readonly rows: number;
+  public readonly cols: number;
+  public readonly image: Image;
 
   constructor(
-    name: string,
-    path: string,
-    elm: HTMLImageElement,
-    config: SpriteSheetConfig
+    image: Image,
+    frameRate: number,
+    frameWidth: number,
+    frameHeight: number
   ) {
-    this.elm = elm;
-    this.path = path;
-    this.name = name;
-
-    this.frameRate = config.frameRate;
-    this.frameWidth = config.frameWidth;
-    this.frameHeight = config.frameHeight;
+    this.image = image;
+    this.frameRate = frameRate;
+    this.frameWidth = frameWidth;
+    this.frameHeight = frameHeight;
+    this.cols = image.width / frameWidth;
+    this.rows = image.height / frameHeight;
   }
 
-  public get width() {
-    return this.elm.width;
+  public getAnimationSequence(
+    beginFrame: number,
+    endFrame: number,
+    frameRate?: number
+  ): SpriteSheetAnimationSequence {
+    return {
+      spriteSheet: this,
+      beginFrame: beginFrame,
+      endFrame: endFrame,
+      totalFrames: endFrame - beginFrame,
+      frameRate: frameRate || this.frameRate,
+    };
+  }
+}
+
+/**
+ * This is a state machine for controlling spritesheet animation
+ */
+export class SpriteSheetAnimator {
+  public readonly spriteSheet: SpriteSheet;
+  private currentAnimation: SpriteSheetAnimationSequence;
+
+  private isPlaying: boolean = false;
+  private loopAnimation: boolean = false;
+
+  private animationLookupTable: {
+    [animationName: string]: SpriteSheetAnimationSequence;
+  } = {};
+
+  // save the initial play time for animation in order to get current frame;
+  private playBeginTime: number = Date.now();
+
+  constructor(
+    image: Image,
+    frameRate: number,
+    frameWidth: number,
+    frameHeight: number
+  ) {
+    this.spriteSheet = new SpriteSheet(
+      image,
+      frameRate,
+      frameWidth,
+      frameHeight
+    );
   }
 
-  public set width(val: number) {
-    this.elm.width = val;
+  /**
+   * Define an animation with label name from the state machine
+   * @param animationLabel
+   */
+  public defineAnimation(
+    animationLabel: string,
+    beginFrame: number,
+    endFrame: number,
+    frameRate: number = 12
+  ) {
+    // define aniamtion here
+    this.animationLookupTable[
+      animationLabel
+    ] = this.spriteSheet.getAnimationSequence(beginFrame, endFrame, frameRate);
+  }
+  /**
+   * Begin playing the animation
+   * @param animation
+   */
+  public play(animation: SpriteSheetAnimationSequence | string) {
+    this.isPlaying = true;
+    this.playBeginTime = Date.now();
+
+    // play the animation label or an animation sequence
+    this.currentAnimation =
+      typeof animation === "string"
+        ? this.animationLookupTable[animation]
+        : animation;
   }
 
-  public get height() {
-    return this.elm.width;
+  /**
+   * Begin playing the animation sequence, restart when animation finish
+   * @param animation
+   */
+  public loop(animation: SpriteSheetAnimationSequence | string) {
+    this.loopAnimation = true;
+    this.play(animation);
   }
 
-  public set height(val: number) {
-    this.elm.width = val;
+  public stop() {
+    this.isPlaying = false;
   }
 
-  public get isLoaded(): boolean {
-    return this.elm.complete;
+  public getElapsedTime(): number {
+    return (Date.now() - this.playBeginTime) * 0.001;
   }
+
+  public getCurrentAnimationFramePos(): [col: number, row: number] {
+    const currentFrame = this.getCurrentAnimationFrame();
+
+    // calculate which col and row to play
+    const col = currentFrame % this.spriteSheet.cols;
+    const row = Math.floor(currentFrame / this.spriteSheet.cols);
+
+    return [col, row];
+  }
+
+  public getCurrentAnimationFrame(): number {
+    if (!this.isPlaying) return 0;
+
+    // calculate which animation frame is it right now
+    const frameRate = this.currentAnimation.frameRate;
+    const elapsedTimeInSeconds = (Date.now() - this.playBeginTime) * 0.001;
+
+    // calculate how much frames have elapsed
+    const currentFrame = Math.round(frameRate * elapsedTimeInSeconds);
+
+    // not looping and at the end of the naimation
+    if (
+      currentFrame > this.currentAnimation.totalFrames &&
+      !this.loopAnimation
+    ) {
+      this.stop();
+      return this.currentAnimation.endFrame - this.currentAnimation.beginFrame;
+    }
+
+    // looping and it's the end of animation
+    if (
+      currentFrame > this.currentAnimation.totalFrames &&
+      this.loopAnimation
+    ) {
+      // restart here
+      const frameRemainder = Math.round(
+        currentFrame % this.currentAnimation.totalFrames
+      );
+      return frameRemainder;
+    }
+
+    // not reach the end of animation yet
+    return currentFrame;
+  }
+}
+
+/**
+ * Stateless declaration of the SpriteSheetAnimation Information
+ */
+export interface SpriteSheetAnimationSequence {
+  spriteSheet: SpriteSheet;
+  frameRate: number;
+  beginFrame: number;
+  endFrame: number;
+  totalFrames: number;
+}
+
+export interface SpriteSheetAnimationFrame {
+  animation: SpriteSheetAnimationSequence;
+  frame: number;
 }
