@@ -1,5 +1,3 @@
-// import * as THREE from "three";
-// import REGL from "regl";
 import { Engine } from "./ecs";
 
 // game engine modules
