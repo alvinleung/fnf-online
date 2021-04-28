@@ -3,5 +3,4 @@ import { SpriteSheetLoader } from "./SpriteSheetLoader";
 
 export interface AssetManager {
   image: ImageLoader;
-  sprites: SpriteSheetLoader;
 }
