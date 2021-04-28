@@ -32,7 +32,7 @@ export class SpriteSheet {
       spriteSheet: this,
       beginFrame: beginFrame,
       endFrame: endFrame,
-      totalFrames: endFrame - beginFrame,
+      totalFrames: endFrame - beginFrame + 1, // +1 because begin frame start from 0
       frameRate: frameRate || this.frameRate,
     };
   }
@@ -77,7 +77,7 @@ export class SpriteSheetAnimator {
     animationLabel: string,
     beginFrame: number,
     endFrame: number,
-    frameRate: number = 12
+    frameRate?: number
   ) {
     // define aniamtion here
     this.animationLookupTable[
@@ -134,30 +134,19 @@ export class SpriteSheetAnimator {
     const elapsedTimeInSeconds = (Date.now() - this.playBeginTime) * 0.001;
 
     // calculate how much frames have elapsed
-    const currentFrame = Math.round(frameRate * elapsedTimeInSeconds);
+    const elapsedFrames = Math.round(frameRate * elapsedTimeInSeconds);
 
     // not looping and at the end of the naimation
     if (
-      currentFrame > this.currentAnimation.totalFrames &&
+      elapsedFrames >= this.currentAnimation.totalFrames &&
       !this.loopAnimation
     ) {
       this.stop();
       return this.currentAnimation.endFrame - this.currentAnimation.beginFrame;
     }
 
-    // looping and it's the end of animation
-    if (
-      currentFrame > this.currentAnimation.totalFrames &&
-      this.loopAnimation
-    ) {
-      // restart here
-      const frameRemainder = Math.round(
-        currentFrame % this.currentAnimation.totalFrames
-      );
-      return frameRemainder;
-    }
-
-    // not reach the end of animation yet
+    // return the playhead of the animation
+    const currentFrame = elapsedFrames % this.currentAnimation.totalFrames;
     return currentFrame;
   }
 }

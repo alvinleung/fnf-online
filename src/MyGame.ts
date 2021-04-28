@@ -27,15 +27,15 @@ class MyGame extends Game {
     const imageResource = this.assets.image.get("test");
     renderingComponent.setRenderer(new ImageRenderer(imageResource));
 
-    this.addEntity(testEntity);
+    // this.addEntity(testEntity);
 
     const spriteSheetAnimator = new SpriteSheetAnimator(
       imageResource,
-      12,
+      6,
       50,
       37
     );
-    spriteSheetAnimator.defineAnimation("idle", 0, 10);
+    spriteSheetAnimator.defineAnimation("idle", 0, 3);
     spriteSheetAnimator.loop("idle");
 
     const animatingEntity = new Entity();
