@@ -30,15 +30,15 @@ export class ShaderProgram {
 
   public initAttrib(
     attribName: string,
-    bufferData: Float32Array,
-    size: number // how the data should be read
+    bufferData: Float32Array | number,
+    size?: number // how the data should be read
   ) {
     // initialise attribute
     const attribLocation = this.gl.getAttribLocation(
       this.shaderProgram,
       attribName
     );
-    const buffer = new GraphicBuffer(this.gl, attribLocation, size);
+    const buffer = new GraphicBuffer(this.gl, attribLocation);
     this.graphicBuffers[attribName] = buffer;
     buffer.writeBuffer(bufferData, size);
   }
@@ -47,8 +47,12 @@ export class ShaderProgram {
     this.graphicBuffers[attribName].prepareBufferForRendering();
   }
 
-  public writeAttrib(name: string, bufferData: Float32Array, size: number) {
-    this.graphicBuffers[name].writeBuffer(bufferData, size);
+  public writeAttrib(
+    attribName: string,
+    bufferData: Float32Array,
+    size: number
+  ) {
+    this.graphicBuffers[attribName].writeBuffer(bufferData, size);
   }
 
   public getAttribLocation(attributeName: string | {}) {
