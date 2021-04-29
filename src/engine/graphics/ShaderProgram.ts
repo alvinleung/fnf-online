@@ -27,7 +27,7 @@ export class ShaderProgram {
   public getShader() {
     return this.shaderProgram;
   }
-
+//TODO: add support for uniforms
   public initAttrib(
     attribName: string,
     bufferData: Float32Array | number,
@@ -84,6 +84,7 @@ export class ShaderProgram {
     if (uniformLocation) {
       return uniformLocation;
     } else {
+
       return (this.cachedUniformLocation[
         uniformName
       ] = this.gl.getUniformLocation(this.shaderProgram, uniformName));

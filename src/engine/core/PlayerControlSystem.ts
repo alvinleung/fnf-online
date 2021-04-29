@@ -25,5 +25,11 @@ export default class PlayerControlSystem extends System {
     // mutate the player speed state
     transform.x += game.input.getAxis("horizontal") * SPEED * delta;
     transform.y += game.input.getAxis("vertical") * SPEED * delta;
+
+    //console.log(this.playerEntity.entities)
+
+    const triangleEntity = this.playerEntity.entities[1];
+    const triangleTransform = triangleEntity.getComponent(TransformComponent);
+    triangleTransform.rotation += game.input.getAxis("yawX")* 10 * delta;
   }
 }

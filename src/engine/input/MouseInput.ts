@@ -69,8 +69,8 @@ class MouseInput extends InputSourceFactory {
   }
 
   private getDragAxis(axis: string): number {
-    console.log(this.currentMouse[axis])
-    console.log(this.mouseDown[axis])
+    //console.log(this.currentMouse[axis])
+    //console.log(this.mouseDown[axis])
     return Math.min((this.currentMouse[axis] - this.mouseDown[axis] ) * this.SCALE_FACTOR, this.MOUSE_AXIS_MAX);
   }
 

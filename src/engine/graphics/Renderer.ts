@@ -12,7 +12,9 @@ export abstract class Renderer {
   public abstract render(
     gl: WebGLRenderingContext,
     system: RenderingSystem,
-    transformMatrix: m4.Mat4
+    transformMatrix: m4.Mat4,
+    cameraMatrix: m4.Mat4,
+    projectionMatrix: m4.Mat4
   );
 }
 

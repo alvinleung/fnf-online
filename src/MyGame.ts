@@ -20,6 +20,7 @@ import { TransformComponent } from "./engine/core/TransformComponent";
 import { SoundLoader } from "./engine/assets/SoundLoader";
 
 import ASSET_DECLARATION from "./MyGameAssets";
+import { Renderer3D, Renderer3Dsetup } from "./engine/graphics/3dRender/Renderer3D";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -57,7 +58,19 @@ class MyGame extends Game {
 
     this.addEntity(animatingEntity);
 
-    this.assets.sound.get("action-theme").play();
+    const squareEntity = new Entity();
+
+    squareEntity.useComponent(TransformComponent);
+    squareEntity.useComponent(RenderingComponent).setRenderer(new Renderer3D());
+    squareEntity.useComponent(PlayerControlComponent);
+
+    const transform = squareEntity.getComponent(TransformComponent);
+    transform.scaleX = 0.2;
+    transform.scaleY = 0.2;
+    
+    this.addEntity(squareEntity);
+
+    // this.assets.sound.get("action-theme").play();
   }
 
   // @override
@@ -75,11 +88,11 @@ class MyGame extends Game {
 
     input.bindAction("attack", keyboard.createKeyBinding("Space"));
 
-    //input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
-    //input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
+    input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
+    input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
 
-    input.bindAxis("horizontal",mouse.createDragBinding("mouseleft","x"))
-    input.bindAxis("vertical",mouse.createDragBinding("mouseleft","y"))
+    input.bindAxis("yawX",mouse.createDragBinding("mouseleft","x"))
+    input.bindAxis("yawY",mouse.createDragBinding("mouseleft","y"))
 
     console.log()
     
@@ -113,6 +126,7 @@ class MyGame extends Game {
     const rendererSetups = [
       new ImageRendererSetup(),
       new SpriteSheetRendererSetup(),
+      new Renderer3Dsetup(),
     ];
     this.addSystem(new RenderingSystem(rendererSetups));
   }

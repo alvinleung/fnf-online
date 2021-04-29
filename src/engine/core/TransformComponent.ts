@@ -70,7 +70,10 @@ export class TransformComponent implements Component {
 
     // set the _changed flag back to false
     this._changed = false;
-
+    
+    // cache the calculated matrix
+    this._matrix = matrix;
+    
     return matrix;
   }
 }
