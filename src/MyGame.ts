@@ -75,9 +75,14 @@ class MyGame extends Game {
 
     input.bindAction("attack", keyboard.createKeyBinding("Space"));
 
-    input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
-    input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
+    //input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
+    //input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
 
+    input.bindAxis("horizontal",mouse.createDragBinding("mouseleft","x"))
+    input.bindAxis("vertical",mouse.createDragBinding("mouseleft","y"))
+
+    console.log()
+    
     return input;
   }
 

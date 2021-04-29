@@ -69,6 +69,9 @@ class InputSystem {
       console.warn(`Input System:  ${axisName} not found`);
       return 0;
     }
+
+    //console.log(axisBindingLookup);
+
     return axisBindingLookup.getAxis(axisBindingLookup.axis);
   }
 }
