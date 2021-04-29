@@ -12,7 +12,9 @@ export class TransformComponent implements Component {
   private _y: number = 0;
   private _scaleX: number = 1;
   private _scaleY: number = 1;
-  private _rotation: number = 0;
+  private _rotationZ: number = 0;
+  private _rotationY: number = 0;
+  private _rotationX: number = 0;
 
   public get x() {
     return this._x;
@@ -49,13 +51,31 @@ export class TransformComponent implements Component {
     this._scaleX = val;
   }
 
-  public get rotation() {
-    return this._rotation;
+  public get rotationZ() {
+    return this._rotationZ;
   }
 
-  public set rotation(radian: number) {
+  public set rotationZ(radian: number) {
     this._changed = true;
-    this._rotation = radian;
+    this._rotationZ = radian;
+  }
+
+  public get rotationX() {
+    return this._rotationX;
+  }
+
+  public set rotationX(radian: number) {
+    this._changed = true;
+    this._rotationX = radian;
+  }
+
+  public get rotationY() {
+    return this._rotationY;
+  }
+
+  public set rotationY(radian: number) {
+    this._changed = true;
+    this._rotationY = radian;
   }
 
   public getMatrix() {
@@ -66,7 +86,9 @@ export class TransformComponent implements Component {
     let matrix = m4.translation(v3.create(0, 0, 0));
     matrix = m4.translate(matrix, v3.create(this._x, this._y, 0));
     matrix = m4.scale(matrix, v3.create(this._scaleX, this._scaleY, 0));
-    matrix = m4.rotateZ(matrix, this._rotation);
+    matrix = m4.rotateZ(matrix, this._rotationZ);
+    matrix = m4.rotateY(matrix, this._rotationY);
+    matrix = m4.rotateX(matrix, this._rotationX);
 
     // set the _changed flag back to false
     this._changed = false;

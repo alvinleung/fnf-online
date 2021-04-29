@@ -30,6 +30,7 @@ export default class PlayerControlSystem extends System {
 
     const triangleEntity = this.playerEntity.entities[1];
     const triangleTransform = triangleEntity.getComponent(TransformComponent);
-    triangleTransform.rotation += game.input.getAxis("yawX")* 10 * delta;
+    triangleTransform.rotationZ += game.input.getAxis("yawX") * 10 * delta;
+    triangleTransform.rotationX += game.input.getAxis("yawY") * 10 * delta;
   }
 }

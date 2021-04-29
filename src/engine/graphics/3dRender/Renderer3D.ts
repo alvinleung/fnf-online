@@ -8,15 +8,25 @@ const RENDER3D_SHADER_FRAG = require("./shaders/3DShader.frag");
 
 
 let sampleObjectVertices = [
-  -1.0,0,-1,1,
-   1,0,-1,1,
-  0,1,-1,1,
+  // Front face
+  -1.0, -1.0,  1.0,
+   1.0, -1.0,  1.0,
+   1.0,  1.0,  1.0,
+
+   1.0,  1.0,  1.0,
+   -1.0,  1.0,  1.0,
+   -1.0, -1.0,  1.0,
+
+
 ]
 
 let sampleObjectColors = [
   1.0,0.0,0.0,1.0,
   0.0,1.0,0.0,1.0,
   0.0,0.0,1.0,1.0,
+  0.0,0.0,1.0,1.0,
+  1.0,1.0,1.0,1.0,
+  1.0,0.0,0.0,1.0,
 ]
 
 
@@ -34,7 +44,7 @@ export class Renderer3Dsetup extends RendererSetup {
     // this part run once per entity
     renderer3DShader.initAttrib("vPosition",
       new Float32Array( sampleObjectVertices ),
-      4
+      3
     )
 
     renderer3DShader.initAttrib("vColor",
@@ -80,7 +90,7 @@ export class Renderer3D extends Renderer{
     renderer3DShader.prepareAttribForRendering("vColor");
 
     // Step 2 draw
-    gl.drawArrays(gl.TRIANGLES,0,3);
+    gl.drawArrays(gl.TRIANGLES,0,6);
   }
 }
   

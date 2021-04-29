@@ -1,6 +1,5 @@
-attribute  vec4 vPosition;
+attribute  vec3 vPosition;
 attribute  vec4 vColor;
-attribute  vec3 vNormal;
 
 varying vec4 fColor;
 
@@ -12,5 +11,5 @@ uniform mat4 projectionMatrix; // from cameara CS to NDCS(normalized device CS),
 void main()
 {
     fColor = vColor;
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vPosition;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition,1.0);
 }
