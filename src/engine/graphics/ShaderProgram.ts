@@ -27,10 +27,10 @@ export class ShaderProgram {
   public getShader() {
     return this.shaderProgram;
   }
-//TODO: add support for uniforms
+
   public initAttrib(
     attribName: string,
-    bufferData: Float32Array | number,
+    bufferData: Float32Array | number[],
     size?: number // how the data should be read
   ) {
     // initialise attribute
@@ -40,7 +40,13 @@ export class ShaderProgram {
     );
     const buffer = new GraphicBuffer(this.gl, attribLocation);
     this.graphicBuffers[attribName] = buffer;
-    buffer.writeBuffer(bufferData, size);
+
+    if (bufferData instanceof Float32Array) {
+      this.graphicBuffers[attribName].writeBuffer(bufferData, size);
+      return;
+    }
+
+    buffer.writeBuffer(new Float32Array(bufferData), size);
   }
 
   public prepareAttribForRendering(attribName: string) {
@@ -84,7 +90,6 @@ export class ShaderProgram {
     if (uniformLocation) {
       return uniformLocation;
     } else {
-
       return (this.cachedUniformLocation[
         uniformName
       ] = this.gl.getUniformLocation(this.shaderProgram, uniformName));

@@ -42,15 +42,9 @@ export class Renderer3Dsetup extends RendererSetup {
     );
 
     // this part run once per entity
-    renderer3DShader.initAttrib("vPosition",
-      new Float32Array( sampleObjectVertices ),
-      3
-    )
+    renderer3DShader.initAttrib("vPosition", sampleObjectVertices, 3)
 
-    renderer3DShader.initAttrib("vColor",
-      new Float32Array( sampleObjectColors ),
-      4
-    )
+    renderer3DShader.initAttrib("vColor", sampleObjectColors, 4)
 
     renderer3DShader.getUniformLocation("modelMatrix");
     renderer3DShader.getUniformLocation("viewMatrix");
