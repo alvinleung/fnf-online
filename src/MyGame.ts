@@ -71,6 +71,7 @@ class MyGame extends Game {
     this.addEntity(squareEntity);
 
     // this.assets.sound.get("action-theme").play();
+    // this.assets.sound.get("action-theme").play();
   }
 
   // @override
@@ -94,8 +95,8 @@ class MyGame extends Game {
     input.bindAxis("yawX",mouse.createDragBinding("mouseleft","x"))
     input.bindAxis("yawY",mouse.createDragBinding("mouseleft","y"))
 
-    console.log()
-    
+    console.log();
+
     return input;
   }
 
