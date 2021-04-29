@@ -135,7 +135,7 @@ export class ShaderProgram {
     this.gl.uniformMatrix4fv(
       this.getUniformLocation(uniformName),
       false,
-      matrix
+      new Float32Array(matrix)
     );
   }
 
@@ -143,14 +143,14 @@ export class ShaderProgram {
     this.gl.uniformMatrix2fv(
       this.getUniformLocation(uniformName),
       false,
-      matrix
+      new Float32Array(matrix)
     );
   }
   public writeUniformMat3(uniformName: string, matrix) {
     this.gl.uniformMatrix3fv(
       this.getUniformLocation(uniformName),
       false,
-      matrix
+      new Float32Array(matrix)
     );
   }
   public writeUniformInt(uniformName: string, value) {

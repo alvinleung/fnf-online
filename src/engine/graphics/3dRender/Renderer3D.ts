@@ -81,6 +81,8 @@ export class Renderer3D extends Renderer{
     
     renderer3DShader.useProgram();
 
+    //console.log(projectionMatrix)
+
     renderer3DShader.writeUniformMat4("modelMatrix", transformMatrix);
     renderer3DShader.writeUniformMat4("viewMatrix", cameraMatrix);
     renderer3DShader.writeUniformMat4("projectionMatrix", projectionMatrix);

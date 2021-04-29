@@ -7,8 +7,9 @@ import { RendererSetup } from "./Renderer";
 import { GraphicBuffer } from "./GraphicBufffer";
 import { MatrixStack } from "./MatrixStack";
 import { TransformComponent } from "../core/TransformComponent";
-import { flatten, lookAt, perspective } from "../../../../../Webgl/MV";
+//import { flatten, lookAt, perspective } from "../../../../../Webgl/MV";
 import { config } from "node:process";
+import { m4 } from "twgl.js";
 
 // designing for 1920x1080
 const BASE_VIEWPORT_WIDTH = 1920;
@@ -173,14 +174,16 @@ export class RenderingSystem extends System {
       matrixStack.scale(WORLD_SCALING, WORLD_SCALING, 0);
 
       // camera matrix
-      const cameraMatrix = flatten(lookAt([0,0,1], [0,0,0], [0,1,0]));
+      const cameraMatrix = m4.inverse( m4.lookAt( [0,0,1], [0,0,0], [0,1,0] ));
+
       // perspective matrix
-      const perspectiveMatrix = flatten(perspective(
-        90,  // field of view
+      const perspectiveMatrix = m4.perspective(
+        90 * Math.PI / 180,  // field of view
         game.getCanvas().width / game.getCanvas().height, // aspect ratio
         1,   // nearZ: clip space properties
         2000 // farZ: clip space properties
-      ));
+      );
+
 
       renderComponent
         .getRenderer()
