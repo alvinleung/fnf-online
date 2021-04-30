@@ -3,13 +3,15 @@ import { Game } from "../Game";
 import { RenderingComponent } from "./RenderingComponent";
 import { Image } from "./Image/Image";
 import { ShaderProgram } from "./ShaderProgram";
-import { RendererSetup } from "./Renderer";
+import { Renderer, RendererSetup } from "./Renderer";
 import { MatrixStack } from "./MatrixStack";
 import { TransformComponent } from "../core/TransformComponent";
-//import { flatten, lookAt, perspective } from "../../../../../Webgl/MV";
-import { config } from "node:process";
-import { m4 } from "twgl.js";
+import { m4, v3 } from "twgl.js";
+import * as q from "../utils/quaternion";
 import CameraComponent from "../camera/CameraComponent";
+import { RenderableComponent } from "./Renderable";
+import { Texture } from "./Texture";
+import { RenderPass } from "./RenderPass";
 
 // designing for 1920x1080
 const BASE_VIEWPORT_WIDTH = 1920;
@@ -20,17 +22,17 @@ const WORLD_SCALING =
 
 export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
-  private _texturesRefs: { [name: string]: WebGLTexture } = {};
+  private _texturesRefs: { [name: string]: Texture } = {};
   private _shaderProgram: { [name: string]: ShaderProgram } = {};
 
-  private _rendererConfigurators: RendererSetup[] = [];
+  private _renderPasses: RenderPass[] = [];
 
   private _renderList: Family;
   private _cameras: Family;
 
-  constructor(rendererConfigurators: RendererSetup[]) {
+  constructor(renderPasses: RenderPass[]) {
     super();
-    this._rendererConfigurators = rendererConfigurators;
+    this._renderPasses = renderPasses;
   }
 
   /**
@@ -55,13 +57,13 @@ export class RenderingSystem extends System {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     // initialise all the renderers here
-    this._rendererConfigurators.forEach((renderer) => {
-      renderer.setup(this.gl, this);
+    this._renderPasses.forEach((renderPass) => {
+      renderPass.setup(this.gl, this);
     });
 
     // create a cached sub list of entitites that are going to be rendered
     this._renderList = new FamilyBuilder(game)
-      .include(TransformComponent, RenderingComponent)
+      .include(TransformComponent, RenderableComponent)
       .build();
 
     this._cameras = new FamilyBuilder(game)
@@ -77,18 +79,19 @@ export class RenderingSystem extends System {
     gl: WebGLRenderingContext,
     allImages: { [name: string]: Image }
   ) {
-    const allTextures: { [name: string]: WebGLTexture } = {};
+    const allTextures: { [name: string]: Texture } = {};
 
     Object.keys(allImages).forEach((key) => {
       const currentImage = allImages[key];
-      allTextures[key] = createTexture(gl, currentImage);
+      // allTextures[key] = createTexture(gl, currentImage);
+      allTextures[key] = new Texture(gl, { image: currentImage });
     });
 
     return allTextures;
   }
 
   public getTexture(name: string) {
-    return this._texturesRefs[name];
+    return this._texturesRefs[name].source;
   }
 
   /**
@@ -124,7 +127,8 @@ export class RenderingSystem extends System {
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // render the camera
+    // for 3d rendering
+    gl.enable(gl.DEPTH_TEST);
 
     const mainCamera = this.getMainCamera();
     if (mainCamera) {
@@ -148,26 +152,38 @@ export class RenderingSystem extends System {
       // camera matrix
       const cameraMatrix = m4.inverse( m4.lookAt( [0,0,1], [0,0,0], [0,1,0] ));
 
-      // perspective matrix
-      const perspectiveMatrix = m4.perspective(
-        90 * Math.PI / 180,  // field of view
-        game.getCanvas().width / game.getCanvas().height, // aspect ratio
-        1,   // nearZ: clip space properties
-        2000 // farZ: clip space properties
+    // perspective matrix
+    const perspectiveMatrix = m4.perspective(
+      (90 * Math.PI) / 180, // field of view
+      game.getCanvas().width / game.getCanvas().height, // aspect ratio
+      1, // nearZ: clip space properties
+      2000 // farZ: clip space properties
+    );
+
+    // for each render pass
+    this._renderPasses.forEach((renderPass) => {
+      // only grab the renderable components
+      const renderablObjects = this._renderList.entities.map((e) => {
+        const renderableObject = e.getComponent(RenderableComponent)
+          .renderableObject;
+
+        // set the transform base on the entity's transform component
+        renderableObject.transform = e
+          .getComponent(TransformComponent)
+          .getMatrix();
+
+        return renderableObject;
+      });
+
+      renderPass.render(
+        gl,
+        this,
+        cameraMatrix,
+        perspectiveMatrix,
+        renderablObjects
       );
-
-
-      renderComponent
-        .getRenderer()
-        .render(this.gl, this, matrixStack.getCurrentMatrix(), cameraMatrix, perspectiveMatrix);
     });
   }
-
-  private processCameraUpdate(
-    gl: WebGLRenderingContext,
-    cameraConfg: CameraComponent,
-    transform: TransformComponent
-  ) {}
 
   private getMainCamera() {
     if (this._cameras.entities.length === 1) {
@@ -178,57 +194,4 @@ export class RenderingSystem extends System {
       if (!e.getComponent(CameraComponent)) return;
     });
   }
-}
-
-/**
- * Local scope
- */
-
-function isPowerOf2(value) {
-  return (value & (value - 1)) == 0;
-}
-
-function createTexture(gl: WebGLRenderingContext, image: Image) {
-  const texture = gl.createTexture();
-
-  const level = 0;
-  const internalFormat = gl.RGBA;
-  const srcFormat = gl.RGBA;
-  const srcType = gl.UNSIGNED_BYTE;
-
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(
-    gl.TEXTURE_2D,
-    level,
-    internalFormat,
-    srcFormat,
-    srcType,
-    image.elm
-  );
-
-  // WebGL1 has different requirements for power of 2 images
-  // vs non power of 2 images so check if the image is a
-  // power of 2 in both dimensions.
-  if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-    // Yes, it's a power of 2. Generate mips.
-    gl.generateMipmap(gl.TEXTURE_2D);
-  } else {
-    // No, it's not a power of 2. Turn off mips and set
-    // wrapping to clamp to edge
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  }
-
-  // For scaling pixel art, we want to use gl.NEAREST for scaling
-  // to preserve the crisp pixel look when magnifying. gl.LINEAR will
-  // yeild a muddy result when scale up.
-  if (image.useSmoothScaling) {
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  } else {
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  }
-
-  return texture;
 }
