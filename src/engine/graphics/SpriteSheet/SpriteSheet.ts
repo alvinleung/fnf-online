@@ -116,7 +116,7 @@ export class SpriteSheetAnimator {
     return (Date.now() - this.playBeginTime) * 0.001;
   }
 
-  public getCurrentAnimationFramePos(): [col: number, row: number] {
+  public getCurrentAnimationTilePos(): [col: number, row: number] {
     const currentFrame = this.getCurrentAnimationFrame();
 
     // calculate which col and row to play

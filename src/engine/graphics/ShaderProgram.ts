@@ -1,4 +1,4 @@
-import { GraphicBuffer } from "./GraphicBufffer";
+import { AttribDataBuffer } from "./AttribDataBuffer";
 
 const twgl = require("twgl.js");
 
@@ -9,7 +9,7 @@ export class ShaderProgram {
   private cachedUniformLocation = {};
   private cachedAttribLocation = {};
 
-  private graphicBuffers = {};
+  private attribBuffers = {};
 
   /**
    * Init and compile a shader program, wrapper of the shader API in webgl
@@ -28,34 +28,30 @@ export class ShaderProgram {
     return this.shaderProgram;
   }
 
-  public initAttrib(
+  /**
+   * Insert buffer data into the rendering of the buffer
+   * @param attribName
+   * @param data
+   */
+  public useAttribForRendering(
     attribName: string,
-    bufferData: Float32Array | number,
-    size?: number // how the data should be read
+    dataBuffer: AttribDataBuffer
   ) {
-    // initialise attribute
-    const attribLocation = this.gl.getAttribLocation(
-      this.shaderProgram,
-      attribName
+    const attribPointerLocation = this.getAttribLocation(attribName);
+    // use the buffer for rendering
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, dataBuffer.buffer);
+    this.gl.enableVertexAttribArray(attribPointerLocation);
+    this.gl.vertexAttribPointer(
+      attribPointerLocation,
+      dataBuffer.bufferSize,
+      this.gl.FLOAT,
+      false,
+      0,
+      0
     );
-    const buffer = new GraphicBuffer(this.gl, attribLocation);
-    this.graphicBuffers[attribName] = buffer;
-    buffer.writeBuffer(bufferData, size);
   }
 
-  public prepareAttribForRendering(attribName: string) {
-    this.graphicBuffers[attribName].prepareBufferForRendering();
-  }
-
-  public writeAttrib(
-    attribName: string,
-    bufferData: Float32Array,
-    size: number
-  ) {
-    this.graphicBuffers[attribName].writeBuffer(bufferData, size);
-  }
-
-  public getAttribLocation(attributeName: string | {}) {
+  public getAttribLocation(attributeName: string) {
     if (typeof attributeName !== "string") {
       console.warn("Supplied attribute name is not a string.");
       return;
@@ -67,7 +63,7 @@ export class ShaderProgram {
     }
 
     this.cachedAttribLocation[attributeName] = this.gl.getAttribLocation(
-      this.compileShaderProgram,
+      this.shaderProgram,
       attributeName
     );
 
@@ -134,7 +130,7 @@ export class ShaderProgram {
     this.gl.uniformMatrix4fv(
       this.getUniformLocation(uniformName),
       false,
-      matrix
+      new Float32Array(matrix)
     );
   }
 
@@ -142,14 +138,14 @@ export class ShaderProgram {
     this.gl.uniformMatrix2fv(
       this.getUniformLocation(uniformName),
       false,
-      matrix
+      new Float32Array(matrix)
     );
   }
   public writeUniformMat3(uniformName: string, matrix) {
     this.gl.uniformMatrix3fv(
       this.getUniformLocation(uniformName),
       false,
-      matrix
+      new Float32Array(matrix)
     );
   }
   public writeUniformInt(uniformName: string, value) {
@@ -164,8 +160,8 @@ export class ShaderProgram {
     return twgl.createProgram(gl, [vert, frag]);
   }
 
-  public getGraphicBuffer(name: string): GraphicBuffer {
-    return this.graphicBuffers[name];
+  public getAttribBuffer(name: string): AttribDataBuffer {
+    return this.attribBuffers[name];
   }
 
   public useProgram() {

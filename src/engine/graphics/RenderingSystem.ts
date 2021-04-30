@@ -1,12 +1,17 @@
-import { Family, FamilyBuilder, System } from "../ecs";
+import { Entity, Family, FamilyBuilder, System } from "../ecs";
 import { Game } from "../Game";
 import { RenderingComponent } from "./RenderingComponent";
 import { Image } from "./Image/Image";
 import { ShaderProgram } from "./ShaderProgram";
-import { RendererSetup } from "./Renderer";
-import { GraphicBuffer } from "./GraphicBufffer";
+import { Renderer, RendererSetup } from "./Renderer";
 import { MatrixStack } from "./MatrixStack";
 import { TransformComponent } from "../core/TransformComponent";
+import { m4, v3 } from "twgl.js";
+import * as q from "../utils/quaternion";
+import CameraComponent from "../camera/CameraComponent";
+import { RenderableComponent } from "./Renderable";
+import { Texture } from "./Texture";
+import { RenderPass } from "./RenderPass";
 
 // designing for 1920x1080
 const BASE_VIEWPORT_WIDTH = 1920;
@@ -17,17 +22,17 @@ const WORLD_SCALING =
 
 export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
-  private texturesDict: { [name: string]: WebGLTexture } = {};
-  private shaderProgram: { [name: string]: ShaderProgram } = {};
-  private graphicBuffers: { [name: string]: GraphicBuffer } = {};
+  private _texturesRefs: { [name: string]: Texture } = {};
+  private _shaderProgram: { [name: string]: ShaderProgram } = {};
 
-  private rendererConfigurators: RendererSetup[] = [];
+  private _renderPasses: RenderPass[] = [];
 
-  private renderList: Family;
+  private _renderList: Family;
+  private _cameras: Family;
 
-  constructor(rendererConfigurators: RendererSetup[]) {
+  constructor(renderPasses: RenderPass[]) {
     super();
-    this.rendererConfigurators = rendererConfigurators;
+    this._renderPasses = renderPasses;
   }
 
   /**
@@ -41,7 +46,10 @@ export class RenderingSystem extends System {
       .getContext("webgl", { antialias: false, alpha: false }); // disable AA for pixel art
     this.gl = gl;
 
-    this.texturesDict = this.convertAllImagesToTextures(this.gl, game);
+    this._texturesRefs = this.convertAllImagesToTextures(
+      this.gl,
+      game.assets.image.getAssetDictionary()
+    );
 
     // Allow different texture blend together when overlap.
     // to support png texture transparency
@@ -49,13 +57,17 @@ export class RenderingSystem extends System {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     // initialise all the renderers here
-    this.rendererConfigurators.forEach((renderer) => {
-      renderer.setup(this.gl, this);
+    this._renderPasses.forEach((renderPass) => {
+      renderPass.setup(this.gl, this);
     });
 
     // create a cached sub list of entitites that are going to be rendered
-    this.renderList = new FamilyBuilder(game)
-      .include(TransformComponent, RenderingComponent)
+    this._renderList = new FamilyBuilder(game)
+      .include(TransformComponent, RenderableComponent)
+      .build();
+
+    this._cameras = new FamilyBuilder(game)
+      .include(TransformComponent, CameraComponent)
       .build();
   }
 
@@ -63,67 +75,23 @@ export class RenderingSystem extends System {
    * Textures
    */
 
-  private convertAllImagesToTextures(gl: WebGLRenderingContext, game: Game) {
-    const allTextures: { [name: string]: WebGLTexture } = {};
-    const allImages = game.assets.image.getAssetDictionary();
+  private convertAllImagesToTextures(
+    gl: WebGLRenderingContext,
+    allImages: { [name: string]: Image }
+  ) {
+    const allTextures: { [name: string]: Texture } = {};
 
     Object.keys(allImages).forEach((key) => {
       const currentImage = allImages[key];
-      // if (currentImage.isLoaded) {
-      allTextures[key] = this.createTexture(gl, currentImage);
-      // }
+      // allTextures[key] = createTexture(gl, currentImage);
+      allTextures[key] = new Texture(gl, { image: currentImage });
     });
 
     return allTextures;
   }
 
-  private createTexture(gl: WebGLRenderingContext, image: Image) {
-    const texture = gl.createTexture();
-
-    const level = 0;
-    const internalFormat = gl.RGBA;
-    const srcFormat = gl.RGBA;
-    const srcType = gl.UNSIGNED_BYTE;
-
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      level,
-      internalFormat,
-      srcFormat,
-      srcType,
-      image.elm
-    );
-
-    // WebGL1 has different requirements for power of 2 images
-    // vs non power of 2 images so check if the image is a
-    // power of 2 in both dimensions.
-    if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-      // Yes, it's a power of 2. Generate mips.
-      gl.generateMipmap(gl.TEXTURE_2D);
-    } else {
-      // No, it's not a power of 2. Turn off mips and set
-      // wrapping to clamp to edge
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    }
-
-    // For scaling pixel art, we want to use gl.NEAREST for scaling
-    // to preserve the crisp pixel look when magnifying. gl.LINEAR will
-    // yeild a muddy result when scale up.
-    if (image.useSmoothScaling) {
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    } else {
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    }
-
-    return texture;
-  }
-
   public getTexture(name: string) {
-    return this.texturesDict[name];
+    return this._texturesRefs[name].source;
   }
 
   /**
@@ -131,17 +99,17 @@ export class RenderingSystem extends System {
    */
 
   public useShaderProgram(name: string, program: ShaderProgram): boolean {
-    if (this.shaderProgram[name]) {
+    if (this._shaderProgram[name]) {
       console.log(
-        `Abort shader program creation, shader "${name}" already exist`
+        `Abort shader program creation, shader "${name}" already exist in the record. Please choose another name.`
       );
       return false;
     }
-    this.shaderProgram[name] = program;
+    this._shaderProgram[name] = program;
     return true;
   }
   public getShaderProgram(name: string): ShaderProgram {
-    return this.shaderProgram[name];
+    return this._shaderProgram[name];
   }
 
   /**
@@ -159,24 +127,76 @@ export class RenderingSystem extends System {
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // render all the entitites in the family
-    this.renderList.entities.forEach((e) => {
-      // render the entitites base on their
-      const renderComponent = e.getComponent(RenderingComponent);
-      const transformComponent = e.getComponent(TransformComponent);
+    // for 3d rendering
+    gl.enable(gl.DEPTH_TEST);
 
-      const matrixStack = new MatrixStack();
+    const mainCamera = this.getMainCamera();
+    if (!mainCamera) {
+      console.warn("No active camera found in the entities, aborting draw.");
+      return;
+    }
 
-      matrixStack.setCurrentMatrix(transformComponent.getMatrix());
-      matrixStack.scale(WORLD_SCALING, WORLD_SCALING, 0);
+    // TODO: finish implementation of the camera features
+    const cameraComponent = mainCamera.getComponent(CameraComponent);
+    const cameraTransform = mainCamera.getComponent(TransformComponent);
 
-      renderComponent
-        .getRenderer()
-        .render(this.gl, this, matrixStack.getCurrentMatrix());
+    // let cameraMatrix = m4.inverse(m4.lookAt([0, 0, 1], [0, 0, 0], [0, 1, 0]));
+
+    let camPos = cameraTransform.getPosition();
+    let lookPos = [...camPos];
+    lookPos[2] = lookPos[2] - 2;
+    //console.log(lookPos);
+    // let cameraMatrix = m4.inverse(m4.lookAt(camPos, lookPos, [0, 1, 0]));
+
+    const cameraRotMat = m4.inverse(
+      q.quatToMat4(cameraTransform.getRotation())
+    );
+    let cameraMatrix = m4.translate(
+      cameraRotMat,
+      v3.negate(cameraTransform.getPosition())
+    );
+    // console.log(cameraMatrix);
+
+    // perspective matrix
+    const perspectiveMatrix = m4.perspective(
+      (90 * Math.PI) / 180, // field of view
+      game.getCanvas().width / game.getCanvas().height, // aspect ratio
+      1, // nearZ: clip space properties
+      2000 // farZ: clip space properties
+    );
+
+    // for each render pass
+    this._renderPasses.forEach((renderPass) => {
+      // only grab the renderable components
+      const renderablObjects = this._renderList.entities.map((e) => {
+        const renderableObject = e.getComponent(RenderableComponent)
+          .renderableObject;
+
+        // set the transform base on the entity's transform component
+        renderableObject.transform = e
+          .getComponent(TransformComponent)
+          .getMatrix();
+
+        return renderableObject;
+      });
+
+      renderPass.render(
+        gl,
+        this,
+        cameraMatrix,
+        perspectiveMatrix,
+        renderablObjects
+      );
     });
   }
-}
 
-function isPowerOf2(value) {
-  return (value & (value - 1)) == 0;
+  private getMainCamera() {
+    if (this._cameras.entities.length === 1) {
+      return this._cameras.entities[0];
+    }
+
+    return this._cameras.entities.find((e: Entity) => {
+      if (!e.getComponent(CameraComponent)) return;
+    });
+  }
 }

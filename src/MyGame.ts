@@ -8,7 +8,6 @@ import {
 } from "./engine/graphics/Image/ImageRenderer";
 import { RenderingComponent } from "./engine/graphics/RenderingComponent";
 import { RenderingSystem } from "./engine/graphics/RenderingSystem";
-import { PositionComponent } from "./engine/core/PositionComponent";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
 import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheet";
@@ -20,44 +19,75 @@ import { TransformComponent } from "./engine/core/TransformComponent";
 import { SoundLoader } from "./engine/assets/SoundLoader";
 
 import ASSET_DECLARATION from "./MyGameAssets";
+import { Plane3D, Renderer3D } from "./engine/graphics/3dRender/Renderer3D";
+import CameraComponent from "./engine/camera/CameraComponent";
+import { RenderableComponent } from "./engine/graphics/Renderable";
 
 class MyGame extends Game {
   protected gameDidInit() {
     // ready to go! do some crazy shit here
-    const testEntity = new Entity();
+    // const testEntity = new Entity();
+
     // insert and configure component
-    testEntity.useComponent(TransformComponent);
-    const renderingComponent = testEntity.useComponent(RenderingComponent);
-    const imageResource = this.assets.image.get("test");
-    renderingComponent.setRenderer(new ImageRenderer(imageResource));
+    // testEntity.useComponent(TransformComponent);
+    // const renderingComponent = testEntity.useComponent(RenderingComponent);
+    // const imageResource = this.assets.image.get("test");
+    // renderingComponent.setRenderer(new ImageRenderer(imageResource));
 
     // this.addEntity(testEntity);
 
-    const spriteSheetAnimator = new SpriteSheetAnimator(
-      imageResource,
-      6,
-      50,
-      37
-    );
-    spriteSheetAnimator.defineAnimation("idle", 0, 3);
-    spriteSheetAnimator.defineAnimation("crouch", 4, 7);
-    spriteSheetAnimator.defineAnimation("run", 8, 13);
-    spriteSheetAnimator.defineAnimation("jump", 14, 23);
+    // const spriteSheetAnimator = new SpriteSheetAnimator(
+    //   imageResource,
+    //   6,
+    //   50,
+    //   37
+    // );
+    // spriteSheetAnimator.defineAnimation("idle", 0, 3);
+    // spriteSheetAnimator.defineAnimation("crouch", 4, 7);
+    // spriteSheetAnimator.defineAnimation("run", 8, 13);
+    // spriteSheetAnimator.defineAnimation("jump", 14, 23);
 
-    spriteSheetAnimator.loop("run");
+    // spriteSheetAnimator.loop("run");
 
-    const animatingEntity = new Entity();
+    // const animatingEntity = new Entity();
 
     // insert and configure component
-    animatingEntity.useComponent(TransformComponent);
-    animatingEntity
-      .useComponent(RenderingComponent)
-      .setRenderer(new SpriteSheetRenderer(spriteSheetAnimator));
-    animatingEntity.useComponent(PlayerControlComponent);
 
-    this.addEntity(animatingEntity);
+    // animatingEntity.useComponent(TransformComponent);
+    // animatingEntity
+    //   .useComponent(RenderingComponent)
+    //   .setRenderer(new SpriteSheetRenderer(spriteSheetAnimator));
+    // animatingEntity.useComponent(PlayerControlComponent);
 
-    this.assets.sound.get("action-theme").play();
+    // this.addEntity(animatingEntity);
+
+    const squareEntity = new Entity();
+    squareEntity.useComponent(TransformComponent);
+    squareEntity.useComponent(
+      RenderableComponent
+    ).renderableObject = new Plane3D();
+
+    const transform = squareEntity.getComponent(TransformComponent);
+    transform.scaleX = 1;
+    transform.scaleY = 1;
+    transform.z = -1;
+
+    const squareEntity2 = new Entity();
+    squareEntity2.useComponent(TransformComponent).z = -2;
+    squareEntity2.useComponent(
+      RenderableComponent
+    ).renderableObject = new Plane3D();
+
+    const cameraEntity = new Entity();
+    cameraEntity.useComponent(TransformComponent).z = 2;
+    cameraEntity.useComponent(CameraComponent);
+    cameraEntity.useComponent(PlayerControlComponent);
+
+    this.addEntity(cameraEntity);
+    this.addEntity(squareEntity2);
+    this.addEntity(squareEntity);
+    // this.assets.sound.get("action-theme").play();
+    // this.assets.sound.get("action-theme").play();
   }
 
   // @override
@@ -75,14 +105,14 @@ class MyGame extends Game {
 
     input.bindAction("attack", keyboard.createKeyBinding("Space"));
 
-    //input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
-    //input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
+    input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
+    input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
 
-    input.bindAxis("horizontal",mouse.createDragBinding("mouseleft","x"))
-    input.bindAxis("vertical",mouse.createDragBinding("mouseleft","y"))
+    input.bindAxis("yawX", mouse.createDragBinding("mouseleft", "x"));
+    input.bindAxis("yawY", mouse.createDragBinding("mouseleft", "y"));
 
-    console.log()
-    
+    console.log();
+
     return input;
   }
 
@@ -108,13 +138,19 @@ class MyGame extends Game {
   protected setupSystems() {
     // setup game logic
     this.addSystem(new PlayerControlSystem());
+  }
 
+  protected setupRendering(): RenderingSystem {
     // add renderers here
-    const rendererSetups = [
-      new ImageRendererSetup(),
-      new SpriteSheetRendererSetup(),
+    const renderers = [
+      // new ImageRendererSetup(),
+      // new SpriteSheetRendererSetup(),
+      new Renderer3D(),
     ];
-    this.addSystem(new RenderingSystem(rendererSetups));
+    const renderingSystem = new RenderingSystem(renderers);
+    this.addSystem(renderingSystem);
+
+    return renderingSystem;
   }
 }
 

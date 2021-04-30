@@ -39,11 +39,6 @@ export class SpriteSheetRenderer extends Renderer {
     system: RenderingSystem,
     transformMatrix: m4.Mat4
   ) {
-    // render the sprite sheet
-    const currentFrame = this.animator.getCurrentAnimationFrame();
-    // const spriteSheet = currentFrame.animation.spriteSheet;
-    // const frameNumber = currentFrame.frame;
-
     const program = system.getShaderProgram("spriteSheetRenderer");
     program.useProgram();
 
@@ -61,9 +56,7 @@ export class SpriteSheetRenderer extends Renderer {
     matrix = m4.multiply(matrix, transformMatrix);
 
     // cols and rows in the tile
-    const [col, row] = this.animator.getCurrentAnimationFramePos();
-    // const col = 1;
-    // const row = 0;
+    const [col, row] = this.animator.getCurrentAnimationTilePos();
 
     // drawing target pos
     const dstX = 0;
