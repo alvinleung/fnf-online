@@ -134,9 +134,10 @@ export class TransformComponent implements Component {
     const yRot = q.fromAxisAndAngle([0, 1, 0], this._rotationY);
     const zRot = q.fromAxisAndAngle([0, 0, 1], this._rotationZ);
 
+    // combine rotation of all axis
     const xyzRot = q.mult(q.mult(xRot, yRot), zRot);
 
-    this._rotationQuat = yRot;
+    this._rotationQuat = xyzRot;
 
     // return this._rotationQuat;
     return this._rotationQuat;

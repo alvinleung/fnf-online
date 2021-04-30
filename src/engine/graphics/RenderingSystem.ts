@@ -3,7 +3,6 @@ import { Game } from "../Game";
 import { RenderingComponent } from "./RenderingComponent";
 import { Image } from "./Image/Image";
 import { ShaderProgram } from "./ShaderProgram";
-import { Renderer, RendererSetup } from "./Renderer";
 import { MatrixStack } from "./MatrixStack";
 import { TransformComponent } from "../core/TransformComponent";
 import { m4, v3 } from "twgl.js";
