@@ -3,10 +3,12 @@ import { Engine } from "./ecs";
 // game engine modules
 import InputSystem, { KeyboardInput, MouseInput } from "./input";
 import { AssetLoader, AssetManager } from "./assets";
+import { RenderingSystem } from "./graphics/RenderingSystem";
 
 export abstract class Game extends Engine {
   public readonly assets: AssetManager;
   public readonly input: InputSystem;
+  private _rendering: RenderingSystem;
   private canvasElement: HTMLCanvasElement;
 
   // when enabled, it will render more pixels to make things
@@ -35,6 +37,9 @@ export abstract class Game extends Engine {
       if (!that.isAllAssetAloaded()) return;
       // continue the rest of initialisation after all the assets loaded
 
+      // setup the rendering system
+      that._rendering = that.setupRendering();
+
       // setup other game systems
       that.setupSystems();
 
@@ -45,6 +50,12 @@ export abstract class Game extends Engine {
       that.tick();
     }
   }
+
+  // getter for rendering system
+  public get rendering() {
+    return this._rendering;
+  }
+
   private isAllAssetAloaded() {
     const isUnfinish = Object.values(this.assets).some(
       (assetLoader: AssetLoader<any>) => assetLoader.isLoaded() === false
@@ -77,6 +88,7 @@ export abstract class Game extends Engine {
   // facotry function for binding input controls
   protected abstract setupInput(): InputSystem;
   protected abstract setupAssets(): AssetManager;
+  protected abstract setupRendering(): RenderingSystem;
 
   protected gameDidInit() {
     // finished initialisation
