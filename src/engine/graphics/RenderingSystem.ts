@@ -131,26 +131,31 @@ export class RenderingSystem extends System {
     gl.enable(gl.DEPTH_TEST);
 
     const mainCamera = this.getMainCamera();
-    if (mainCamera) {
-      const cameraComponent = mainCamera.getComponent(CameraComponent);
-      const cameraTransform = mainCamera.getComponent(TransformComponent);
-      // handle camera update here
-      this.processCameraUpdate(this.gl, cameraComponent, cameraTransform);
+    if (!mainCamera) {
+      console.warn("No active camera found in the entities, aborting draw.");
+      return;
     }
 
-    // render all the entitites in the family
-    this._renderList.entities.forEach((e) => {
-      // render the entitites base on their
-      const renderComponent = e.getComponent(RenderingComponent);
-      const transformComponent = e.getComponent(TransformComponent);
+    // TODO: finish implementation of the camera features
+    const cameraComponent = mainCamera.getComponent(CameraComponent);
+    const cameraTransform = mainCamera.getComponent(TransformComponent);
 
-      const matrixStack = new MatrixStack();
+    // let cameraMatrix = m4.inverse(m4.lookAt([0, 0, 1], [0, 0, 0], [0, 1, 0]));
 
-      matrixStack.setCurrentMatrix(transformComponent.getMatrix());
-      matrixStack.scale(WORLD_SCALING, WORLD_SCALING, 0);
+    let camPos = cameraTransform.getPosition();
+    let lookPos = [...camPos];
+    lookPos[2] = lookPos[2] - 2;
+    //console.log(lookPos);
+    // let cameraMatrix = m4.inverse(m4.lookAt(camPos, lookPos, [0, 1, 0]));
 
-      // camera matrix
-      const cameraMatrix = m4.inverse( m4.lookAt( [0,0,1], [0,0,0], [0,1,0] ));
+    const cameraRotMat = m4.inverse(
+      q.quatToMat4(cameraTransform.getRotation())
+    );
+    let cameraMatrix = m4.translate(
+      cameraRotMat,
+      v3.negate(cameraTransform.getPosition())
+    );
+    // console.log(cameraMatrix);
 
     // perspective matrix
     const perspectiveMatrix = m4.perspective(
