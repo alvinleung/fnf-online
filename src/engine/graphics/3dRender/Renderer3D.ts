@@ -1,39 +1,21 @@
-import { m4 } from "twgl.js";
-import { Renderer, RendererSetup } from "../Renderer";
+import { m4, v3 } from "twgl.js";
+import { AttribDataBuffer } from "../AttribDataBuffer";
+import { RenderableObject } from "../Renderable";
 import { RenderingSystem } from "../RenderingSystem";
+import { RenderPass } from "../RenderPass";
 import { ShaderProgram } from "../ShaderProgram";
 
 const RENDER3D_SHADER_VERT = require("./shaders/3DShader.vert");
 const RENDER3D_SHADER_FRAG = require("./shaders/3DShader.frag");
 
+let sampleObjectVertices = require("./Primitives").plane;
+let sampleObjectColors = require("./Primitives").plane_colors;
 
-let sampleObjectVertices = [
-  // Front face
-  -1.0, -1.0,  1.0,
-   1.0, -1.0,  1.0,
-   1.0,  1.0,  1.0,
+export class Renderer3D extends RenderPass {
+  private positionBuffer: AttribDataBuffer;
+  private colorBuffer: AttribDataBuffer;
 
-   1.0,  1.0,  1.0,
-   -1.0,  1.0,  1.0,
-   -1.0, -1.0,  1.0,
-
-
-]
-
-let sampleObjectColors = [
-  1.0,0.0,0.0,1.0,
-  0.0,1.0,0.0,1.0,
-  0.0,0.0,1.0,1.0,
-  0.0,0.0,1.0,1.0,
-  1.0,1.0,1.0,1.0,
-  1.0,0.0,0.0,1.0,
-]
-
-
-export class Renderer3Dsetup extends RendererSetup {
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
-    // setup the Image Rendering Code here
-
     // compile shaders here
     const renderer3DShader = new ShaderProgram(
       gl,
@@ -42,52 +24,80 @@ export class Renderer3Dsetup extends RendererSetup {
     );
 
     // this part run once per entity
-    renderer3DShader.initAttrib("vPosition", sampleObjectVertices, 3)
 
-    renderer3DShader.initAttrib("vColor", sampleObjectColors, 4)
+    // init the buffer
+    this.positionBuffer = AttribDataBuffer.fromData(
+      gl,
+      new Float32Array(sampleObjectVertices),
+      3
+    );
+    this.colorBuffer = AttribDataBuffer.fromData(
+      gl,
+      new Float32Array(sampleObjectColors),
+      4
+    );
 
-    renderer3DShader.getUniformLocation("modelMatrix");
+    // for trigger the cache
+    renderer3DShader.getUniformLocation("modelMatsrix");
     renderer3DShader.getUniformLocation("viewMatrix");
     renderer3DShader.getUniformLocation("projectionMatrix");
 
     // add the shader to the rendering system
     system.useShaderProgram("renderer3DShader", renderer3DShader);
   }
-}
-
-
-export class Renderer3D extends Renderer{
-
-  constructor() {
-    super();
-  }
 
   // this will be called per frame
   public render(
     gl: WebGLRenderingContext,
     system: RenderingSystem,
-    transformMatrix: m4.Mat4,
     cameraMatrix: m4.Mat4,
-    projectionMatrix: m4.Mat4
+    projectionMatrix: m4.Mat4,
+    renderableObjects: RenderableObject[]
   ) {
-
     const renderer3DShader = system.getShaderProgram("renderer3DShader");
-    
     renderer3DShader.useProgram();
 
-    //console.log(projectionMatrix)
-
-    renderer3DShader.writeUniformMat4("modelMatrix", transformMatrix);
+    // set world matrix
     renderer3DShader.writeUniformMat4("viewMatrix", cameraMatrix);
     renderer3DShader.writeUniformMat4("projectionMatrix", projectionMatrix);
 
-    // Step 1 change pointers
-    renderer3DShader.prepareAttribForRendering("vPosition");
-    renderer3DShader.prepareAttribForRendering("vColor");
+    renderableObjects.forEach((renderableObject) => {
+      if (!renderableObject.isLoadedOntoGPUMemory) {
+        // load the object onto gpu if it is not on gpu yet
+        renderableObject.loadOntoGPU(gl);
+      }
 
-    // Step 2 draw
-    gl.drawArrays(gl.TRIANGLES,0,6);
+      // change the transformation base on the renderable object setting
+      renderer3DShader.writeUniformMat4(
+        "modelMatrix",
+        renderableObject.transform
+      );
+
+      // Step 1 change pointers
+      renderer3DShader.useAttribForRendering(
+        "vPosition",
+        renderableObject.coordsBuffer
+      );
+
+      // TODO: chnage it into rendering texture instead of the placehodler color
+      renderer3DShader.useAttribForRendering("vColor", this.colorBuffer);
+
+      // Step 2 draw
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+    });
   }
 }
-  
 
+/**
+ * 3d Objects types
+ */
+
+export class Plane3D extends RenderableObject {
+  constructor(textureName?: string) {
+    super(
+      require("./Primitives").plane,
+      require("./Primitives").quad_2d,
+      textureName
+    );
+  }
+}
