@@ -22,7 +22,7 @@ import ASSET_DECLARATION from "./MyGameAssets";
 import { Renderer3D } from "./engine/graphics/3dRender/Renderer3D";
 import CameraComponent from "./engine/camera/CameraComponent";
 import { RenderableComponent } from "./engine/graphics/Renderable";
-import { Plane } from "./engine/graphics/3dRender/Objects/Plane";
+import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 
 class MyGame extends Game {
   protected gameDidInit() {
