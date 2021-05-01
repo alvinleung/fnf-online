@@ -4,7 +4,7 @@ import { RenderableObject } from "../Renderable";
 import { RenderingSystem } from "../RenderingSystem";
 import { RenderPass } from "../RenderPass";
 import { ShaderProgram } from "../ShaderProgram";
-import { SpriteSheetAnimation } from "./SpriteSheetAnimation";
+import { SpriteSheetRenderable } from "./SpriteSheetAnimation";
 
 const SPRITE_SHEET_SHADER_VERT = require("./ShaderSpriteSheet.vert");
 const SPRITE_SHEET_SHADER_FRAG = require("./ShaderSpriteSheet.frag");
@@ -39,8 +39,8 @@ export class SpriteSheetRenderPass extends RenderPass {
     // this._frameBuffer.useForRendering();
 
     renderableObjects.forEach((renderableObject) => {
-      if (!(renderableObject instanceof SpriteSheetAnimation)) return;
-      const animation: SpriteSheetAnimation = renderableObject as SpriteSheetAnimation;
+      if (!(renderableObject instanceof SpriteSheetRenderable)) return;
+      const animation: SpriteSheetRenderable = renderableObject as SpriteSheetRenderable;
 
       if (!renderableObject.isLoadedIntoGPUMemory()) {
         renderableObject.loadIntoGPU(gl);
@@ -50,7 +50,7 @@ export class SpriteSheetRenderPass extends RenderPass {
       if (!animation.hasSpriteSheetTexture()) return;
 
       // access the sprite sheet resources
-      const spriteSheet = animation.spriteSheet;
+      const spriteSheet = animation.animator.spriteSheet;
       const finalRenderingTexture = animation.getRenderingTexture();
 
       // bindBuffer
@@ -68,7 +68,7 @@ export class SpriteSheetRenderPass extends RenderPass {
       );
 
       // cols and rows in the tile
-      const [col, row] = animation.getCurrentAnimationTilePos();
+      const [col, row] = animation.animator.getCurrentAnimationTilePos();
 
       // drawing target pos
       const dstX = 0;

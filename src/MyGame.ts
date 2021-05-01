@@ -10,7 +10,11 @@ import { RenderingComponent } from "./engine/graphics/RenderingComponent";
 import { RenderingSystem } from "./engine/graphics/RenderingSystem";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
-import { SpriteSheetAnimation } from "./engine/graphics/SpriteSheet/SpriteSheetAnimation";
+import {
+  SpriteSheetAnimation,
+  SpriteSheetAnimator,
+  SpriteSheetRenderable,
+} from "./engine/graphics/SpriteSheet/SpriteSheetAnimation";
 import {
   SpriteSheetRenderer,
   SpriteSheetRendererSetup,
@@ -81,19 +85,18 @@ class MyGame extends Game {
     /**
      * Entity 2 - animated entity
      */
-    const spriteSheetAnimation = new SpriteSheetAnimation(image, 12, 50, 37);
+    const spriteSheetAnimation = new SpriteSheetAnimator(image, 12, 50, 37);
     spriteSheetAnimation.defineAnimation("idle", 0, 3);
     spriteSheetAnimation.defineAnimation("crouch", 4, 7);
     spriteSheetAnimation.defineAnimation("run", 8, 13);
     spriteSheetAnimation.defineAnimation("jump", 14, 23);
-
     spriteSheetAnimation.loop("run");
 
     const squareEntity2 = new Entity();
     squareEntity2.useComponent(TransformComponent).z = -2;
     squareEntity2.useComponent(
       RenderableComponent
-    ).renderableObject = spriteSheetAnimation;
+    ).renderableObject = new SpriteSheetRenderable(spriteSheetAnimation);
 
     /**
      * Entity 3 - Camera Controller

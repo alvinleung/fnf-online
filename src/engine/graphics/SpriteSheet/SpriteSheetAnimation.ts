@@ -3,11 +3,74 @@ import { Plane } from "../3dRender/objects/Plane";
 import { FrameBuffer } from "../FrameBuffer";
 import { Texture } from "../Texture";
 import { SpriteSheet } from "./SpriteSheet";
+import { RenderableObject } from "../Renderable";
+
+/**
+ * Renderable object for the SpriteSheetRenderPass
+ */
+export class SpriteSheetRenderable extends RenderableObject {
+  private _frameBuffer: FrameBuffer;
+  private _spriteSheetTexture: Texture;
+
+  public readonly animator: SpriteSheetAnimator;
+
+  constructor(animator: SpriteSheetAnimator) {
+    super(
+      require("../3dRender/objects/Primitives").plane,
+      require("../3dRender/objects/Primitives").quad_2d,
+      animator.spriteSheet.image
+    );
+    this.animator = animator;
+  }
+
+  // override the initialisation of the buffer
+  protected createBufferObjectsInGPU(gl: WebGLRenderingContext) {
+    super.createBufferObjectsInGPU(gl);
+
+    const spriteSheet = this.animator.spriteSheet;
+    this._spriteSheetTexture = spriteSheet.getTexture(gl);
+
+    // create framebuffer from the texture of this
+    this._frameBuffer = FrameBuffer.fromSize(
+      gl,
+      spriteSheet.frameWidth,
+      spriteSheet.frameHeight
+    );
+
+    // set the output texture for render
+    this.setRenderingTexture(this._frameBuffer.getOutputTexture());
+  }
+
+  public getFrameBuffer(): FrameBuffer {
+    if (!this._frameBuffer) {
+      console.warn(`Unable to access frame buffer: not initialised`);
+    }
+
+    return this._frameBuffer;
+  }
+
+  /**
+   * Require the renderable object
+   * @returns
+   */
+  public getSpriteSheetTexture(): Texture {
+    if (!this.isLoadedIntoGPUMemory()) {
+      console.warn("Sprite sheet have not been loaded into gpu");
+    }
+    return this._spriteSheetTexture;
+  }
+  public hasSpriteSheetTexture(): boolean {
+    if (!this.isLoadedIntoGPUMemory()) {
+      console.warn("Sprite sheet have not been loaded into gpu");
+    }
+    return this._spriteSheetTexture ? true : false;
+  }
+}
 
 /**
  * This is a state machine for controlling spritesheet animation
  */
-export class SpriteSheetAnimation extends Plane {
+export class SpriteSheetAnimator {
   public readonly spriteSheet: SpriteSheet;
   private currentAnimation: SpriteSheetAnimationSequence;
 
@@ -30,7 +93,6 @@ export class SpriteSheetAnimation extends Plane {
     frameWidth: number,
     frameHeight: number
   ) {
-    super();
     this.spriteSheet = new SpriteSheet(
       image,
       frameRate,
@@ -121,52 +183,7 @@ export class SpriteSheetAnimation extends Plane {
       (elapsedFrames % this.currentAnimation.totalFrames);
     return currentFrame;
   }
-
-  // override and create a object buffer here
-  protected createBufferObjectsInGPU(gl: WebGLRenderingContext) {
-    super.createBufferObjectsInGPU(gl);
-
-    this._spriteSheetTexture = this.spriteSheet.getTexture(gl);
-
-    // create framebuffer from the texture of this
-    const frameBuffer = FrameBuffer.fromSize(
-      gl,
-      this.spriteSheet.frameWidth,
-      this.spriteSheet.frameHeight
-    );
-
-    this._frameBuffer = frameBuffer;
-
-    // set the output texture for render
-    this.setRenderingTexture(frameBuffer.getOutputTexture());
-  }
-
-  public getFrameBuffer(): FrameBuffer {
-    if (!this._frameBuffer) {
-      console.warn(`Unable to access frame buffer: not initialised`);
-    }
-
-    return this._frameBuffer;
-  }
-
-  /**
-   * Require the renderable object
-   * @returns
-   */
-  public getSpriteSheetTexture(): Texture {
-    if (!this.isLoadedIntoGPUMemory()) {
-      console.warn("Sprite sheet have not been loaded into gpu");
-    }
-    return this._spriteSheetTexture;
-  }
-  public hasSpriteSheetTexture(): boolean {
-    if (!this.isLoadedIntoGPUMemory()) {
-      console.warn("Sprite sheet have not been loaded into gpu");
-    }
-    return this._spriteSheetTexture ? true : false;
-  }
 }
-
 /**
  * Stateless declaration of the SpriteSheetAnimation Information
  */
