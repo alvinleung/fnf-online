@@ -8,8 +8,8 @@ import { ShaderProgram } from "../ShaderProgram";
 const RENDER3D_SHADER_VERT = require("./shaders/3DShader.vert");
 const RENDER3D_SHADER_FRAG = require("./shaders/3DShader.frag");
 
-let sampleObjectVertices = require("./Primitives").plane;
-let sampleObjectColors = require("./Primitives").plane_colors;
+let sampleObjectVertices = require("./objects/Primitives").plane;
+let sampleObjectColors = require("./objects/Primitives").plane_colors;
 
 export class Renderer3D extends RenderPass {
   private positionBuffer: AttribDataBuffer;
@@ -85,19 +85,5 @@ export class Renderer3D extends RenderPass {
       // Step 2 draw
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     });
-  }
-}
-
-/**
- * 3d Objects types
- */
-
-export class Plane3D extends RenderableObject {
-  constructor(textureName?: string) {
-    super(
-      require("./Primitives").plane,
-      require("./Primitives").quad_2d,
-      textureName
-    );
   }
 }
