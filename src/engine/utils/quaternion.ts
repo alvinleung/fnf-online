@@ -24,12 +24,42 @@ var dot = function (a, b) {
 
 export type Quat = number[] | Float32Array;
 
-export function fromAxisAndAngle(axis: v3.Vec3, phi: number) {
+export const Y_AXIS = [0, 1, 0];
+export const X_AXIS = [1, 0, 0];
+export const Z_AXIS = [0, 0, 1];
+
+export function fromAxisAndAngle(axis: v3.Vec3, phi: number): Quat {
   var cos = Math.cos(phi / 2);
   var sin = Math.sin(phi / 2);
   var normal = v3.normalize(axis);
   return [cos, sin * normal[0], sin * normal[1], sin * normal[2]];
 }
+
+//https://stackoverflow.com/questions/50011864/changing-xyz-order-when-converting-euler-angles-to-quaternions
+export function fromEulerAngles(
+  rotationX: number,
+  rotationY: number,
+  rotationZ: number
+): Quat {
+  // Assuming the angles are in radians.
+  const c1 = Math.cos(rotationX / 2);
+  const s1 = Math.sin(rotationX / 2);
+  const c2 = Math.cos(rotationY / 2);
+  const s2 = Math.sin(rotationY / 2);
+  const c3 = Math.cos(rotationZ / 2);
+  const s3 = Math.sin(rotationZ / 2);
+  // const c1c2 = c1 * c2;
+  // const s1s2 = s1 * s2;
+
+  // return [w, x, y, z];
+  return [
+    c1 * c2 * c3 + s1 * s2 * s3,
+    s1 * c2 * c3 - c1 * s2 * s3,
+    c1 * s2 * c3 + s1 * c2 * s3,
+    c1 * c2 * s3 - s1 * s2 * c3,
+  ];
+}
+
 export function quatToMat4(q: Quat): m4.Mat4 {
   const q01 = q[0] * q[1],
     q02 = q[0] * q[2],
@@ -140,4 +170,39 @@ export function mult(a: Quat, b: Quat) {
     a[0] * b[2] + a[2] * b[0] + a[3] * b[1] - a[1] * b[3],
     a[0] * b[3] + a[3] * b[0] + a[1] * b[2] - a[2] * b[1],
   ];
+}
+
+//https://answers.unity.com/questions/372371/multiply-quaternion-by-vector3-how-is-done.html
+export function multVec3(q: Quat, v: v3.Vec3): v3.Vec3 {
+  const [qw, qx, qy, qz] = q;
+  const [vx, vy, vz] = v;
+
+  const num = qx * 2;
+  const num2 = qy * 2;
+  const num3 = qz * 2;
+  const num4 = qx * num;
+  const num5 = qy * num2;
+  const num6 = qz * num3;
+  const num7 = qx * num2;
+  const num8 = qx * num3;
+  const num9 = qy * num3;
+  const num10 = qw * num;
+  const num11 = qw * num2;
+  const num12 = qw * num3;
+
+  return [
+    (1 - (num5 + num6)) * vx + (num7 - num12) * vy + (num8 + num11) * vz,
+    (num7 + num12) * vx + (1 - (num4 + num6)) * vy + (num9 - num10) * vz,
+    (num8 - num11) * vx + (num9 + num10) * vy + (1 - (num4 + num5)) * vz,
+  ];
+}
+
+/**
+ *
+ * @param q Quaternion to inverse.
+ * @returns
+ */
+export function inverse(q: Quat): Quat {
+  const [w, x, y, z] = q;
+  return [w, -x, -y, -z];
 }
