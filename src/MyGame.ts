@@ -108,7 +108,8 @@ class MyGame extends Game {
     input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
     input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
 
-    input.bindAxis("yawX", mouse.createDragBinding("mouseleft", "x"));
+    input.bindAxis("yawX", keyboard.createAxisBinding("ArrowLeft|ArrowRight"));
+    // input.bindAxis("yawX", mouse.createDragBinding("mouseleft", "x"));
     input.bindAxis("yawY", mouse.createDragBinding("mouseleft", "y"));
 
     console.log();

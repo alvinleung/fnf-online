@@ -1,9 +1,7 @@
 import { Entity, Family, FamilyBuilder, System } from "../ecs";
 import { Game } from "../Game";
-import { RenderingComponent } from "./RenderingComponent";
 import { Image } from "./Image/Image";
 import { ShaderProgram } from "./ShaderProgram";
-import { MatrixStack } from "./MatrixStack";
 import { TransformComponent } from "../core/TransformComponent";
 import { m4, v3 } from "twgl.js";
 import * as q from "../utils/quaternion";
@@ -12,12 +10,12 @@ import { RenderableComponent } from "./Renderable";
 import { Texture } from "./Texture";
 import { RenderPass } from "./RenderPass";
 
-// designing for 1920x1080
-const BASE_VIEWPORT_WIDTH = 1920;
-const CLIENT_WIDTH = window.innerWidth;
-const DEFAULT_MAGNIFICAITON = 4;
-const WORLD_SCALING =
-  (CLIENT_WIDTH / BASE_VIEWPORT_WIDTH) * DEFAULT_MAGNIFICAITON;
+/**
+ * RENDERING CONFIG
+ */
+const FOV = 54.4;
+const CLIP_NEAR = 1;
+const CLIP_FAR = 2000;
 
 export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
@@ -138,30 +136,17 @@ export class RenderingSystem extends System {
     // TODO: finish implementation of the camera features
     const cameraComponent = mainCamera.getComponent(CameraComponent);
     const cameraTransform = mainCamera.getComponent(TransformComponent);
+    const negativeOffsetPos = v3.negate(cameraTransform.position);
 
-    // let cameraMatrix = m4.inverse(m4.lookAt([0, 0, 1], [0, 0, 0], [0, 1, 0]));
-
-    let camPos = cameraTransform.getPosition();
-    let lookPos = [...camPos];
-    lookPos[2] = lookPos[2] - 2;
-    //console.log(lookPos);
-    // let cameraMatrix = m4.inverse(m4.lookAt(camPos, lookPos, [0, 1, 0]));
-
-    const cameraRotMat = m4.inverse(
-      q.quatToMat4(cameraTransform.getRotation())
-    );
-    let cameraMatrix = m4.translate(
-      cameraRotMat,
-      v3.negate(cameraTransform.getPosition())
-    );
-    // console.log(cameraMatrix);
+    const cameraRotMat = m4.inverse(q.quatToMat4(cameraTransform.rotation));
+    let cameraMatrix = m4.translate(cameraRotMat, negativeOffsetPos);
 
     // perspective matrix
     const perspectiveMatrix = m4.perspective(
-      (90 * Math.PI) / 180, // field of view
+      (FOV * Math.PI) / 180, // field of view
       game.getCanvas().width / game.getCanvas().height, // aspect ratio
-      1, // nearZ: clip space properties
-      2000 // farZ: clip space properties
+      CLIP_NEAR, // nearZ: clip space properties
+      CLIP_FAR // farZ: clip space properties
     );
 
     // for each render pass

@@ -15,10 +15,30 @@ export class TransformComponent implements Component {
   private _scaleX: number = 1;
   private _scaleY: number = 1;
   private _scaleZ: number = 1;
-  private _rotationZ: number = 0;
-  private _rotationY: number = 0;
-  private _rotationX: number = 0;
+  // private _rotationZ: number = 0;
+  // private _rotationY: number = 0;
+  // private _rotationX: number = 0;
   private _rotationQuat: q.Quat = [0, 0, 0, 0];
+
+  public set position([x, y, z]: v3.Vec3) {
+    this._x = x;
+    this._y = y;
+    this._z = z;
+  }
+
+  public get position(): v3.Vec3 {
+    return [this._x, this._y, this._z];
+  }
+
+  public set scale([x, y, z]: v3.Vec3) {
+    this._scaleX = x;
+    this._scaleY = y;
+    this._scaleZ = z;
+  }
+
+  public get scale() {
+    return [this._scaleX, this._scaleY, this._scaleZ];
+  }
 
   public get x() {
     return this._x;
@@ -74,32 +94,32 @@ export class TransformComponent implements Component {
     this._scaleZ = val;
   }
 
-  public get rotationZ() {
-    return this._rotationZ;
-  }
+  // public get rotationZ() {
+  //   return this._rotationZ;
+  // }
 
-  public set rotationZ(radian: number) {
-    this._changed = true;
-    this._rotationZ = radian;
-  }
+  // public set rotationZ(radian: number) {
+  //   this._rotChanged = true;
+  //   this._rotationZ = radian;
+  // }
 
-  public get rotationX() {
-    return this._rotationX;
-  }
+  // public get rotationX() {
+  //   return this._rotationX;
+  // }
 
-  public set rotationX(radian: number) {
-    this._changed = true;
-    this._rotationX = radian;
-  }
+  // public set rotationX(radian: number) {
+  //   this._rotChanged = true;
+  //   this._rotationX = radian;
+  // }
 
-  public get rotationY() {
-    return this._rotationY;
-  }
+  // public get rotationY() {
+  //   return this._rotationY;
+  // }
 
-  public set rotationY(radian: number) {
-    this._changed = true;
-    this._rotationY = radian;
-  }
+  // public set rotationY(radian: number) {
+  //   this._rotChanged = true;
+  //   this._rotationY = radian;
+  // }
 
   public getMatrix(): m4.Mat4 {
     // return the cached matrix if it is unchanged
@@ -129,17 +149,30 @@ export class TransformComponent implements Component {
     return v3.create(this._x, this._y, this._z);
   }
 
-  public getRotation(): q.Quat {
-    const xRot = q.fromAxisAndAngle([1, 0, 0], this._rotationX);
-    const yRot = q.fromAxisAndAngle([0, 1, 0], this._rotationY);
-    const zRot = q.fromAxisAndAngle([0, 0, 1], this._rotationZ);
+  public set rotation(quaternion: q.Quat) {
+    this._rotationQuat = quaternion;
+  }
 
-    // combine rotation of all axis
-    const xyzRot = q.mult(q.mult(xRot, yRot), zRot);
-
-    this._rotationQuat = xyzRot;
-
-    // return this._rotationQuat;
+  public get rotation() {
     return this._rotationQuat;
   }
+
+  // public setRotationQuat(quaternion: q.Quat) {
+  //   this._rotationQuat = quaternion;
+  //   // set rotation
+  // }
+
+  // public getRotation(): q.Quat {
+  //   if (!this._rotChanged) return this._rotationQuat;
+
+  //   this._rotationQuat = q.fromEuler([
+  //     this._rotationX,
+  //     this._rotationY,
+  //     this._rotationZ,
+  //   ]);
+  //   this._rotChanged = false;
+
+  //   // return this._rotationQuat;
+  //   return this._rotationQuat;
+  // }
 }

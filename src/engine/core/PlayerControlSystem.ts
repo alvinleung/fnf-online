@@ -2,12 +2,16 @@ import { Family, FamilyBuilder, System } from "../ecs";
 import { Game } from "../Game";
 import { PlayerControlComponent } from "./PlayerControlComponent";
 import { TransformComponent } from "./TransformComponent";
+import * as q from "../utils/quaternion";
+import { v3 } from "twgl.js";
 
-const SPEED = 1;
+const SPEED = 5;
+const ROT_SPEED = 2;
+
 export default class PlayerControlSystem extends System {
   private playerEntity: Family;
 
-  private t = 0;
+  private rotAmount = 0;
 
   onAttach(game: Game) {
     this.playerEntity = new FamilyBuilder(game)
@@ -23,10 +27,20 @@ export default class PlayerControlSystem extends System {
 
     const transform = playerEntity.getComponent(TransformComponent);
 
-    // transform.rotate(game.input.isActive("attack") ? 1 * delta : 0);
-    // mutate the player speed state
-    transform.z += game.input.getAxis("vertical") * SPEED * delta;
-    transform.rotationY += game.input.getAxis("horizontal") * SPEED * delta;
+    this.rotAmount += game.input.getAxis("yawX") * ROT_SPEED * delta;
+    transform.rotation = q.fromAxisAndAngle(q.Y_AXIS, this.rotAmount);
+
+    const forwardSpeed = game.input.getAxis("vertical") * SPEED * delta;
+    const sideSpeed = game.input.getAxis("horizontal") * SPEED * delta;
+    const direction = q.multVec3(
+      q.inverse(transform.rotation),
+      v3.create(sideSpeed, 0, forwardSpeed)
+    );
+
+    // transform.z += forwardSpeed;
+    transform.position = v3.add(transform.position, direction);
+
+    // transform.rotationY += game.input.getAxis("horizontal") * SPEED * delta;
 
     //console.log(this.playerEntity.entities)
 
