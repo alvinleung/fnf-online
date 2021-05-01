@@ -46,8 +46,8 @@ export class SpriteSheetRenderer extends Renderer {
     gl.bindTexture(gl.TEXTURE_2D, tex);
 
     // Setup the attributes to pull data from our buffers
-    program.prepareAttribForRendering("a_position");
-    program.prepareAttribForRendering("a_texcoord");
+    program.useAttribForRendering("a_position");
+    program.useAttribForRendering("a_texcoord");
 
     // this matrix will convert from pixels to clip space
     let matrix = m4.ortho(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);

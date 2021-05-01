@@ -15,17 +15,34 @@ interface TextureConfig {
 
 export class Texture implements ITexture {
   private _webglTexture: WebGLTexture;
-  public readonly width: number;
-  public readonly height: number;
+  private _width: number;
+  private _height: number;
+  private _gl: WebGLRenderingContext;
 
   constructor(gl: WebGLRenderingContext, config?: TextureConfig) {
-    const {
-      image,
-      width = image.width,
-      height = image.height,
-      useSmoothScaling = false,
-    } = config;
+    const image = config.image;
 
+    const desiredWidth = config.width;
+    const desiredHeight = config.height;
+
+    const width =
+      desiredWidth !== undefined ? desiredWidth : image && image.width;
+    const height =
+      desiredHeight !== undefined ? desiredHeight : image && image.height;
+
+    const useSmoothScaling = config.useSmoothScaling || false;
+
+    this.loadImageIntoBuffer(gl, image, width, height, useSmoothScaling);
+    this._gl = gl;
+  }
+
+  private loadImageIntoBuffer(
+    gl: WebGLRenderingContext,
+    image: Image,
+    width: number,
+    height: number,
+    useSmoothScaling = false
+  ) {
     const texture = gl.createTexture();
 
     const level = 0;
@@ -34,14 +51,28 @@ export class Texture implements ITexture {
     const srcType = gl.UNSIGNED_BYTE;
 
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      level,
-      internalFormat,
-      srcFormat,
-      srcType,
-      image ? image.elm : null
-    );
+
+    if (image && image.elm) {
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        level,
+        internalFormat,
+        srcFormat,
+        srcType,
+        image.elm
+      );
+    } else {
+      // create and empty texture if there are no image supplied
+      const data = new ImageData(width, height);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        level,
+        internalFormat,
+        srcFormat,
+        srcType,
+        data
+      );
+    }
 
     // WebGL1 has different requirements for power of 2 images
     // vs non power of 2 images so check if the image is a
@@ -56,6 +87,8 @@ export class Texture implements ITexture {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
 
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
     // For scaling pixel art, we want to use gl.NEAREST for scaling
     // to preserve the crisp pixel look when magnifying. gl.LINEAR will
     // yeild a muddy result when scale up.
@@ -68,12 +101,24 @@ export class Texture implements ITexture {
     }
 
     this._webglTexture = texture;
-    this.width = width;
-    this.height = height;
+    this._width = width;
+    this._height = height;
+  }
+
+  public get width() {
+    return this._width;
+  }
+
+  public get height() {
+    return this._height;
   }
 
   public get webglTexture() {
     return this._webglTexture;
+  }
+
+  public useForRendering() {
+    this._gl.bindTexture(this._gl.TEXTURE_2D, this._webglTexture);
   }
 }
 

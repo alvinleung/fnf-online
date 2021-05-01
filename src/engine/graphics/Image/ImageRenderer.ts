@@ -68,8 +68,8 @@ export class ImageRenderer extends Renderer {
     imageRendererShader.useProgram();
 
     // Setup the attributes to pull data from our buffers
-    imageRendererShader.prepareAttribForRendering("a_position");
-    imageRendererShader.prepareAttribForRendering("a_texcoord");
+    imageRendererShader.useAttribForRendering("a_position");
+    imageRendererShader.useAttribForRendering("a_texcoord");
 
     // this matrix will convert from pixels to clip space
     let matrix = m4.ortho(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);

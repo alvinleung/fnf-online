@@ -63,14 +63,18 @@ export class Renderer3D extends RenderPass {
     const renderer3DShader = system.getShaderProgram("renderer3DShader");
     renderer3DShader.useProgram();
 
+    // make sure this pass, it render to canvas
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
     // set world matrix
     renderer3DShader.writeUniformMat4("viewMatrix", cameraMatrix);
     renderer3DShader.writeUniformMat4("projectionMatrix", projectionMatrix);
 
     renderableObjects.forEach((renderableObject) => {
-      if (!renderableObject.isLoadedOntoGPUMemory()) {
+      if (!renderableObject.isLoadedIntoGPUMemory()) {
         // load the object onto gpu if it is not on gpu yet
-        renderableObject.loadOntoGPU(gl);
+        renderableObject.loadIntoGPU(gl);
       }
 
       // change the transformation base on the renderable object setting
@@ -85,13 +89,11 @@ export class Renderer3D extends RenderPass {
         renderableObject.getCoordsBuffer()
       );
 
-      if (renderableObject.hasTexture()) {
-        //TODO:render texture here
-
+      if (renderableObject.hasRenderingTexture()) {
         // change the pointer to texture
         gl.bindTexture(
           gl.TEXTURE_2D,
-          renderableObject.getTexture().webglTexture
+          renderableObject.getRenderingTexture().webglTexture
         );
 
         // supply the texture map coordinates

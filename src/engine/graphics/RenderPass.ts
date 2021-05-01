@@ -1,5 +1,6 @@
 import { m4 } from "twgl.js";
 import { Entity } from "../ecs";
+import { FrameBuffer } from "./FrameBuffer";
 import { RenderableObject } from "./Renderable";
 import { RenderingSystem } from "./RenderingSystem";
 
