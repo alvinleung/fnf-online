@@ -88,7 +88,7 @@ export class RenderingSystem extends System {
   }
 
   public getTexture(name: string) {
-    return this._texturesRefs[name].source;
+    return this._texturesRefs[name].webglTexture;
   }
 
   /**

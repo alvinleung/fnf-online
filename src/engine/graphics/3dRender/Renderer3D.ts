@@ -37,6 +37,12 @@ export class Renderer3D extends RenderPass {
       4
     );
 
+    this.colorBuffer = AttribDataBuffer.fromData(
+      gl,
+      new Float32Array(sampleObjectColors),
+      4
+    );
+
     // for trigger the cache
     renderer3DShader.getUniformLocation("modelMatsrix");
     renderer3DShader.getUniformLocation("viewMatrix");
@@ -62,7 +68,7 @@ export class Renderer3D extends RenderPass {
     renderer3DShader.writeUniformMat4("projectionMatrix", projectionMatrix);
 
     renderableObjects.forEach((renderableObject) => {
-      if (!renderableObject.isLoadedOntoGPUMemory) {
+      if (!renderableObject.isLoadedOntoGPUMemory()) {
         // load the object onto gpu if it is not on gpu yet
         renderableObject.loadOntoGPU(gl);
       }
@@ -76,11 +82,30 @@ export class Renderer3D extends RenderPass {
       // Step 1 change pointers
       renderer3DShader.useAttribForRendering(
         "vPosition",
-        renderableObject.coordsBuffer
+        renderableObject.getCoordsBuffer()
       );
 
-      // TODO: chnage it into rendering texture instead of the placehodler color
-      renderer3DShader.useAttribForRendering("vColor", this.colorBuffer);
+      if (renderableObject.hasTexture()) {
+        //TODO:render texture here
+
+        // change the pointer to texture
+        gl.bindTexture(
+          gl.TEXTURE_2D,
+          renderableObject.getTexture().webglTexture
+        );
+
+        // supply the texture map coordinates
+        renderer3DShader.useAttribForRendering(
+          "vTextureCoords",
+          renderableObject.getTextureCoordsBuffer()
+        );
+
+        // supply the texture memory location
+        // renderer3DShader.writeUniformInt("uTexture", 0);
+      } else {
+        // render a place-holder colour when there is no texture
+        renderer3DShader.useAttribForRendering("vColor", this.colorBuffer);
+      }
 
       // Step 2 draw
       gl.drawArrays(gl.TRIANGLES, 0, 6);

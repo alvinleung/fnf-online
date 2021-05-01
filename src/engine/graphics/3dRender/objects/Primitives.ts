@@ -18,4 +18,12 @@ export const plane_colors = [
   1.0,0.0,0.0,1.0,
 ]
 
-export const quad_2d = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];
+// export const quad_2d = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];
+export const quad_2d = [
+  1, 0,
+  0, 0,
+  0, 1,
+  0, 1,
+  1, 1,
+  1, 0,
+];

@@ -1,7 +1,7 @@
 import { Image } from "./Image";
 
 export interface ITexture {
-  source: WebGLTexture;
+  webglTexture: WebGLTexture;
   width: number;
   height: number;
 }
@@ -72,7 +72,7 @@ export class Texture implements ITexture {
     this.height = height;
   }
 
-  public get source() {
+  public get webglTexture() {
     return this._webglTexture;
   }
 }
@@ -112,7 +112,7 @@ export class DepthTexture implements ITexture {
     this.height = height;
   }
 
-  public get source() {
+  public get webglTexture() {
     return this._webglTexture;
   }
 }

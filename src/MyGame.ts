@@ -19,9 +19,10 @@ import { TransformComponent } from "./engine/core/TransformComponent";
 import { SoundLoader } from "./engine/assets/SoundLoader";
 
 import ASSET_DECLARATION from "./MyGameAssets";
-import { Plane3D, Renderer3D } from "./engine/graphics/3dRender/Renderer3D";
+import { Renderer3D } from "./engine/graphics/3dRender/Renderer3D";
 import CameraComponent from "./engine/camera/CameraComponent";
 import { RenderableComponent } from "./engine/graphics/Renderable";
+import { Plane } from "./engine/graphics/3dRender/Objects/Plane";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -62,10 +63,11 @@ class MyGame extends Game {
     // this.addEntity(animatingEntity);
 
     const squareEntity = new Entity();
+    const image = this.assets.image.get("test");
     squareEntity.useComponent(TransformComponent);
-    squareEntity.useComponent(
-      RenderableComponent
-    ).renderableObject = new Plane3D();
+    squareEntity.useComponent(RenderableComponent).renderableObject = new Plane(
+      image
+    );
 
     const transform = squareEntity.getComponent(TransformComponent);
     transform.scaleX = 1;
@@ -76,7 +78,7 @@ class MyGame extends Game {
     squareEntity2.useComponent(TransformComponent).z = -2;
     squareEntity2.useComponent(
       RenderableComponent
-    ).renderableObject = new Plane3D();
+    ).renderableObject = new Plane();
 
     const cameraEntity = new Entity();
     cameraEntity.useComponent(TransformComponent).z = 2;
