@@ -11,7 +11,6 @@ import { RenderingSystem } from "./engine/graphics/RenderingSystem";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
 import {
-  SpriteSheetAnimation,
   SpriteSheetAnimator,
   SpriteSheetRenderable,
 } from "./engine/graphics/SpriteSheet/SpriteSheetAnimation";
