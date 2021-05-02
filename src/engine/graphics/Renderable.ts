@@ -11,9 +11,11 @@ export class RenderableComponent implements Component {
 }
 
 /**
- * Rendeable Objects types
+ * Rendeable Objects types, this is designed to hold information
+ * that are necessary for rendering an object onto the scene.
+ *
+ * If possible, try to decouple the object behaviour logic from this class.
  */
-
 export abstract class RenderableObject {
   constructor(
     objectCoords: number[],
