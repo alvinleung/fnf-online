@@ -111,9 +111,9 @@ export class TransformComponent implements Component {
 
     // calculate a new matrix object if there is manipulation happen
     // sidenote - the applicaiton of matrix transformation is inverted (last in first out)
-    let matrix = m4.scaling([this._scaleX, this._scaleY, this._scaleZ]);
-    matrix = m4.multiply(matrix, m4.translation([this._x, this._y, this._z]));
+    let matrix = m4.translation([this._x, this._y, this._z]);
     matrix = m4.multiply(matrix, q.quatToMat4(this._rotationQuat));
+    matrix = m4.scale(matrix, [this._scaleX, this._scaleY, this._scaleZ]);
 
     // set the _changed flag back to false
     this._changed = false;
