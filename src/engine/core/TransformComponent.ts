@@ -21,6 +21,7 @@ export class TransformComponent implements Component {
   private _rotationQuat: q.Quat = [0, 0, 0, 0];
 
   public set position([x, y, z]: v3.Vec3) {
+    this._changed = true;
     this._x = x;
     this._y = y;
     this._z = z;
@@ -132,9 +133,7 @@ export class TransformComponent implements Component {
       matrix,
       v3.create(this._scaleX, this._scaleY, this._scaleZ)
     );
-    // matrix = m4.rotateZ(matrix, this._rotationZ);
-    // matrix = m4.rotateY(matrix, this._rotationY);
-    // matrix = m4.rotateX(matrix, this._rotationX);
+    matrix = m4.multiply(matrix, q.quatToMat4(this._rotationQuat));
 
     // set the _changed flag back to false
     this._changed = false;
