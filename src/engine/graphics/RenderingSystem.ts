@@ -9,6 +9,7 @@ import CameraComponent from "../camera/CameraComponent";
 import { RenderableComponent } from "./Renderable";
 import { Texture } from "./Texture";
 import { RenderPass } from "./RenderPass";
+import { FrameBuffer } from "./FrameBuffer";
 
 /**
  * RENDERING CONFIG
@@ -105,6 +106,7 @@ export class RenderingSystem extends System {
     this._shaderProgram[name] = program;
     return true;
   }
+
   public getShaderProgram(name: string): ShaderProgram {
     return this._shaderProgram[name];
   }
@@ -149,21 +151,22 @@ export class RenderingSystem extends System {
       CLIP_FAR // farZ: clip space properties
     );
 
+    // setup the renederableObject inside for rendering
+    const renderablObjects = this._renderList.entities.map((e) => {
+      const renderableObject = e.getComponent(RenderableComponent)
+        .renderableObject;
+
+      // set the transform base on the entity's transform component
+      renderableObject.transform = e
+        .getComponent(TransformComponent)
+        .getMatrix();
+
+      return renderableObject;
+    });
+
     // for each render pass
     this._renderPasses.forEach((renderPass) => {
-      // only grab the renderable components
-      const renderablObjects = this._renderList.entities.map((e) => {
-        const renderableObject = e.getComponent(RenderableComponent)
-          .renderableObject;
-
-        // set the transform base on the entity's transform component
-        renderableObject.transform = e
-          .getComponent(TransformComponent)
-          .getMatrix();
-
-        return renderableObject;
-      });
-
+      // render the scene
       renderPass.render(
         gl,
         this,

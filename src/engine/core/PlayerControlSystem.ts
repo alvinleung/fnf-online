@@ -27,8 +27,18 @@ export default class PlayerControlSystem extends System {
 
     const transform = playerEntity.getComponent(TransformComponent);
 
-    this.rotAmount += game.input.getAxis("yawX") * ROT_SPEED * delta;
-    transform.rotation = q.fromAxisAndAngle(q.Y_AXIS, this.rotAmount);
+    this.rotAmount = 0.02; // game.input.getAxis("yawX") * ROT_SPEED * delta;
+    this.rotAmount = game.input.getAxis("yawX") * ROT_SPEED * delta;
+    // transform.rotation = q.fromAxisAndAngle(q.Y_AXIS, this.rotAmount);
+    transform.rotation = q.mult(
+      q.fromEulerAngles(0, this.rotAmount, 0),
+      transform.rotation
+    );
+
+    // transform.rotation = q.mult(
+    //   transform.rotation,
+    //   q.inverse(transform.rotation)
+    // );
 
     const forwardSpeed = game.input.getAxis("vertical") * SPEED * delta;
     const sideSpeed = game.input.getAxis("horizontal") * SPEED * delta;
@@ -40,7 +50,7 @@ export default class PlayerControlSystem extends System {
     // transform.z += forwardSpeed;
     transform.position = v3.add(transform.position, direction);
 
-    //console.log(game.input.getAxis("yawY"));
+    transform.scaleX = sideSpeed >= 0 ? -1 : 1;
 
     // transform.rotationY += game.input.getAxis("horizontal") * SPEED * delta;
 
