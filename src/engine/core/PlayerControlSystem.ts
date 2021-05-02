@@ -50,6 +50,8 @@ export default class PlayerControlSystem extends System {
     // transform.z += forwardSpeed;
     transform.position = v3.add(transform.position, direction);
 
+    transform.scaleX = sideSpeed >= 0 ? -1 : 1;
+
     // transform.rotationY += game.input.getAxis("horizontal") * SPEED * delta;
 
     //console.log(this.playerEntity.entities)
