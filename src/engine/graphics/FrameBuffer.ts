@@ -41,6 +41,26 @@ export class FrameBuffer {
       0 // mip level
     );
 
+    //https://webglfundamentals.org/webgl/lessons/webgl-render-to-texture.html
+
+    // create a depth renderbuffer
+    const depthBuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
+
+    // make a depth buffer and the same size as the targetTexture
+    gl.renderbufferStorage(
+      gl.RENDERBUFFER,
+      gl.DEPTH_COMPONENT16,
+      renderTargetTexture.width,
+      renderTargetTexture.height
+    );
+    gl.framebufferRenderbuffer(
+      gl.FRAMEBUFFER,
+      gl.DEPTH_ATTACHMENT,
+      gl.RENDERBUFFER,
+      depthBuffer
+    );
+
     this._frameBuffer = frameBuffer;
     this._gl = gl;
     this._frameBufferTexture = renderTargetTexture;
@@ -66,7 +86,12 @@ export class FrameBuffer {
     );
 
     // clean the viewport
+    gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // colour blend mode
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   }
 
   public getOutputTexture() {

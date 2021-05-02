@@ -63,13 +63,23 @@ export class Texture implements ITexture {
       );
     } else {
       // create and empty texture if there are no image supplied
-      const data = new ImageData(width, height);
+      // const data = new ImageData(width, height);
+      // define size and format of level 0
+      const level = 0;
+      const internalFormat = gl.RGBA;
+      const border = 0;
+      const format = gl.RGBA;
+      const type = gl.UNSIGNED_BYTE;
+      const data = null;
       gl.texImage2D(
         gl.TEXTURE_2D,
         level,
         internalFormat,
-        srcFormat,
-        srcType,
+        width,
+        height,
+        border,
+        format,
+        type,
         data
       );
     }

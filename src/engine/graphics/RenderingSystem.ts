@@ -106,6 +106,7 @@ export class RenderingSystem extends System {
     this._shaderProgram[name] = program;
     return true;
   }
+
   public getShaderProgram(name: string): ShaderProgram {
     return this._shaderProgram[name];
   }
