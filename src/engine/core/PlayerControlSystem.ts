@@ -33,12 +33,14 @@ export default class PlayerControlSystem extends System {
     const forwardSpeed = game.input.getAxis("vertical") * SPEED * delta;
     const sideSpeed = game.input.getAxis("horizontal") * SPEED * delta;
     const direction = q.multVec3(
-      q.inverse(transform.rotation),
+      q.inverse(transform.rotation),//transform.rotation,//
       v3.create(sideSpeed, 0, forwardSpeed)
     );
 
     // transform.z += forwardSpeed;
     transform.position = v3.add(transform.position, direction);
+
+    //console.log(game.input.getAxis("yawY"));
 
     // transform.rotationY += game.input.getAxis("horizontal") * SPEED * delta;
 

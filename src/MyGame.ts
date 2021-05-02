@@ -98,7 +98,9 @@ class MyGame extends Game {
 
     // bind input
     const keyboard = new KeyboardInput();
-    const mouse = new MouseInput();
+    const mouse = new MouseInput(this);
+    mouse.enablePointerLockSetting();
+
 
     input.bindAction("left", keyboard.createKeyBinding("KeyA"));
     input.bindAction("right", keyboard.createKeyBinding("KeyD"));
@@ -110,9 +112,9 @@ class MyGame extends Game {
     input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
     input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
 
-    input.bindAxis("yawX", keyboard.createAxisBinding("ArrowLeft|ArrowRight"));
+    //input.bindAxis("yawX", keyboard.createAxisBinding("ArrowLeft|ArrowRight"));
     // input.bindAxis("yawX", mouse.createDragBinding("mouseleft", "x"));
-    input.bindAxis("yawY", mouse.createDragBinding("mouseleft", "y"));
+    input.bindAxis("yawX", mouse.createAxisBinding("x"));
 
     console.log();
 
