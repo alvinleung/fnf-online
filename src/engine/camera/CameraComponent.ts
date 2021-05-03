@@ -1,5 +1,6 @@
 import { TransformComponent } from "../core/TransformComponent";
 import { Component, Entity } from "../ecs";
+import { Editable, Editor } from "../editor";
 
 /**
  * This Component depends the TransformComponent

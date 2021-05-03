@@ -2,10 +2,6 @@ import { Entity } from "./engine/ecs";
 import { AssetManager, ImageLoader } from "./engine/assets";
 import { Game } from "./engine/Game";
 import InputSystem, { KeyboardInput, MouseInput } from "./engine/input";
-import {
-  ImageRenderer,
-  ImageRendererSetup,
-} from "./engine/graphics/Image/ImageRenderer";
 import { RenderingSystem } from "./engine/graphics/RenderingSystem";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
@@ -23,6 +19,9 @@ import { RenderableComponent } from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
 
+import * as q from "./engine/utils/quaternion";
+import { getEditableFields } from "./engine/utils/getEditableProps";
+
 class MyGame extends Game {
   protected gameDidInit() {
     /**
@@ -36,9 +35,21 @@ class MyGame extends Game {
     );
 
     const transform = squareEntity.getComponent(TransformComponent);
-    transform.scaleX = 1;
-    transform.scaleY = 1;
-    transform.z = -1;
+    transform.scale = [1, 1, 0];
+    transform.position = [0, 0, 0];
+
+    /**
+     * Entity 1 - static
+     */
+    const squareEntity3 = new Entity();
+    squareEntity3.useComponent(TransformComponent);
+    squareEntity3.useComponent(
+      RenderableComponent
+    ).renderableObject = new Plane(image);
+
+    const transform3 = squareEntity3.getComponent(TransformComponent);
+    transform3.scale = [1, 1, 0];
+    transform3.position = [0, 0, -5];
 
     /**
      * Entity 2 - animated entity
@@ -48,25 +59,28 @@ class MyGame extends Game {
     spriteSheetAnimation.defineAnimation("crouch", 4, 7);
     spriteSheetAnimation.defineAnimation("run", 8, 13);
     spriteSheetAnimation.defineAnimation("jump", 14, 23);
-    spriteSheetAnimation.loop("run");
+    spriteSheetAnimation.loop("idle");
 
     const squareEntity2 = new Entity();
-    squareEntity2.useComponent(TransformComponent).z = -2;
+    const transform2 = squareEntity2.useComponent(TransformComponent);
+    transform2.position = [0, -2, -1];
+
     squareEntity2.useComponent(
       RenderableComponent
     ).renderableObject = new SpriteSheetRenderable(spriteSheetAnimation);
 
-    squareEntity.useComponent(PlayerControlComponent);
     /**
      * Entity 3 - Camera Controller
      */
 
     const cameraEntity = new Entity();
-    cameraEntity.useComponent(TransformComponent).z = 2;
+    cameraEntity.useComponent(TransformComponent).position = [0, 0, 4];
     cameraEntity.useComponent(CameraComponent);
+    squareEntity2.useComponent(PlayerControlComponent);
 
     this.addEntity(cameraEntity);
     this.addEntity(squareEntity2);
+    this.addEntity(squareEntity3);
     this.addEntity(squareEntity);
     // this.assets.sound.get("action-theme").play();
     // this.assets.sound.get("action-theme").play();
@@ -81,7 +95,6 @@ class MyGame extends Game {
     const mouse = new MouseInput(this);
     mouse.enablePointerLockSetting();
 
-
     input.bindAction("left", keyboard.createKeyBinding("KeyA"));
     input.bindAction("right", keyboard.createKeyBinding("KeyD"));
     input.bindAction("up", keyboard.createKeyBinding("KeyW"));
@@ -95,8 +108,6 @@ class MyGame extends Game {
     //input.bindAxis("yawX", keyboard.createAxisBinding("ArrowLeft|ArrowRight"));
     // input.bindAxis("yawX", mouse.createDragBinding("mouseleft", "x"));
     input.bindAxis("yawX", mouse.createAxisBinding("x"));
-
-    console.log();
 
     return input;
   }

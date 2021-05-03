@@ -1,6 +1,7 @@
 import { Component } from "../ecs";
 import { m4, v3 } from "twgl.js";
 import * as q from "../utils/quaternion";
+import { Editable, Editor } from "../editor";
 
 /**
  * A component for 2d spatial manipulation
@@ -15,11 +16,9 @@ export class TransformComponent implements Component {
   private _scaleX: number = 1;
   private _scaleY: number = 1;
   private _scaleZ: number = 1;
-  // private _rotationZ: number = 0;
-  // private _rotationY: number = 0;
-  // private _rotationX: number = 0;
   private _rotationQuat: q.Quat = q.fromEulerAngles(0, 0, 0);
 
+  @Editable(Editor.VECTOR)
   public set position([x, y, z]: v3.Vec3) {
     this._changed = true;
     this._x = x;
@@ -31,6 +30,7 @@ export class TransformComponent implements Component {
     return [this._x, this._y, this._z];
   }
 
+  @Editable(Editor.VECTOR)
   public set scale([x, y, z]: v3.Vec3) {
     this._changed = true;
     this._scaleX = x;
@@ -42,6 +42,7 @@ export class TransformComponent implements Component {
     return [this._scaleX, this._scaleY, this._scaleZ];
   }
 
+  @Editable(Editor.QUATERNION)
   public set rotation(quaternion: q.Quat) {
     this._changed = true;
     this._rotationQuat = quaternion;
@@ -49,60 +50,6 @@ export class TransformComponent implements Component {
 
   public get rotation(): q.Quat {
     return this._rotationQuat;
-  }
-
-  public get x() {
-    return this._x;
-  }
-
-  public set x(val: number) {
-    this._changed = true;
-    this._x = val;
-  }
-
-  public get y() {
-    return this._y;
-  }
-
-  public set y(val: number) {
-    this._changed = true;
-    this._y = val;
-  }
-
-  public get z() {
-    return this._z;
-  }
-
-  public set z(val: number) {
-    this._changed = true;
-    this._z = val;
-  }
-
-  public get scaleY() {
-    return this._scaleY;
-  }
-
-  public set scaleY(val: number) {
-    this._changed = true;
-    this._scaleY = val;
-  }
-
-  public get scaleX() {
-    return this._scaleX;
-  }
-
-  public set scaleX(val: number) {
-    this._changed = true;
-    this._scaleX = val;
-  }
-
-  public get scaleZ() {
-    return this._scaleZ;
-  }
-
-  public set scaleZ(val: number) {
-    this._changed = true;
-    this._scaleZ = val;
   }
 
   public getMatrix(): m4.Mat4 {
