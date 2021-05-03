@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import "./main.css";
 import MyGame from "./MyGame";
 
