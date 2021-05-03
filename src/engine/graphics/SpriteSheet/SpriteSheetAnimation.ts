@@ -1,4 +1,4 @@
-import { Image } from "../Image";
+import { Image } from "../Image/Image";
 import { Plane } from "../3dRender/objects/Plane";
 import { FrameBuffer } from "../FrameBuffer";
 import { Texture } from "../Texture";

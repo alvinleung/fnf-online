@@ -1,7 +1,7 @@
 import { m4, v3 } from "twgl.js";
 import { Component } from "../ecs";
 import { AttribDataBuffer } from "./AttribDataBuffer";
-import { Image } from "./Image";
+import { Image } from "./Image/Image";
 import { Texture } from "./Texture";
 
 const VERBOSE = true;
