@@ -1,7 +1,10 @@
 {
   "sourceMaps": "both",
+  "presets": ["@babel/preset-react"],
   "plugins": [
-    ["@babel/plugin-transform-typescript"],
+    ["@babel/plugin-syntax-jsx"],
+    ["@babel/plugin-transform-react-jsx"],
+    ["@babel/plugin-transform-typescript", { "isTSX": true }],
     ["@babel/plugin-proposal-decorators", { "legacy": true }],
     ["@babel/plugin-proposal-class-properties", { "loose": true }]
   ]
