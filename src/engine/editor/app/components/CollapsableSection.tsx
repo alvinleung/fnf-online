@@ -26,7 +26,6 @@ export const CollapsableSection = ({ header, children }: Props) => {
         onClick={toggleCollapseState}
         transition={config.DEFAULT_TRANSITION}
       >
-        {header}
         <motion.img
           src={ARROW_DOWN}
           animate={{
@@ -34,6 +33,7 @@ export const CollapsableSection = ({ header, children }: Props) => {
           }}
           transition={config.DEFAULT_TRANSITION}
         />
+        {header}
       </motion.button>
       {childrenArr.map((children, index) => {
         return (

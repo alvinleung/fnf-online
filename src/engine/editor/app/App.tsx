@@ -13,11 +13,17 @@ import { v3 } from "twgl.js";
 import { BooleanEditor } from "./components/valueEditor/BooleanEditor";
 import { RotationEditor } from "./components/valueEditor/RotationEditor";
 import { NumberEditor } from "./components/valueEditor/NumberEditor";
+import { ColorEditor } from "./components/valueEditor/ColorEditor";
 
 const App = () => {
   return (
     <>
-      <Panel header="Entity List" dockingSide="left" minSize={150} initialState="collapsed">
+      <Panel
+        header="Entity List"
+        dockingSide="left"
+        minSize={150}
+        initialState="collapsed"
+      >
         <List>
           <ListItem value="test">test</ListItem>
           <ListItem value="test2">test2</ListItem>
@@ -34,6 +40,17 @@ const App = () => {
         </CollapsableSection>
         <CollapsableSection header="Renderable Component">
           <BooleanEditor name="Enable" initialValue={false} />
+          <ColorEditor name="Color" />
+        </CollapsableSection>
+        <CollapsableSection header="Renderable Component">
+          <BooleanEditor name="Enable" initialValue={false} />
+          <ColorEditor name="Color" />
+          <ColorEditor name="Color" />
+          <ColorEditor name="Color" />
+          <ColorEditor
+            name="Color"
+            initialValue={{ r: 1, g: 1, b: 1, a: 0.5 }}
+          />
         </CollapsableSection>
       </Panel>
     </>
