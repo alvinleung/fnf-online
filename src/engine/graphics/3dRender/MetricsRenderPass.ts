@@ -8,20 +8,18 @@ import { ShaderProgram } from "../ShaderProgram";
 //let gridVertices = require("./objects/Primitives").plane;
 //let gridColors = require("./objects/Primitives").plane_colors;
 
-
 export class MetricsRenderPass extends RenderPass {
   private positionBuffer: AttribDataBuffer;
   private colorBuffer: AttribDataBuffer;
-  private textureBuffer: AttribDataBuffer;
   private verticeSize: number;
 
-  private GRID_SIZE = 10;
-  private GRID_COLOR = [1.0,1.0,1.0,1.0];
+  private GRID_SIZE = 100;
+  private GRID_COLOR = [1.0, 1.0, 1.0, 1.0];
   private GRID_AXIS_COLOR = {
-    x:[1.0,0.0,0.0,1.0],
-    y:[0.0,1.0,0.0,1.0],
-    z:[0.0,0.0,1.0,1.0],
-  }
+    x: [1.0, 0.0, 0.0, 1.0],
+    y: [0.0, 1.0, 0.0, 1.0],
+    z: [0.0, 0.0, 1.0, 1.0],
+  };
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
     // this part run once per entity
@@ -29,29 +27,29 @@ export class MetricsRenderPass extends RenderPass {
     let Size = this.GRID_SIZE;
 
     var xLinesVertices = [];
-    for (var i = 0; i < Size; i++){
-        xLinesVertices.push(Size,0,i + 1);
-        xLinesVertices.push(-Size,0,i + 1);
-  
-        xLinesVertices.push(Size,0,-i - 1);
-        xLinesVertices.push(-Size,0,-i - 1);
+    for (var i = 0; i < Size; i++) {
+      xLinesVertices.push(Size, 0, i + 1);
+      xLinesVertices.push(-Size, 0, i + 1);
+
+      xLinesVertices.push(Size, 0, -i - 1);
+      xLinesVertices.push(-Size, 0, -i - 1);
     }
-  
+
     var zLinesVertices = [];
-    for (var i = 0; i < Size; i++){
-        zLinesVertices.push(i + 1,0,Size);
-        zLinesVertices.push(i + 1,0,-Size);
-  
-        zLinesVertices.push(-i - 1,0,Size);
-        zLinesVertices.push(-i - 1,0,-Size);
-    } 
+    for (var i = 0; i < Size; i++) {
+      zLinesVertices.push(i + 1, 0, Size);
+      zLinesVertices.push(i + 1, 0, -Size);
+
+      zLinesVertices.push(-i - 1, 0, Size);
+      zLinesVertices.push(-i - 1, 0, -Size);
+    }
 
     var gridVertices = xLinesVertices.concat(zLinesVertices);
 
-    console.log([...gridVertices].length)
+    console.log([...gridVertices].length);
 
     var gridColors = [];
-    for(var i = 0; i < gridVertices.length / 3 ; i++){
+    for (var i = 0; i < gridVertices.length / 3; i++) {
       gridColors.push(...this.GRID_COLOR);
     }
 
@@ -86,12 +84,6 @@ export class MetricsRenderPass extends RenderPass {
       new Float32Array(gridColors),
       4
     );
-    
-    this.textureBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(gridVertices),
-      2
-    );
   }
 
   // this will be called per frame
@@ -103,11 +95,8 @@ export class MetricsRenderPass extends RenderPass {
     renderableObjects: RenderableObject[]
   ) {
     const renderer3DShader = system.getShaderProgram("renderer3DShader");
-    if(!renderer3DShader) return;
+    if (!renderer3DShader) return;
     renderer3DShader.useProgram();
-
-    //gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer.buffer);
-    //console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
 
     // make sure this pass, it render to canvas
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -116,21 +105,20 @@ export class MetricsRenderPass extends RenderPass {
     // set world matrix
     renderer3DShader.writeUniformMat4("viewMatrix", cameraMatrix);
     renderer3DShader.writeUniformMat4("projectionMatrix", projectionMatrix);
-    renderer3DShader.writeUniformVec3Float("cameraPosition", m4.getTranslation(m4.inverse(cameraMatrix)));
+    renderer3DShader.writeUniformVec3Float(
+      "cameraPosition",
+      m4.getTranslation(m4.inverse(cameraMatrix))
+    );
 
-    // load attribs to render grid 
+    // load attribs to render grid
     renderer3DShader.writeUniformMat4("modelMatrix", m4.identity());
     renderer3DShader.useAttribForRendering("vPosition", this.positionBuffer);
     renderer3DShader.useAttribForRendering("vColor", this.colorBuffer);
-    //renderer3DShader.useAttribForRendering("vTextureCoords",this.textureBuffer);
 
     // disable texture
-    renderer3DShader.writeUniformBoolean("useTexture",false);
+    renderer3DShader.writeUniformBoolean("useTexture", false);
 
     // Step 2 draw
     gl.drawArrays(gl.LINES, 0, this.verticeSize);
-    
   }
 }
-
-
