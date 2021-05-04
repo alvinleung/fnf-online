@@ -4,7 +4,8 @@ import { Game } from "../Game";
 import {InputSourceFactory, AxisBinding} from "./InputSystem";
 
 interface MouseAxisBinding extends AxisBinding {
-  axis: string,
+  axis: string;
+  getAxis(key: string): number;
 }
 
 interface MousePosition {
@@ -42,6 +43,7 @@ class MouseInput extends InputSourceFactory {
 
     const axisBinding: MouseAxisBinding = {
       axis: axis,
+      getAxisChange: this.getAxisChange.bind(this),
       getAxis: this.getAxis.bind(this),
     };
 
@@ -50,7 +52,7 @@ class MouseInput extends InputSourceFactory {
     return axisBinding;
   }
 
-  protected getAxis(axis: string): number {
+  protected getAxisChange(axis: string): number {
     if (!this.axisBindings[axis] || !this.currentMouse) return 0;
     if(this.usePointerLocking){
       if(!this.pointerLocked){
@@ -60,12 +62,16 @@ class MouseInput extends InputSourceFactory {
     }
     let velocity = 0;
     const axisBinding = this.axisBindings[axis].axis;
-    // check if calculation has already been done in the same frame
     velocity = this.currentMouse[axisBinding] - this.cacheMouse[axisBinding];
     this.cacheMouse[axisBinding] = this.currentMouse[axisBinding];
     
     velocity = velocity * this.SENSITIVITY * 0.5;
     return velocity;
+  }
+  protected getAxis(axis: string): number {
+    if (!this.axisBindings[axis] || !this.currentMouse) return 0;
+    const axisBinding = this.axisBindings[axis].axis;
+    return this.currentMouse[axisBinding]
   }
 
   private addEventListeners(game:Game) {

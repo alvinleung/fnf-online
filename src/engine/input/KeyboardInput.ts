@@ -14,7 +14,7 @@ class KeyboardInput extends InputSourceFactory {
     this.addEventListeners();
   }
 
-  protected getAxis(axis: string): number {
+  protected getAxisChange(axis: string): number {
     if (!this.axisBindings[axis]) return 0;
 
     const positiveKey = this.axisBindings[axis].positiveKey;
@@ -41,7 +41,7 @@ class KeyboardInput extends InputSourceFactory {
       axis: axis,
       positiveKey: positiveKey,
       negativeKey: negativekey,
-      getAxis: this.getAxis.bind(this),
+      getAxisChange: this.getAxisChange.bind(this),
     };
 
     this.axisBindings[axis] = axisBinding;

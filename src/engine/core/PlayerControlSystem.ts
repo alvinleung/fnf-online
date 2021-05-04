@@ -28,9 +28,9 @@ export default class PlayerControlSystem extends System {
 
     const transform = playerEntity.getComponent(TransformComponent);
 
-    //console.log(game.input.getAxis("yawY") * ROT_SPEED * delta)
-    this.rotXAmount += game.input.getAxis("yawX") * ROT_SPEED * delta;
-    this.rotYAmount += -game.input.getAxis("yawY") * ROT_SPEED * delta;
+    //console.log(game.input.getAxisChange("yawY") * ROT_SPEED * delta)
+    this.rotXAmount += game.input.getAxisChange("yawX") * ROT_SPEED * delta;
+    this.rotYAmount += -game.input.getAxisChange("yawY") * ROT_SPEED * delta;
 
     transform.rotation = q.fromEulerAngles(0, this.rotXAmount , 0);
     /*
@@ -54,8 +54,8 @@ export default class PlayerControlSystem extends System {
     //   q.inverse(transform.rotation)
     // );
       //console.log(transform.rotation)
-    const forwardSpeed = game.input.getAxis("vertical") * SPEED * delta;
-    const sideSpeed = game.input.getAxis("horizontal") * SPEED * delta;
+    const forwardSpeed = game.input.getAxisChange("vertical") * SPEED * delta;
+    const sideSpeed = game.input.getAxisChange("horizontal") * SPEED * delta;
     const direction = q.multVec3(
       q.inverse(transform.rotation),//transform.rotation,//
       v3.create(sideSpeed, 0, forwardSpeed)
@@ -64,15 +64,15 @@ export default class PlayerControlSystem extends System {
     // transform.z += forwardSpeed;
     transform.position = v3.add(transform.position, direction);
 
-    transform.scaleX = sideSpeed >= 0 ? -1 : 1;
+    //transform.scaleX = sideSpeed >= 0 ? -1 : 1;
 
-    // transform.rotationY += game.input.getAxis("horizontal") * SPEED * delta;
+    // transform.rotationY += game.input.getAxisChange("horizontal") * SPEED * delta;
 
     //console.log(this.playerEntity.entities)
 
     // const triangleEntity = this.playerEntity.entities[1];
     // const triangleTransform = triangleEntity.getComponent(TransformComponent);
-    // triangleTransform.rotationZ += game.input.getAxis("yawX") * 10 * delta;
-    // triangleTransform.rotationX += game.input.getAxis("yawY") * 10 * delta;
+    // triangleTransform.rotationZ += game.input.getAxisChange("yawX") * 10 * delta;
+    // triangleTransform.rotationX += game.input.getAxisChange("yawY") * 10 * delta;
   }
 }
