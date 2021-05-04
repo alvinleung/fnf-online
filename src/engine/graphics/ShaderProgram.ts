@@ -9,6 +9,8 @@ export class ShaderProgram {
   private cachedUniformLocation = {};
   private cachedAttribLocation = {};
 
+  private _uncleanAttrib:{[name:string]: number} = {};
+
   private attribBuffers = {};
 
   /**
@@ -49,6 +51,20 @@ export class ShaderProgram {
       0,
       0
     );
+    // add the used attribute to the clean up list
+    this._uncleanAttrib[attribPointerLocation] = attribPointerLocation;
+  }
+
+  /**
+   * Usually called at the end of the render pass, the function 
+   * disable all the currently enabled vertex attributes.
+   * (enabled by the useAttribForRendering function) 
+   */
+  public cleanUpAttribs() {
+    const uncleanAttribs = Object.values(this._uncleanAttrib);
+    for(let i = 0; i < uncleanAttribs.length; i++) {
+      this.gl.disableVertexAttribArray(uncleanAttribs[i]);
+    }
   }
 
   public getAttribLocation(attributeName: string) {

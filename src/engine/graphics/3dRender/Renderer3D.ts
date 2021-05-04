@@ -37,12 +37,6 @@ export class Renderer3D extends RenderPass {
       4
     );
 
-    this.colorBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(sampleObjectColors),
-      4
-    );
-
     // for trigger the cache
     renderer3DShader.getUniformLocation("modelMatsrix");
     renderer3DShader.getUniformLocation("viewMatrix");
@@ -71,6 +65,7 @@ export class Renderer3D extends RenderPass {
     renderer3DShader.writeUniformMat4("viewMatrix", cameraMatrix);
     renderer3DShader.writeUniformMat4("projectionMatrix", projectionMatrix);
 
+    
     renderableObjects.forEach((renderableObject) => {
       if (!renderableObject.isLoadedIntoGPUMemory()) {
         // load the object onto gpu if it is not on gpu yet
@@ -116,5 +111,8 @@ export class Renderer3D extends RenderPass {
       // Step 2 draw
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     });
+
+    // disable all the used attributes
+    renderer3DShader.cleanUpAttribs();
   }
 }

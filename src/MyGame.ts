@@ -18,9 +18,6 @@ import CameraComponent from "./engine/camera/CameraComponent";
 import { RenderableComponent } from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
-
-import * as q from "./engine/utils/quaternion";
-import { getEditableFields } from "./engine/utils/getEditableProps";
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
 
 class MyGame extends Game {
@@ -75,7 +72,7 @@ class MyGame extends Game {
      */
 
     const cameraEntity = new Entity();
-    cameraEntity.useComponent(TransformComponent).position = [0, 5, 4];
+    cameraEntity.useComponent(TransformComponent).position = [0, 0, 4];
     cameraEntity.useComponent(CameraComponent);
     cameraEntity.useComponent(PlayerControlComponent);
 
