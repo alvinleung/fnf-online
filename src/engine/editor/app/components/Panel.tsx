@@ -13,16 +13,18 @@ interface Props {
   header?: string;
   dockingSide: "left" | "right" | "bottom" | "top";
   minSize?: number;
+  initialState?: "collapsed" | "expanded";
 }
 
 export const Panel = ({
   children,
   header,
   dockingSide,
+  initialState,
   minSize = 200,
 }: Props) => {
-  const [collapsed, setColapsed] = useState(false);
-  const [panelSize, setPanelSize] = useState(minSize);
+  const [collapsed, setColapsed] = useState(initialState === "collapsed");
+  const [panelSize, setPanelSize] = useState(collapsed ? 0 : minSize);
   const [isDragging, setIsDragging] = useState(false);
 
   const resizableX =
