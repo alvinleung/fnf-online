@@ -5,6 +5,9 @@
 }
 
 .collapsable-section__toggle {
+  position: sticky;
+  top: 0rem;
+
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -20,6 +23,8 @@
   background-color: var(--clr-bg-lighter);
 
   border: none;
+
+  z-index: 10;
 }
 
 .panel__button {

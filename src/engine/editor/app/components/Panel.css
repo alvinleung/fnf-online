@@ -10,7 +10,8 @@
   /* padding-top: var(--spacing-s); */
   z-index: 100;
 
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scoll;
 }
 
 .panel__button {
@@ -38,6 +39,8 @@
 
   cursor: col-resize;
   opacity: 0;
+
+  z-index: 1000;
 }
 
 .panel__drag-handle--right {
@@ -60,7 +63,7 @@
 }
 .panel--right {
   right: 0rem;
-  min-height: 100vh;
+  max-height: 100vh;
 }
 .panel--bottom {
   bottom: 0rem;
