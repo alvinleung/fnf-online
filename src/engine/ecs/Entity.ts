@@ -21,6 +21,21 @@ class Entity {
   } = {};
 
   /**
+   * A static factory function for creating an entity instance
+   * @param id
+   * @param components
+   */
+  public static create(id: string, components: ComponentClass<any>[]): Entity {
+    const entityInstance = new Entity();
+    entityInstance.id = id;
+    components.forEach((component) => {
+      entityInstance.useComponent(component);
+    });
+
+    return entityInstance;
+  }
+
+  /**
    * Gets the id of the entity.
    * @throws when the id is null.
    */

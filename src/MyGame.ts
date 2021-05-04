@@ -19,6 +19,7 @@ import { RenderableComponent } from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
+import { fromEulerAngles } from "./engine/utils/quaternion";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -26,6 +27,7 @@ class MyGame extends Game {
      * Entity 1 - static
      */
     const squareEntity = new Entity();
+    squareEntity.id = "square-entity-1";
     const image = this.assets.image.get("test");
     squareEntity.useComponent(TransformComponent);
     squareEntity.useComponent(RenderableComponent).renderableObject = new Plane(
@@ -44,7 +46,8 @@ class MyGame extends Game {
     squareEntity3.useComponent(
       RenderableComponent
     ).renderableObject = new Plane(image);
-    
+    squareEntity3.id = "square-entity-3";
+
     const transform3 = squareEntity3.getComponent(TransformComponent);
     transform3.scale = [1, 1, 0];
     transform3.position = [0, 0, -5];
@@ -60,6 +63,7 @@ class MyGame extends Game {
     spriteSheetAnimation.loop("idle");
 
     const squareEntity2 = new Entity();
+    squareEntity2.id = "square-entity-3";
     const transform2 = squareEntity2.useComponent(TransformComponent);
     transform2.position = [0, -1, -1];
 
@@ -71,11 +75,16 @@ class MyGame extends Game {
      * Entity 3 - Camera Controller
      */
 
-    const cameraEntity = new Entity();
-    cameraEntity.useComponent(TransformComponent).position = [0, 0, 4];
-    cameraEntity.useComponent(CameraComponent);
-    cameraEntity.useComponent(PlayerControlComponent);
+    const cameraEntity = Entity.create("camera", [
+      TransformComponent,
+      CameraComponent,
+      PlayerControlComponent,
+    ]);
+    const cameraTransform = cameraEntity.getComponent(TransformComponent);
+    cameraTransform.position = [0, 1, 5];
+    cameraTransform.rotation = fromEulerAngles(0.2, 0, 4);
 
+    console.log(cameraEntity.listComponents());
 
     this.addEntity(cameraEntity);
     this.addEntity(squareEntity2);
@@ -83,11 +92,9 @@ class MyGame extends Game {
     this.addEntity(squareEntity);
     // this.assets.sound.get("action-theme").play();
     // this.assets.sound.get("action-theme").play();
-      
-    // console.log(getPublicProperties(new TransformComponent));
-    
-  }
 
+    // console.log(getPublicProperties(new TransformComponent));
+  }
 
   // @override
   protected setupInput(): InputSystem {

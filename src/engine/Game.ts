@@ -1,4 +1,4 @@
-import { Engine } from "./ecs";
+import { Engine, Entity } from "./ecs";
 
 // game engine modules
 import InputSystem from "./input";
@@ -10,6 +10,8 @@ export abstract class Game extends Engine {
   public readonly input: InputSystem;
   private _rendering: RenderingSystem;
   private canvasElement: HTMLCanvasElement;
+
+  private _entitiesRefMap: { [name: string]: Entity } = {};
 
   // when enabled, it will render more pixels to make things
   // look cleaner in retina display, but it will increase
@@ -98,6 +100,42 @@ export abstract class Game extends Engine {
   public getCanvas(): HTMLCanvasElement {
     // return this.renderer.domElement;
     return this.canvasElement;
+  }
+
+  /**
+   * Override addEntity method, each entity has a unique id when adding to the system.
+   */
+  public addEntity(entity: Entity): this {
+    if (entity.isNew())
+      throw new Error(
+        `Unable to add entity: Entity "id" property need to be set before adding to the engine, currently null.`
+      );
+
+    if (this._entitiesRefMap[entity.id])
+      throw new Error(
+        `Unable to add entity: Entity with id ${entity.id} already exist in the system`
+      );
+
+    this._entitiesRefMap[entity.id] = entity;
+    super.addEntity(entity);
+    return this;
+  }
+  /**
+   * Override addEntity to add mapping functionality
+   */
+  //@ts-ignore overrriding parent method with different signiture
+  public removeEntity(entity: Entity) {
+    const self = super.removeEntity(entity);
+    // remove entity reference from the ref map list
+    delete this._entitiesRefMap[entity.id];
+    return self;
+  }
+
+  /**
+   * Override addEntity to add mapping functionality
+   */
+  public getEntityById(name: string): Entity {
+    return this._entitiesRefMap[name];
   }
 
   private tick() {
