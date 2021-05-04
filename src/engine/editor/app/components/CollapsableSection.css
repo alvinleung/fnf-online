@@ -12,8 +12,8 @@
   width: 100%;
   padding-left: var(--spacing-m);
   padding-right: var(--spacing-m);
-  padding-top: var(--spacing-m);
-  padding-bottom: var(--spacing-m);
+  padding-top: var(--spacing-s);
+  padding-bottom: var(--spacing-s);
   text-align: left;
 
   color: var(--clr-text);
@@ -43,7 +43,7 @@
 
 /* the toggle icon */
 .collapsable-section__toggle > img {
-  margin-left: auto;
+  margin-right: var(--spacing-m);
 }
 
 .collapsable-section__group {
