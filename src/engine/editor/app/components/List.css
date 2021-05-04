@@ -1,0 +1,20 @@
+.list {
+  padding-left: 0rem;
+  padding-right: 0rem;
+}
+
+.list-item {
+  padding-top: var(--spacing-s);
+  padding-bottom: var(--spacing-s);
+  padding-left: var(--spacing-m);
+  padding-right: var(--spacing-m);
+}
+
+.list-item:hover {
+  cursor: default;
+  background-color: var(--clr-bg-lighter);
+}
+
+.list-item--selected {
+  background-color: var(--clr-accent-muted) !important;
+}

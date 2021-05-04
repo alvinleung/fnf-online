@@ -1,0 +1,12 @@
+:root {
+  --clr-text: #fff;
+  --clr-accent: #9b51e0;
+  --clr-accent-muted: rgba(155, 81, 224, 0.5);
+  --clr-bg: #292929;
+  --clr-bg-lighter: #3b3b3b;
+
+  --spacing-xs: 0.25rem;
+  --spacing-s: 0.5rem;
+  --spacing-m: 1rem;
+  --spacing-l: 2rem;
+}

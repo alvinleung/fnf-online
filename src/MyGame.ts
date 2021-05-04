@@ -18,7 +18,6 @@ import CameraComponent from "./engine/camera/CameraComponent";
 import { RenderableComponent } from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
-import { v3 } from "twgl.js";
 
 import * as q from "./engine/utils/quaternion";
 import { getEditableFields } from "./engine/utils/getEditableProps";

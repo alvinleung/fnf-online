@@ -1,0 +1,64 @@
+.collapsable-section {
+  /* reset the padding */
+  padding-left: 0rem;
+  width: 100%;
+}
+
+.collapsable-section__toggle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  width: 100%;
+  padding-left: var(--spacing-m);
+  padding-right: var(--spacing-m);
+  padding-top: var(--spacing-m);
+  padding-bottom: var(--spacing-m);
+  text-align: left;
+
+  color: var(--clr-text);
+  background-color: var(--clr-bg-lighter);
+
+  border: none;
+}
+
+.panel__button {
+  --offset: var(--spacing-m);
+  position: fixed;
+  z-index: 10000;
+  padding: 0rem;
+}
+.panel__button > img {
+  width: 1rem;
+}
+
+.panel__button--left {
+  top: var(--offset);
+  left: 0rem;
+}
+.panel__button--right {
+  top: var(--offset);
+  right: 0rem;
+}
+
+/* the toggle icon */
+.collapsable-section__toggle > img {
+  margin-left: auto;
+}
+
+.collapsable-section__group {
+  /* reset the padding */
+  padding: var(--spacing-m);
+  width: 100%;
+}
+
+.collapsable-section__group-container {
+  overflow: hidden;
+  box-sizing: content-box;
+  border-bottom: 1px solid var(--clr-bg-lighter);
+  width: 100%;
+}
+
+.collapsable-section__group-container:last-child {
+  border-bottom: none;
+}
