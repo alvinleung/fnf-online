@@ -15,6 +15,12 @@ export class MetricsRenderPass extends RenderPass {
   private verticeSize: number;
 
   private GRID_SIZE = 100;
+  private GRID_COLOR = [1.0,1.0,1.0,1.0];
+  private GRID_AXIS_COLOR = {
+    x:[1.0,0.0,0.0,1.0],
+    y:[0.0,1.0,0.0,1.0],
+    z:[0.0,0.0,1.0,1.0],
+  }
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
     // this part run once per entity
@@ -42,12 +48,28 @@ export class MetricsRenderPass extends RenderPass {
     var gridVertices = xLinesVertices.concat(zLinesVertices);
 
     var gridColors = [];
-    for(var i = 0; i < gridVertices.length ; i++){
-      gridColors.push(1.0);
-      gridColors.push(1.0);
-      gridColors.push(1.0);
-      gridColors.push(1.0);
+    for(var i = 0; i < gridVertices.length / 3 ; i++){
+      gridColors.push(...this.GRID_COLOR);
     }
+
+    // Axis lines
+    // X
+    gridVertices.push(Size, 0, 0);
+    gridVertices.push(-Size, 0, 0);
+    gridColors.push(...this.GRID_AXIS_COLOR.x);
+    gridColors.push(...this.GRID_AXIS_COLOR.x);
+    // Y
+    /*
+    gridVertices.push(0, Size, 0);
+    gridVertices.push(0, -Size, 0);
+    gridColors.push(...this.GRID_AXIS_COLOR.y);
+    gridColors.push(...this.GRID_AXIS_COLOR.y);
+    */
+    // Z
+    gridVertices.push(0, 0, Size);
+    gridVertices.push(0, 0, -Size);
+    gridColors.push(...this.GRID_AXIS_COLOR.z);
+    gridColors.push(...this.GRID_AXIS_COLOR.z);
 
     this.verticeSize = gridVertices.length;
     // init the buffer
@@ -83,7 +105,9 @@ export class MetricsRenderPass extends RenderPass {
     // set world matrix
     renderer3DShader.writeUniformMat4("viewMatrix", cameraMatrix);
     renderer3DShader.writeUniformMat4("projectionMatrix", projectionMatrix);
-    renderer3DShader.writeUniformVec3Float("cameraPosition", m4.inverse(m4.getTranslation(cameraMatrix)));
+    renderer3DShader.writeUniformVec3Float("cameraPosition", m4.getTranslation(m4.inverse(cameraMatrix)));
+
+
 
     //console.log(m4.identity())
     

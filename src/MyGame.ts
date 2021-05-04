@@ -75,7 +75,7 @@ class MyGame extends Game {
      */
 
     const cameraEntity = new Entity();
-    cameraEntity.useComponent(TransformComponent).position = [0, 0, 4];
+    cameraEntity.useComponent(TransformComponent).position = [0, 5, 4];
     cameraEntity.useComponent(CameraComponent);
     cameraEntity.useComponent(PlayerControlComponent);
 

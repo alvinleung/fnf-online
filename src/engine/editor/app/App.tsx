@@ -17,13 +17,13 @@ import { NumberEditor } from "./components/valueEditor/NumberEditor";
 const App = () => {
   return (
     <>
-      <Panel header="Entity List" dockingSide="left" minSize={150}>
+      <Panel header="Entity List" dockingSide="left" minSize={150} initialState="collapsed">
         <List>
           <ListItem value="test">test</ListItem>
           <ListItem value="test2">test2</ListItem>
         </List>
       </Panel>
-      <Panel dockingSide="right">
+      <Panel dockingSide="right" initialState="collapsed">
         <EntityInspectorHead selectedEntity="EntityName" />
         <CollapsableSection header="Component Name">
           <VectorEditor name="Position" initialValue={[9, 9, 2]} />
