@@ -1,0 +1,10 @@
+.header-label {
+  font-weight: normal;
+  font-size: 0.75rem;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+#editor-ui {
+  font-size: 14px;
+}

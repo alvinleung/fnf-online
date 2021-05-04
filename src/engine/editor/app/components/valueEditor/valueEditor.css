@@ -1,0 +1,26 @@
+.value-editor {
+  width: 100%;
+}
+
+.value-editor__group-name {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+
+  opacity: 0.5;
+}
+
+.value-editor__group-container {
+  margin-top: var(--spacing-xs);
+  width: 100%;
+}
+
+.value-editor__field {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.value-editor__label {
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+  opacity: 0.5;
+}

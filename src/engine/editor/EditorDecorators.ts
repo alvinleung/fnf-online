@@ -1,9 +1,5 @@
-interface ComponentField {
-  [propsName: string]: Editor;
-}
-
 /**
- * Structure
+ * Editable Map Structure
  * {
  *   TransformComponent: {
  *     position: Editor.VECTOR,
@@ -13,6 +9,9 @@ interface ComponentField {
  *   ...
  * }
  */
+interface ComponentField {
+  [propsName: string]: Editor;
+}
 const editableMap: { [name: string]: ComponentField } = {};
 
 /**
@@ -20,7 +19,7 @@ const editableMap: { [name: string]: ComponentField } = {};
  * @param type
  * @returns
  */
-export function Editable(type: Editor) {
+function Editable(type: Editor) {
   return function (
     target: any,
     propertyKey: string,
@@ -38,21 +37,44 @@ export function Editable(type: Editor) {
       editableMap[componentName] = {};
     }
 
+    if (type == Editor.FUNCTION) {
+      // log the function variables name
+      console.log(getParamNames(target[propertyKey]));
+    }
+
     // put the entr
     editableMap[componentName][propName] = type;
   };
 }
 
-export function getEditableComponentMap() {
+//https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically
+//The following function will return an array of the parameter names of any function passed in
+var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
+var ARGUMENT_NAMES = /([^\s,]+)/g;
+function getParamNames(func) {
+  var fnStr = func.toString().replace(STRIP_COMMENTS, "");
+  var result = fnStr
+    .slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")"))
+    .match(ARGUMENT_NAMES);
+  if (result === null) result = [];
+  return result;
+}
+
+function getEditableComponentMap() {
   return Object.freeze({ ...editableMap });
 }
 
-export enum Editor {
+enum Editor {
   VECTOR,
   QUATERNION,
   STRING,
   NUMBER,
   BOOLEAN,
   CLASS,
+  ENTITY,
   SOURCE_CODE,
+  INSTANCE,
+  FUNCTION,
 }
+
+export { Editable, Editor, getEditableComponentMap };
