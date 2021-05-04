@@ -27,6 +27,7 @@
     "react": "^17.0.2",
     "react-colorful": "^5.1.4",
     "react-dom": "^17.0.2",
+    "react-hotkeys-hook": "^3.3.1",
     "twgl.js": "^4.19.1"
   }
 }

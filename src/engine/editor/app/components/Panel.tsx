@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { config } from "../AnimationConfig";
+import { HotkeyConfig } from "../Hotkeys";
 import "./Panel.css";
 
 const ARROW_RIGHT = require("url:../images/arrow-right-nav.svg");
@@ -82,10 +84,10 @@ export const Panel = ({
     setPanelSize(minSize);
     setColapsed(false);
   };
-
-  useEffect(() => {
-    return () => {};
-  }, [collapsed]);
+  const closePanel = () => {
+    setPanelSize(0);
+    setColapsed(true);
+  };
 
   const getArrow = (dockingSide) => {
     if (dockingSide === "left") return ARROW_RIGHT;
@@ -113,6 +115,18 @@ export const Panel = ({
         bottom: collapsed ? 0 : -offset,
       };
   };
+  // configure hotkey state
+  useHotkeys(
+    HotkeyConfig.HIDE_UI,
+    () => {
+      if (collapsed) {
+        openPanel();
+        return;
+      }
+      closePanel();
+    },
+    [collapsed]
+  );
 
   return (
     <>
@@ -129,6 +143,7 @@ export const Panel = ({
         style={{
           width: resizableX ? panelSize : "auto",
           height: resizableY ? panelSize : "auto",
+          // overflowX: !isDragging || !collapsed ? "visible" : "hidden",
         }}
         animate={{
           width: resizableX && collapsed ? 0 : panelSize,

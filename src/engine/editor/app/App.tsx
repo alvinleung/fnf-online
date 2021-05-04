@@ -42,6 +42,16 @@ const App = () => {
           <BooleanEditor name="Enable" initialValue={false} />
           <ColorEditor name="Color" />
         </CollapsableSection>
+        <CollapsableSection header="Renderable Component">
+          <BooleanEditor name="Enable" initialValue={false} />
+          <ColorEditor name="Color" />
+          <ColorEditor name="Color" />
+          <ColorEditor name="Color" />
+          <ColorEditor
+            name="Color"
+            initialValue={{ r: 1, g: 1, b: 1, a: 0.5 }}
+          />
+        </CollapsableSection>
       </Panel>
     </>
   );

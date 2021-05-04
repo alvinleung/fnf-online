@@ -24,7 +24,7 @@
 
   border: none;
 
-  z-index: 10;
+  z-index: 1;
 }
 
 .panel__button {
@@ -52,6 +52,7 @@
 }
 
 .collapsable-section__group {
+  position: relative;
   /* reset the padding */
   padding: var(--spacing-m);
   width: 100%;
