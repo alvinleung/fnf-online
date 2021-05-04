@@ -10,19 +10,19 @@ interface KeyBinding {
 
 interface AxisBinding {
   axis: string;
-  getAxis(key: string): number;
+  getAxisChange(key: string): number;
 }
 
 abstract class InputSourceFactory {
   constructor() {}
 
-  protected abstract getAxis(axis: string): number;
+  protected abstract getAxisChange(axis: string): number;
   protected abstract isActive(axis: string): boolean;
 
   public createAxisBinding(axis: string): AxisBinding {
     return {
       axis: axis,
-      getAxis: this.getAxis.bind(this),
+      getAxisChange: this.getAxisChange.bind(this),
     };
   }
 
@@ -63,7 +63,7 @@ class InputSystem {
     this.axisBindingLookup[axisName] = axis;
   }
 
-  public getAxis(axisName: string): number {
+  public getAxisChange(axisName: string): number {
     const axisBindingLookup = this.axisBindingLookup[axisName];
     if (!axisBindingLookup) {
       console.warn(`Input System:  ${axisName} not found`);
@@ -72,7 +72,7 @@ class InputSystem {
 
     //console.log(axisName);
 
-    return axisBindingLookup.getAxis(axisBindingLookup.axis);
+    return axisBindingLookup.getAxisChange(axisBindingLookup.axis);
   }
 }
 

@@ -19,6 +19,7 @@ import { RenderableComponent } from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
+import { PhysicsSystem } from "./engine/core/PhysicsSystem";
 import { fromEulerAngles } from "./engine/utils/quaternion";
 
 class MyGame extends Game {
@@ -120,6 +121,8 @@ class MyGame extends Game {
     input.bindAxis("yawX", mouse.createAxisBinding("x"));
     input.bindAxis("yawY", mouse.createAxisBinding("y"));
 
+    input.bindAction("debug",keyboard.createKeyBinding("KeyX"));
+
     return input;
   }
 
@@ -161,6 +164,9 @@ class MyGame extends Game {
 
     return renderingSystem;
   }
+
+
+
 }
 
 export default MyGame;
