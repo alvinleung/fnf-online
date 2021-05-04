@@ -113,6 +113,8 @@ class MyGame extends Game {
     input.bindAxis("yawX", mouse.createAxisBinding("x"));
     input.bindAxis("yawY", mouse.createAxisBinding("y"));
 
+    input.bindAction("debug",keyboard.createKeyBinding("KeyX"));
+
     return input;
   }
 
@@ -154,6 +156,9 @@ class MyGame extends Game {
 
     return renderingSystem;
   }
+
+  
+
 }
 
 export default MyGame;
