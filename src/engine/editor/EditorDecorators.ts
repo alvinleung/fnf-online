@@ -70,6 +70,7 @@ enum Editor {
   STRING,
   NUMBER,
   BOOLEAN,
+  RGBA,
   CLASS,
   ENTITY,
   SOURCE_CODE,
