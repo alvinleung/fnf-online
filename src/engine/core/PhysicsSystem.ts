@@ -7,5 +7,7 @@ export class PhysicsSystem extends System {
   update(engine: Engine, delta: number): void {
     // update the system
     // step - 1 interpolate physics
+
+    //console.log("enabled")
   }
 }
