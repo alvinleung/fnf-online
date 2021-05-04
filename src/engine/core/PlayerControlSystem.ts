@@ -11,7 +11,8 @@ const ROT_SPEED = 2;
 export default class PlayerControlSystem extends System {
   private playerEntity: Family;
 
-  private rotAmount = 0;
+  private rotXAmount = 0;
+  private rotYAmount = 0;
 
   onAttach(game: Game) {
     this.playerEntity = new FamilyBuilder(game)
@@ -27,19 +28,32 @@ export default class PlayerControlSystem extends System {
 
     const transform = playerEntity.getComponent(TransformComponent);
 
-    this.rotAmount = 0.02; // game.input.getAxis("yawX") * ROT_SPEED * delta;
-    this.rotAmount = game.input.getAxis("yawX") * ROT_SPEED * delta;
-    // transform.rotation = q.fromAxisAndAngle(q.Y_AXIS, this.rotAmount);
+    //console.log(game.input.getAxis("yawY") * ROT_SPEED * delta)
+    this.rotXAmount += game.input.getAxis("yawX") * ROT_SPEED * delta;
+    this.rotYAmount += -game.input.getAxis("yawY") * ROT_SPEED * delta;
+
+    transform.rotation = q.fromEulerAngles(0, this.rotXAmount , 0);
+    /*
     transform.rotation = q.mult(
-      q.fromEulerAngles(0, this.rotAmount, 0),
+      //q.fromEulerAngles(0, this.rotAmount, 0),
+      q.fromEulerAngles(0, this.rotXAmount , 0),
+      transform.rotation
+    );
+*/
+    transform.rotation = q.mult(
+      //q.fromEulerAngles(0, this.rotAmount, 0),
+      q.fromEulerAngles(this.rotYAmount, 0 , 0),
       transform.rotation
     );
 
-    // transform.rotation = q.mult(
+    //console.log(yRotationAmount)
+    //console.log(q.fromEulerAngles(yRotationAmount, this.rotXAmount, 0))
+
+    // transform.rotation = q.mult( 
     //   transform.rotation,
     //   q.inverse(transform.rotation)
     // );
-
+      //console.log(transform.rotation)
     const forwardSpeed = game.input.getAxis("vertical") * SPEED * delta;
     const sideSpeed = game.input.getAxis("horizontal") * SPEED * delta;
     const direction = q.multVec3(

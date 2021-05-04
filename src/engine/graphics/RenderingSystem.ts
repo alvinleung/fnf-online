@@ -136,7 +136,7 @@ export class RenderingSystem extends System {
     }
 
     // TODO: finish implementation of the camera features
-    const cameraComponent = mainCamera.getComponent(CameraComponent);
+    //const cameraComponent = mainCamera.getComponent(CameraComponent);
     const cameraTransform = mainCamera.getComponent(TransformComponent);
     const negativeOffsetPos = v3.negate(cameraTransform.position);
 

@@ -18,9 +18,11 @@ import CameraComponent from "./engine/camera/CameraComponent";
 import { RenderableComponent } from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
+import { v3 } from "twgl.js";
 
 import * as q from "./engine/utils/quaternion";
 import { getEditableFields } from "./engine/utils/getEditableProps";
+import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -36,7 +38,7 @@ class MyGame extends Game {
 
     const transform = squareEntity.getComponent(TransformComponent);
     transform.scale = [1, 1, 0];
-    transform.position = [0, 0, 0];
+    transform.position = [0, 0, -1];
 
     /**
      * Entity 1 - static
@@ -46,7 +48,7 @@ class MyGame extends Game {
     squareEntity3.useComponent(
       RenderableComponent
     ).renderableObject = new Plane(image);
-
+    
     const transform3 = squareEntity3.getComponent(TransformComponent);
     transform3.scale = [1, 1, 0];
     transform3.position = [0, 0, -5];
@@ -63,7 +65,7 @@ class MyGame extends Game {
 
     const squareEntity2 = new Entity();
     const transform2 = squareEntity2.useComponent(TransformComponent);
-    transform2.position = [0, -2, -1];
+    transform2.position = [0, -1, -1];
 
     squareEntity2.useComponent(
       RenderableComponent
@@ -76,15 +78,20 @@ class MyGame extends Game {
     const cameraEntity = new Entity();
     cameraEntity.useComponent(TransformComponent).position = [0, 0, 4];
     cameraEntity.useComponent(CameraComponent);
-    squareEntity2.useComponent(PlayerControlComponent);
+    cameraEntity.useComponent(PlayerControlComponent);
+
 
     this.addEntity(cameraEntity);
     this.addEntity(squareEntity2);
-    this.addEntity(squareEntity3);
+    //this.addEntity(squareEntity3);
     this.addEntity(squareEntity);
     // this.assets.sound.get("action-theme").play();
     // this.assets.sound.get("action-theme").play();
+      
+    // console.log(getPublicProperties(new TransformComponent));
+    
   }
+
 
   // @override
   protected setupInput(): InputSystem {
@@ -108,6 +115,7 @@ class MyGame extends Game {
     //input.bindAxis("yawX", keyboard.createAxisBinding("ArrowLeft|ArrowRight"));
     // input.bindAxis("yawX", mouse.createDragBinding("mouseleft", "x"));
     input.bindAxis("yawX", mouse.createAxisBinding("x"));
+    input.bindAxis("yawY", mouse.createAxisBinding("y"));
 
     return input;
   }
@@ -143,6 +151,7 @@ class MyGame extends Game {
       // new SpriteSheetRendererSetup(),
       new SpriteSheetRenderPass(),
       new Renderer3D(),
+      new MetricsRenderPass(),
     ];
     const renderingSystem = new RenderingSystem(renderers);
     this.addSystem(renderingSystem);

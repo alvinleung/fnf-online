@@ -2,7 +2,7 @@
  * 3d Objects types
  */
 
-import { Image } from "../../Image";
+import { Image } from "../../Image/Image";
 import { RenderableObject } from "../../Renderable";
 
 export class Plane extends RenderableObject {

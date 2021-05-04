@@ -6,7 +6,7 @@ import { Editable, Editor } from "../editor";
  * This Component depends the TransformComponent
  */
 export default class CameraComponent implements Component {
-  public zoom: number;
+  public zoom: number = 0;
   public isActive: boolean = true;
   private _followingEntity: Entity = null;
 

@@ -101,12 +101,16 @@ export class Renderer3D extends RenderPass {
           "vTextureCoords",
           renderableObject.getTextureCoordsBuffer()
         );
-
+        
         // supply the texture memory location
         // renderer3DShader.writeUniformInt("uTexture", 0);
+
+        // enable textures
+        renderer3DShader.writeUniformBoolean("useTexture",true);
       } else {
         // render a place-holder colour when there is no texture
         renderer3DShader.useAttribForRendering("vColor", this.colorBuffer);
+        renderer3DShader.writeUniformBoolean("useTexture",false);
       }
 
       // Step 2 draw

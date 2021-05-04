@@ -39,7 +39,7 @@ export abstract class RenderableObject {
   private _coordsBuffer: AttribDataBuffer;
   private _texCoordsBuffer: AttribDataBuffer;
   private _texture: Texture;
-
+  
   public loadIntoGPU(gl: WebGLRenderingContext) {
     this.createBufferObjectsInGPU(gl);
     this._isLoadedIntoGPUMemory = true;

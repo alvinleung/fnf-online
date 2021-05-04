@@ -70,7 +70,7 @@ class InputSystem {
       return 0;
     }
 
-    //console.log(axisBindingLookup);
+    //console.log(axisName);
 
     return axisBindingLookup.getAxis(axisBindingLookup.axis);
   }

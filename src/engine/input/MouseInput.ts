@@ -23,8 +23,8 @@ class MouseInput extends InputSourceFactory {
   private game: Game;
   private usePointerLocking: boolean;
   private pointerLocked: boolean;
-  private SENSITIVITY = 0.08;
 
+  private SENSITIVITY = 0.08;
   private MOUSE_BUTTON_NAME_MAP = {
     mouseleft:0,
     mousemiddle:1,
@@ -33,26 +33,11 @@ class MouseInput extends InputSourceFactory {
 
   constructor(game: Game) {
     super();
-    this.addEventListeners();
+    this.addEventListeners(game);
     this.game = game;
+    this.initCacheMouse()
   }
-/*
-  public createDragBinding(initiateKey: string, axis: string): MouseAxisBinding {
 
-    //const initiateKey = axis;
-
-    const axisBinding: MouseAxisBinding = {
-      axis: axis,
-      initiateKey: initiateKey,
-      //termiateKey: terminatekey,
-      getAxis: this.getAxis.bind(this),
-    };
-
-    this.axisBindings[axis] = axisBinding;
-
-    return axisBinding;
-  }
-*/
   public createAxisBinding(axis: string): MouseAxisBinding {
 
     const axisBinding: MouseAxisBinding = {
@@ -74,23 +59,19 @@ class MouseInput extends InputSourceFactory {
       }
     }
     let velocity = 0;
-      const axisBinding = this.axisBindings[axis].axis;
-      if (this.cacheMouse){
-        velocity = this.currentMouse[axisBinding] - this.cacheMouse[axisBinding];
-      } else {
-        const newMousePosition: MousePosition = {
-          x: 0,
-          y: 0
-        };
-        this.cacheMouse = newMousePosition;
-      }
-      this.cacheMouse.x = this.currentMouse.x;
-      this.cacheMouse.y = this.currentMouse.y;
-      return velocity * this.SENSITIVITY * 0.5;
+    const axisBinding = this.axisBindings[axis].axis;
+    // check if calculation has already been done in the same frame
+    velocity = this.currentMouse[axisBinding] - this.cacheMouse[axisBinding];
+    this.cacheMouse[axisBinding] = this.currentMouse[axisBinding];
+    
+    velocity = velocity * this.SENSITIVITY * 0.5;
+    return velocity;
   }
 
-  private addEventListeners() {
+  private addEventListeners(game:Game) {
+    let canvas = game.getCanvas();
     window.addEventListener("mousedown", this.handleMouseDown.bind(this));
+    canvas.addEventListener("mousedown", this.handleMouseDownInCanvas.bind(this));
     window.addEventListener("mouseup", this.handleMouseUp.bind(this));
     window.addEventListener("mousemove", this.handleMouseMove.bind(this));
 
@@ -100,6 +81,7 @@ class MouseInput extends InputSourceFactory {
   private lockChangeAlert(){
     const canvas = this.game.getCanvas();
     if(document.pointerLockElement === canvas ||
+      //@ts-ignore
       document.mozPointerLockElement === canvas) {
         console.log('The pointer lock status is now locked');
         // Do something useful in response
@@ -110,18 +92,19 @@ class MouseInput extends InputSourceFactory {
         this.pointerLocked = false;
       }
   }
+  private initCacheMouse(){
+    const newMousePosition: MousePosition = {
+      x: 0,
+      y: 0
+    };
+    this.cacheMouse = newMousePosition;
+  }
 
   public enablePointerLockSetting(){
     this.usePointerLocking = true;
   }
 
   private handleMouseDown(e: MouseEvent) {
-    if(this.usePointerLocking){
-      const element = this.game.getCanvas() as Element;
-      console.log(element)
-      element.requestPointerLock();
-    }
-
     this.mouseActiveParts.buttons[e.button] = true;
     if(!this.mouseDown){
       const newMousePosition: MousePosition = {
@@ -132,6 +115,12 @@ class MouseInput extends InputSourceFactory {
     }
     this.mouseDown.x = this.currentMouse.x;
     this.mouseDown.y = this.currentMouse.y;
+  }
+  private handleMouseDownInCanvas(e: MouseEvent) {
+    if(this.usePointerLocking){
+      const element = this.game.getCanvas() as Element;
+      element.requestPointerLock();
+    }
   }
   private handleMouseUp(e: MouseEvent) {
     this.mouseActiveParts.buttons[e.button] = false;

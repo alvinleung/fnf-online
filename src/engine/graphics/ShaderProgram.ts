@@ -151,6 +151,9 @@ export class ShaderProgram {
   public writeUniformInt(uniformName: string, value) {
     this.gl.uniform1i(this.getUniformLocation(uniformName), value);
   }
+  public writeUniformBoolean(uniformName: string, value) {
+    this.gl.uniform1i(this.getUniformLocation(uniformName), value);
+  }
 
   private compileShaderProgram(
     gl: WebGLRenderingContext,
