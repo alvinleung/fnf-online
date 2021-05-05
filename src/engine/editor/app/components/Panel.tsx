@@ -116,7 +116,6 @@ export const Panel = ({
     if (isDragging) return;
 
     if (!collapsed) {
-      console.log(collapsed);
       switch (dockingSide) {
         case "left":
           panelHandleAnimator.start({
