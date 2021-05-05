@@ -8,16 +8,10 @@ import { List } from "./components/List";
 import { ListItem } from "./components/ListItem";
 import { EntityInspectorHead } from "./components/EntityInspectorHead";
 import { CollapsableSection } from "./components/CollapsableSection";
-import { VectorEditor } from "./components/valueEditor/VectorEditor";
 import { v3 } from "twgl.js";
-import { BooleanEditor } from "./components/valueEditor/BooleanEditor";
-import { RotationEditor } from "./components/valueEditor/RotationEditor";
-import { NumberEditor } from "./components/valueEditor/NumberEditor";
-import { ColorEditor } from "./components/valueEditor/ColorEditor";
 import { Game } from "../../Game";
-import { Component, Entity } from "../../ecs";
+import { Component, ComponentClass, Entity } from "../../ecs";
 import * as EditorDecorators from "../EditorDecorators";
-import { TransformComponent } from "../../core/TransformComponent";
 import { ValueEditor } from "./components/valueEditor/ValueEditor";
 import useForceUpdate from "./hooks/useForceUpdate";
 
@@ -25,7 +19,7 @@ interface Props {
   game: Game;
 }
 
-const App = ({ game }: Props) => {
+const App = ({ game }: Props): JSX.Element => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
   const editableComponent = useMemo(
@@ -45,8 +39,16 @@ const App = ({ game }: Props) => {
     setSelectedEntity(selectedEntity);
   };
 
-  const forceUpdate = useForceUpdate();
+  const handleEntityValueUpdate = (
+    entity: Entity,
+    currentComponent: Component,
+    field: any,
+    val: any
+  ) => {
+    currentComponent[field] = val;
+  };
 
+  const forceUpdate = useForceUpdate();
   const handleEngineUpdate = useCallback(
     (game: Game, _delta: number) => {
       // force update the ui if we are inspecting a particular entity
@@ -130,6 +132,14 @@ const App = ({ game }: Props) => {
                     EditorDecorators.getComponentClass(componentName)
                   );
                   const currentComponentVal = currentComponent[fieldName];
+                  const handleEditorValueChange = (val) => {
+                    handleEntityValueUpdate(
+                      selectedEntity,
+                      componentInstance,
+                      fieldName,
+                      val
+                    );
+                  };
 
                   return (
                     <ValueEditor
@@ -137,6 +147,7 @@ const App = ({ game }: Props) => {
                       fieldType={fieldType}
                       value={currentComponentVal}
                       key={index}
+                      onChange={handleEditorValueChange}
                     />
                   );
                 })}
