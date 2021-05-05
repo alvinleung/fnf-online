@@ -12,8 +12,6 @@ let sampleObjectVertices = require("./objects/Primitives").plane;
 let sampleObjectColors = require("./objects/Primitives").plane_colors;
 
 export class Renderer3D extends RenderPass {
-  private positionBuffer: AttribDataBuffer;
-  private colorBuffer: AttribDataBuffer;
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
     // compile shaders here
@@ -21,20 +19,6 @@ export class Renderer3D extends RenderPass {
       gl,
       RENDER3D_SHADER_VERT,
       RENDER3D_SHADER_FRAG
-    );
-
-    // this part run once per entity
-
-    // init the buffer
-    this.positionBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(sampleObjectVertices),
-      3
-    );
-    this.colorBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(sampleObjectColors),
-      4
     );
 
     // for trigger the cache
@@ -65,26 +49,25 @@ export class Renderer3D extends RenderPass {
     renderer3DShader.writeUniformMat4("viewMatrix", cameraMatrix);
     renderer3DShader.writeUniformMat4("projectionMatrix", projectionMatrix);
 
-    
+    let deferredRenderingList = [];
+
+    //console.log(renderableObjects[1])
     renderableObjects.forEach((renderableObject) => {
       if (!renderableObject.isLoadedIntoGPUMemory()) {
         // load the object onto gpu if it is not on gpu yet
         renderableObject.loadIntoGPU(gl);
       }
 
-      // change the transformation base on the renderable object setting
-      renderer3DShader.writeUniformMat4(
-        "modelMatrix",
-        renderableObject.transform
-      );
+      // push colour only object to a posponed render batch
+      if(!renderableObject.hasRenderingTexture()){
+        deferredRenderingList.push(renderableObject);
+        return;
+      }
+      
+      // SUB-PASS 1 - render object with texture
 
-      // Step 1 change pointers
-      renderer3DShader.useAttribForRendering(
-        "vPosition",
-        renderableObject.getCoordsBuffer()
-      );
+      this.setupObjectTrasnform(renderer3DShader, renderableObject);
 
-      if (renderableObject.hasRenderingTexture()) {
         // change the pointer to texture
         gl.bindTexture(
           gl.TEXTURE_2D,
@@ -96,23 +79,52 @@ export class Renderer3D extends RenderPass {
           "vTextureCoords",
           renderableObject.getTextureCoordsBuffer()
         );
-        
-        // supply the texture memory location
-        // renderer3DShader.writeUniformInt("uTexture", 0);
 
         // enable textures
         renderer3DShader.writeUniformBoolean("useTexture",true);
-      } else {
-        // render a place-holder colour when there is no texture
-        renderer3DShader.useAttribForRendering("vColor", this.colorBuffer);
-        renderer3DShader.writeUniformBoolean("useTexture",false);
-      }
 
       // Step 2 draw
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      gl.drawArrays(gl.TRIANGLES, 0, renderableObject.getObjectVerticeSize());
     });
+
+    // clean up the first batch
+    renderer3DShader.cleanUpAttribs();
+
+    if(deferredRenderingList.length === 0) return;
+
+    // SUB-PASS 2 - render object with texture, if there is coloured texture
+    deferredRenderingList.forEach((renderableObject) => {
+      
+      this.setupObjectTrasnform(renderer3DShader, renderableObject);
+
+      // render a place-holder colour when there is no texture
+      renderer3DShader.useAttribForRendering("vColor", renderableObject.getColorBuffer());
+      renderer3DShader.writeUniformBoolean("useTexture",false);
+
+      gl.drawArrays(gl.TRIANGLES, 0, renderableObject.getObjectVerticeSize());
+    })
 
     // disable all the used attributes
     renderer3DShader.cleanUpAttribs();
   }
+
+  /**
+   * Setup transform for colour and texture
+   * @param renderer3DShader 
+   * @param renderableObject 
+   */
+  private setupObjectTrasnform(renderer3DShader:ShaderProgram, renderableObject: RenderableObject ) {
+    // change the transformation base on the renderable object setting
+    renderer3DShader.writeUniformMat4(
+      "modelMatrix",
+      renderableObject.transform
+    );
+
+    // Step 1 change pointers
+    renderer3DShader.useAttribForRendering(
+      "vPosition",
+      renderableObject.getCoordsBuffer()
+    );
+  }
+
 }

@@ -21,6 +21,10 @@ import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheet
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
 import { PhysicsSystem } from "./engine/core/PhysicsSystem";
 import { fromEulerAngles } from "./engine/utils/quaternion";
+import { DebugComponent } from "./engine/core/DebugComponent";
+import { Cube } from "./engine/graphics/3dRender/objects/Cube";
+import EditorControlSystem from "./engine/core/EditorControlSystem";
+import { EditorControlComponent } from "./engine/core/EditorControlComponent";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -79,18 +83,27 @@ class MyGame extends Game {
     const cameraEntity = Entity.create("camera", [
       TransformComponent,
       CameraComponent,
-      PlayerControlComponent,
+      EditorControlComponent,
     ]);
     const cameraTransform = cameraEntity.getComponent(TransformComponent);
     cameraTransform.position = [0, 1, 5];
     cameraTransform.rotation = fromEulerAngles(0.2, 0, 4);
 
-    console.log(cameraEntity.listComponents());
+    //console.log(cameraEntity.listComponents());
+
+    const debugEntity = Entity.create("debug",[
+      TransformComponent,
+      DebugComponent,
+    ])
+    debugEntity.useComponent(RenderableComponent).renderableObject = new Cube();
+    debugEntity.getComponent(TransformComponent).position = [2, 1, 0];
+    debugEntity.getComponent(TransformComponent).scale = [2, 2, 2];
 
     this.addEntity(cameraEntity);
     this.addEntity(squareEntity2);
     //this.addEntity(squareEntity3);
     this.addEntity(squareEntity);
+    this.addEntity(debugEntity);
     // this.assets.sound.get("action-theme").play();
     // this.assets.sound.get("action-theme").play();
 
@@ -111,15 +124,16 @@ class MyGame extends Game {
     input.bindAction("up", keyboard.createKeyBinding("KeyW"));
     input.bindAction("down", keyboard.createKeyBinding("KeyS"));
 
-    input.bindAction("attack", keyboard.createKeyBinding("Space"));
+    //input.bindAction("attack", keyboard.createKeyBinding("Space"));
 
+    // player movements
     input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
-    input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
-
-    //input.bindAxis("yawX", keyboard.createAxisBinding("ArrowLeft|ArrowRight"));
-    // input.bindAxis("yawX", mouse.createDragBinding("mouseleft", "x"));
+    input.bindAxis("foward", keyboard.createAxisBinding("KeyW|KeyS"));
+    input.bindAxis("vertical", keyboard.createAxisBinding("KeyC|Space"));
     input.bindAxis("yawX", mouse.createAxisBinding("x"));
     input.bindAxis("yawY", mouse.createAxisBinding("y"));
+    input.bindAction("hoverMode", keyboard.createKeyBinding("ShiftLeft"));
+    input.bindAction("speedMode", mouse.createKeyBinding("mouseright"));
 
     input.bindAction("debug",keyboard.createKeyBinding("KeyX"));
 
@@ -147,7 +161,8 @@ class MyGame extends Game {
 
   protected setupSystems() {
     // setup game logic
-    this.addSystem(new PlayerControlSystem());
+    //this.addSystem(new PlayerControlSystem());
+    this.addSystem(new EditorControlSystem());
   }
 
   protected setupRendering(): RenderingSystem {
