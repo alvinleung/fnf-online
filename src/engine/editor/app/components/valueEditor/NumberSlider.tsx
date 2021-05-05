@@ -184,8 +184,9 @@ export const NumberSlider = ({
 };
 
 function round(value: number, decimals: number) {
+  return Number(value.toFixed(decimals));
   //@ts-ignore
-  return Number(Math.round(value + "e" + decimals) + "e-" + decimals);
+  // return Number(Math.round(Number(value + "E" + decimals)) + "E-" + decimals);
 }
 
 //https://www.codegrepper.com/code-examples/javascript/regex+to+check+if+string+contains+only+numbers+and+special+characters+js

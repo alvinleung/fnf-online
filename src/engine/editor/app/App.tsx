@@ -45,6 +45,7 @@ const App = ({ game }: Props): JSX.Element => {
     field: any,
     val: any
   ) => {
+    // change in game component field value
     currentComponent[field] = val;
   };
 
