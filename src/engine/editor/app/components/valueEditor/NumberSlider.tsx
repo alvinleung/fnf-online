@@ -2,13 +2,17 @@
  * An implementation of an after effect style number slider editor
  */
 import React, { useEffect, useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+import { HotkeyConfig } from "../../Hotkeys";
 import "./NumberSlider.css";
 
 interface Props {
   value?: number;
   onChange?: (value: number) => void;
   sensitivity?: number;
+  precisionModeScale?: number;
   axis?: "x" | "y";
+  stepSize?: number;
   precision?: number; // correct to certain decimal place
 }
 
@@ -16,6 +20,8 @@ export const NumberSlider = ({
   value = 0,
   onChange,
   sensitivity = 0.1,
+  precisionModeScale = 0.025,
+  stepSize = 0.5,
   axis = "x",
   precision = 5,
 }: Props) => {
@@ -29,6 +35,27 @@ export const NumberSlider = ({
 
   const [isInputMode, setIsInputMode] = useState(false);
   const [inputValue, setInputValue] = useState(value + "");
+
+  // setup precision mode
+  const [isPreciseMode, seIsPreciseMode] = useState(false);
+  const [isStepMode, setIsStepMode] = useState(false);
+  sensitivity = isPreciseMode ? sensitivity * precisionModeScale : sensitivity;
+  useEffect(() => {
+    const keyDownHandler = (e: KeyboardEvent) => {
+      if (e.key === "Shift") seIsPreciseMode(true);
+      if (e.key === "Meta" || e.key === "Control") setIsStepMode(true);
+    };
+    const keyUpHandler = (e: KeyboardEvent) => {
+      if (e.key === "Shift") seIsPreciseMode(false);
+      if (e.key === "Meta" || e.key === "Control") setIsStepMode(false);
+    };
+    window.addEventListener("keydown", keyDownHandler);
+    window.addEventListener("keyup", keyUpHandler);
+    return () => {
+      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyUp", keyUpHandler);
+    };
+  }, []);
 
   const getRoundedValue = (val) => {
     return round(val, precision);
@@ -70,10 +97,18 @@ export const NumberSlider = ({
     // update the value
     if (axis === "x") {
       const newVal = value + e.movementX * sensitivity;
+      if (isStepMode) {
+        safelyUpdateValue(stepSize * Math.round(newVal / stepSize));
+        return;
+      }
       safelyUpdateValue(newVal);
     }
     if (axis === "y") {
       const newVal = value + e.movementY * sensitivity;
+      if (isStepMode) {
+        safelyUpdateValue(stepSize * Math.round(newVal / stepSize));
+        return;
+      }
       safelyUpdateValue(newVal);
     }
   };
