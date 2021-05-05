@@ -19,6 +19,7 @@ import { Component, Entity } from "../../ecs";
 import * as EditorDecorators from "../EditorDecorators";
 import { TransformComponent } from "../../core/TransformComponent";
 import { ValueEditor } from "./components/valueEditor/ValueEditor";
+import useForceUpdate from "./hooks/useForceUpdate";
 
 interface Props {
   game: Game;
@@ -44,7 +45,20 @@ const App = ({ game }: Props) => {
     setSelectedEntity(selectedEntity);
   };
 
-  // add and remove component in the list when notified
+  const forceUpdate = useForceUpdate();
+
+  const handleEngineUpdate = useCallback(
+    (game: Game, _delta: number) => {
+      // force update the ui if we are inspecting a particular entity
+      if (selectedEntity) forceUpdate();
+    },
+    [selectedEntity]
+  );
+  useEffect(() => {
+    game.onUpdate(handleEngineUpdate);
+  }, [selectedEntity]);
+
+  // add and remove entity in the list when notified
   useEffect(() => {
     game.addEntityListener({
       onEntityAdded: handleEntityAdded,
@@ -129,28 +143,6 @@ const App = ({ game }: Props) => {
               </CollapsableSection>
             );
           })}
-
-        {/* <CollapsableSection header="Component Name">
-          <VectorEditor name="Position" initialValue={[9, 9, 2]} />
-          <VectorEditor name="Scale" initialValue={[9, 9, 2]} />
-          <RotationEditor name="Rotation" initialValue={[9, 9, 2]} />
-          <NumberEditor name="23455" initialValue={2} />
-          <BooleanEditor name="test" initialValue={false} />
-        </CollapsableSection>
-        <CollapsableSection header="Renderable Component">
-          <BooleanEditor name="Enable" initialValue={false} />
-          <ColorEditor name="Color" />
-        </CollapsableSection>
-        <CollapsableSection header="Renderable Component">
-          <BooleanEditor name="Enable" initialValue={false} />
-          <ColorEditor name="Color" />
-          <ColorEditor name="Color" />
-          <ColorEditor name="Color" />
-          <ColorEditor
-            name="Color"
-            initialValue={{ r: 1, g: 1, b: 1, a: 0.5 }}
-          />
-        </CollapsableSection> */}
       </Panel>
     </>
   );
