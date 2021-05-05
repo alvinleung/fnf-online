@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./NumberSlider.css";
 
 interface Props {
-  initialValue?: number;
+  value?: number;
   onChange?: (value: number) => void;
   sensitivity?: number;
   axis?: "x" | "y";
@@ -13,20 +13,30 @@ interface Props {
 }
 
 export const NumberSlider = ({
-  initialValue = 0,
+  value = 0,
   onChange,
   sensitivity = 0.1,
   axis = "x",
   decimal = 3,
-}) => {
+}: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [value, setValue] = useState(initialValue);
+  const [internalValue, setInternalValue] = useState(value);
+
   const [isDragging, setIsDragging] = useState(false);
-  const [initialDragValue, setInitialDragValue] = useState(initialValue);
+  const [initialDragValue, setInitialDragValue] = useState(value);
+
   const [isInputMode, setIsInputMode] = useState(false);
-  const [inputValue, setInputValue] = useState(initialValue + "");
+  const [inputValue, setInputValue] = useState(value + "");
+
+  // hijack the setvalue function, instead setting state, it propogate the change
+  const setValue = (val: number) => {
+    onChange && onChange(val);
+    setInternalValue(val);
+  };
+  // make the component still editable without data supplying from the parent component
+  value = value === null ? internalValue : value;
 
   /**
    * update value with number format check
@@ -38,7 +48,7 @@ export const NumberSlider = ({
 
     const newVal = round(_newVal, decimal);
     setValue(newVal);
-    onChange && onChange(newVal);
+    // onChange && onChange(newVal);
   };
 
   const mouseDownHandler = (e: React.MouseEvent) => {
@@ -47,6 +57,8 @@ export const NumberSlider = ({
     setIsDragging(true);
     setInitialDragValue(value);
     containerRef.current.requestPointerLock();
+
+    document.body.style.userSelect = "none";
   };
 
   const mouseMoveHandler = (e: React.MouseEvent) => {
@@ -72,7 +84,12 @@ export const NumberSlider = ({
 
     // if the user didn't move the mouse
     // it suggest that the user is clicking the target
-    if (initialDragValue === value) enterInputMode();
+
+    // use internal value rather than value to enable correct functioning of the feature
+    // even data is not changed
+    if (initialDragValue === internalValue) enterInputMode();
+
+    document.body.style.userSelect = "auto";
   };
 
   /**
