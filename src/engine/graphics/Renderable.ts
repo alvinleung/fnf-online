@@ -1,5 +1,7 @@
 import { m4, v3 } from "twgl.js";
 import { Component } from "../ecs";
+import { spreadArrayRecusively } from "../utils/ArrayUtils";
+import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Image } from "./Image/Image";
 import { Texture } from "./Texture";
@@ -20,15 +22,24 @@ export abstract class RenderableObject {
   constructor(
     objectCoords: number[],
     textureCoords: number[],
-    textureImage?: Image // texture name
+    textureImage?: Image, // texture name
+    objectColors?: number[],
   ) {
     this.objectCoords = objectCoords;
     this.textureCoords = textureCoords;
     this.textureImage = textureImage;
+    console.log(objectColors)
+    if(objectColors) {
+      this.objectColors = objectColors;
+    } else {
+      this.objectColors = spreadArrayRecusively(Array(objectCoords.length / 3).fill(COLORS_VEC4.grayFromPercent(0.5)));
+    }
+
   }
   public readonly objectCoords: number[];
-  public readonly textureCoords: number[];
   public readonly textureImage: Image;
+  public readonly textureCoords: number[];
+  public readonly objectColors: number[];
   public transform: m4.Mat4 = m4.translation(v3.create(0, 0, 0));
 
   /**
@@ -38,6 +49,7 @@ export abstract class RenderableObject {
 
   private _coordsBuffer: AttribDataBuffer;
   private _texCoordsBuffer: AttribDataBuffer;
+  private _colorBuffer: AttribDataBuffer;
   private _texture: Texture;
   
   public loadIntoGPU(gl: WebGLRenderingContext) {
@@ -56,6 +68,12 @@ export abstract class RenderableObject {
       gl,
       new Float32Array(this.textureCoords),
       2
+    );
+    // colors defaulted to gray
+    this._colorBuffer = AttribDataBuffer.fromData(
+      gl,
+      new Float32Array(this.objectColors),
+      4
     );
 
     // load image onto the gpu
@@ -89,6 +107,15 @@ export abstract class RenderableObject {
     return this._texCoordsBuffer;
   }
 
+  public getColorBuffer() {
+    if (!this.isLoadedIntoGPUMemory()) {
+      console.warn(
+        "Cant get color buffer, this RenderableObject has not been loaded into gpu."
+      );
+      return;
+    }
+    return this._colorBuffer;
+  }
   /**
    * Return if the data of this renderable object has complete it's webgl setups already.
    * @returns
@@ -115,5 +142,9 @@ export abstract class RenderableObject {
 
   public hasRenderingTexture(): boolean {
     return this._texture ? true : false;
+  }
+
+  public getObjectVerticeSize(){
+    return this.objectCoords.length / 3;
   }
 }

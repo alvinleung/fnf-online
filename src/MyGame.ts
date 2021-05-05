@@ -21,6 +21,8 @@ import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheet
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
 import { PhysicsSystem } from "./engine/core/PhysicsSystem";
 import { fromEulerAngles } from "./engine/utils/quaternion";
+import { DebugComponent } from "./engine/core/DebugComponent";
+import { Cube } from "./engine/graphics/3dRender/objects/Cube";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -85,12 +87,21 @@ class MyGame extends Game {
     cameraTransform.position = [0, 1, 5];
     cameraTransform.rotation = fromEulerAngles(0.2, 0, 4);
 
-    console.log(cameraEntity.listComponents());
+    //console.log(cameraEntity.listComponents());
+
+    const debugEntity = Entity.create("debug",[
+      TransformComponent,
+      DebugComponent,
+    ])
+    debugEntity.useComponent(RenderableComponent).renderableObject = new Cube();
+    debugEntity.getComponent(TransformComponent).position = [2, 1, 0];
+    debugEntity.getComponent(TransformComponent).scale = [2, 2, 2];
 
     this.addEntity(cameraEntity);
     this.addEntity(squareEntity2);
     //this.addEntity(squareEntity3);
     this.addEntity(squareEntity);
+    this.addEntity(debugEntity);
     // this.assets.sound.get("action-theme").play();
     // this.assets.sound.get("action-theme").play();
 
@@ -110,6 +121,7 @@ class MyGame extends Game {
     input.bindAction("right", keyboard.createKeyBinding("KeyD"));
     input.bindAction("up", keyboard.createKeyBinding("KeyW"));
     input.bindAction("down", keyboard.createKeyBinding("KeyS"));
+    input.bindAction("jump", keyboard.createKeyBinding(" "));
 
     input.bindAction("attack", keyboard.createKeyBinding("Space"));
 
