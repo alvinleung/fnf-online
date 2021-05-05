@@ -3,6 +3,8 @@ import { System } from "../ecs";
 import { Game } from "../Game";
 import {InputSourceFactory, AxisBinding} from "./InputSystem";
 
+const VERBOSE = false;
+
 interface MouseAxisBinding extends AxisBinding {
   axis: string;
   getAxis(key: string): number;
@@ -89,13 +91,13 @@ class MouseInput extends InputSourceFactory {
     if(document.pointerLockElement === canvas ||
       //@ts-ignore
       document.mozPointerLockElement === canvas) {
-        console.log('The pointer lock status is now locked');
+        VERBOSE && console.log('The pointer lock status is now locked');
         // Do something useful in response
         this.cacheMouse.x = this.currentMouse.x;
         this.cacheMouse.y = this.currentMouse.y;
         this.pointerLocked = true;
       } else {
-        console.log('The pointer lock status is now unlocked');
+        VERBOSE && console.log("The pointer lock status is now unlocked");
         // Do something useful in response
         this.pointerLocked = false;
       }
