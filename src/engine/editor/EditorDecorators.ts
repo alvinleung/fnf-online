@@ -1,3 +1,5 @@
+import { Component, ComponentClass } from "../ecs";
+
 /**
  * Editable Map Structure
  * {
@@ -78,6 +80,20 @@ function getEditableComponentMap(): { [name: string]: ComponentField } {
   return Object.freeze({ ...editableMap });
 }
 
+function isComponentEditable(componentClass): boolean {
+  return editableComponentClassRefs[componentClass.constructor.name]
+    ? true
+    : false;
+}
+
+function getComponentEditableFields(componentClass: Component) {
+  return editableMap[componentClass.constructor.name];
+}
+
+function getComponentFieldEditor(componentClass: Component, fieldName: string) {
+  return editableMap[componentClass.constructor.name][fieldName];
+}
+
 function getComponentClass(className: string) {
   return editableComponentClassRefs[className];
 }
@@ -102,4 +118,7 @@ export {
   Editor,
   getEditableComponentMap,
   getComponentClass,
+  isComponentEditable,
+  getComponentEditableFields,
+  getComponentFieldEditor,
 };
