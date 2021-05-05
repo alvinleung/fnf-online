@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import "./style/typography.css";
 import "./style/layout.css";
@@ -14,8 +14,60 @@ import { BooleanEditor } from "./components/valueEditor/BooleanEditor";
 import { RotationEditor } from "./components/valueEditor/RotationEditor";
 import { NumberEditor } from "./components/valueEditor/NumberEditor";
 import { ColorEditor } from "./components/valueEditor/ColorEditor";
+import { Game } from "../../Game";
+import { Component, Entity } from "../../ecs";
+import * as EditorDecorators from "../EditorDecorators";
+import { TransformComponent } from "../../core/TransformComponent";
+import { ValueEditor } from "./components/valueEditor/ValueEditor";
 
-const App = () => {
+interface Props {
+  game: Game;
+}
+
+const App = ({ game }: Props) => {
+  const [entities, setEntities] = useState<Entity[]>([]);
+  const [selectedEntity, setSelectedEntity] = useState<Entity>();
+  const editableComponent = useMemo(
+    () => EditorDecorators.getEditableComponentMap(),
+    []
+  );
+
+  const handleEntityAdded = (entity: Entity) => {
+    setEntities([...entities, entity]);
+  };
+  const handleEntityRemoved = (entity: Entity) => {
+    setEntities(entities.splice(entities.indexOf(entity), 1));
+  };
+
+  const handleEntityListSelect = (val: string) => {
+    const selectedEntity = game.getEntityById(val);
+    setSelectedEntity(selectedEntity);
+  };
+
+  // add and remove component in the list when notified
+  useEffect(() => {
+    game.addEntityListener({
+      onEntityAdded: handleEntityAdded,
+      onEntityRemoved: handleEntityRemoved,
+    });
+  }, []);
+
+  // get the informaiton of component whne component changed
+  const getEntityComponent = useCallback(() => {
+    if (!selectedEntity) return;
+
+    const componentList = game
+      .getEntityById(selectedEntity.id as string)
+      .listComponents();
+    const editableComponentList = componentList.filter((c) => {
+      if (EditorDecorators.isComponentEditable(c)) {
+        return true;
+      }
+    });
+
+    return editableComponentList;
+  }, [selectedEntity]);
+
   return (
     <>
       <Panel
@@ -24,14 +76,61 @@ const App = () => {
         minSize={150}
         initialState="collapsed"
       >
-        <List>
-          <ListItem value="test">test</ListItem>
-          <ListItem value="test2">test2</ListItem>
+        <List onSelect={handleEntityListSelect}>
+          {game.entities.map((entity, index) => {
+            return (
+              <ListItem value={entity.id as string} key={index}>
+                {entity.id as string}
+              </ListItem>
+            );
+          })}
         </List>
       </Panel>
       <Panel dockingSide="right" initialState="collapsed">
-        <EntityInspectorHead selectedEntity="EntityName" />
-        <CollapsableSection header="Component Name">
+        <EntityInspectorHead
+          selectedEntity={selectedEntity && (selectedEntity.id as string)}
+        />
+        {getEntityComponent() &&
+          getEntityComponent().map((componentInstance, index) => {
+            if (!componentInstance)
+              return <div>No editable fields in this component</div>;
+
+            const fields = EditorDecorators.getComponentEditableFields(
+              componentInstance
+            );
+            const componentName = componentInstance.constructor.name;
+            const fieldNames = Object.keys(fields);
+            return (
+              <CollapsableSection
+                key={index}
+                header={camelCaseToSentenceCase(
+                  componentInstance.constructor.name
+                )}
+              >
+                {fieldNames.map((fieldName, index) => {
+                  const fieldType = EditorDecorators.getComponentFieldEditor(
+                    componentInstance,
+                    fieldName
+                  );
+                  const currentComponent = selectedEntity.getComponent(
+                    EditorDecorators.getComponentClass(componentName)
+                  );
+                  const currentComponentVal = currentComponent[fieldName];
+
+                  return (
+                    <ValueEditor
+                      fieldName={fieldName}
+                      fieldType={fieldType}
+                      value={currentComponentVal}
+                      key={index}
+                    />
+                  );
+                })}
+              </CollapsableSection>
+            );
+          })}
+
+        {/* <CollapsableSection header="Component Name">
           <VectorEditor name="Position" initialValue={[9, 9, 2]} />
           <VectorEditor name="Scale" initialValue={[9, 9, 2]} />
           <RotationEditor name="Rotation" initialValue={[9, 9, 2]} />
@@ -51,10 +150,16 @@ const App = () => {
             name="Color"
             initialValue={{ r: 1, g: 1, b: 1, a: 0.5 }}
           />
-        </CollapsableSection>
+        </CollapsableSection> */}
       </Panel>
     </>
   );
 };
+
+function camelCaseToSentenceCase(text: string) {
+  const result = text.replace(/([A-Z])/g, " $1");
+  const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
+  return finalResult;
+}
 
 export default App;
