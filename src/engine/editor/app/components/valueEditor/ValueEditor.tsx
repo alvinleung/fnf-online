@@ -2,6 +2,7 @@ import React from "react";
 import { RotationEditor } from "./RotationEditor";
 import { VectorEditor } from "./VectorEditor";
 import { Editor } from "../../../EditorDecorators";
+import { BooleanEditor } from "./BooleanEditor";
 
 interface Props {
   fieldType: number;
@@ -32,6 +33,8 @@ function getEditorByType(
     return (
       <RotationEditor name={fieldName} value={value} onChange={onChange} />
     );
+  if (fieldType === Editor.BOOLEAN)
+    return <BooleanEditor name={fieldName} value={value} onChange={onChange} />;
 
   return <div>{fieldName} not supported yet</div>;
 }
