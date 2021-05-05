@@ -23,6 +23,8 @@ import { PhysicsSystem } from "./engine/core/PhysicsSystem";
 import { fromEulerAngles } from "./engine/utils/quaternion";
 import { DebugComponent } from "./engine/core/DebugComponent";
 import { Cube } from "./engine/graphics/3dRender/objects/Cube";
+import EditorControlSystem from "./engine/core/EditorControlSystem";
+import { EditorControlComponent } from "./engine/core/EditorControlComponent";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -81,7 +83,7 @@ class MyGame extends Game {
     const cameraEntity = Entity.create("camera", [
       TransformComponent,
       CameraComponent,
-      PlayerControlComponent,
+      EditorControlComponent,
     ]);
     const cameraTransform = cameraEntity.getComponent(TransformComponent);
     cameraTransform.position = [0, 1, 5];
@@ -121,17 +123,17 @@ class MyGame extends Game {
     input.bindAction("right", keyboard.createKeyBinding("KeyD"));
     input.bindAction("up", keyboard.createKeyBinding("KeyW"));
     input.bindAction("down", keyboard.createKeyBinding("KeyS"));
-    input.bindAction("jump", keyboard.createKeyBinding(" "));
 
-    input.bindAction("attack", keyboard.createKeyBinding("Space"));
+    //input.bindAction("attack", keyboard.createKeyBinding("Space"));
 
+    // player movements
     input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
-    input.bindAxis("vertical", keyboard.createAxisBinding("KeyW|KeyS"));
-
-    //input.bindAxis("yawX", keyboard.createAxisBinding("ArrowLeft|ArrowRight"));
-    // input.bindAxis("yawX", mouse.createDragBinding("mouseleft", "x"));
+    input.bindAxis("foward", keyboard.createAxisBinding("KeyW|KeyS"));
+    input.bindAxis("vertical", keyboard.createAxisBinding("KeyC|Space"));
     input.bindAxis("yawX", mouse.createAxisBinding("x"));
     input.bindAxis("yawY", mouse.createAxisBinding("y"));
+    input.bindAction("hoverMode", keyboard.createKeyBinding("ShiftLeft"));
+    input.bindAction("speedMode", mouse.createKeyBinding("mouseright"));
 
     input.bindAction("debug",keyboard.createKeyBinding("KeyX"));
 
@@ -159,7 +161,8 @@ class MyGame extends Game {
 
   protected setupSystems() {
     // setup game logic
-    this.addSystem(new PlayerControlSystem());
+    //this.addSystem(new PlayerControlSystem());
+    this.addSystem(new EditorControlSystem());
   }
 
   protected setupRendering(): RenderingSystem {

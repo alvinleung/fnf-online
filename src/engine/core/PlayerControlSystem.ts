@@ -28,40 +28,25 @@ export default class PlayerControlSystem extends System {
 
     const transform = playerEntity.getComponent(TransformComponent);
 
-    //console.log(game.input.getAxisChange("yawY") * ROT_SPEED * delta)
+    // Rotation
     this.rotXAmount += game.input.getAxisChange("yawX") * ROT_SPEED * delta;
-    this.rotYAmount += -game.input.getAxisChange("yawY") * ROT_SPEED * delta;
-
+    this.rotYAmount = Math.max(Math.min(this.rotYAmount - game.input.getAxisChange("yawY") * ROT_SPEED * delta, Math.PI / 2),-1.0);
     transform.rotation = q.fromEulerAngles(0, this.rotXAmount, 0);
-    /*
     transform.rotation = q.mult(
-      //q.fromEulerAngles(0, this.rotAmount, 0),
-      q.fromEulerAngles(0, this.rotXAmount , 0),
-      transform.rotation
-    );
-*/
-    transform.rotation = q.mult(
-      //q.fromEulerAngles(0, this.rotAmount, 0),
       q.fromEulerAngles(this.rotYAmount, 0, 0),
       transform.rotation
     );
 
-    //console.log(yRotationAmount)
-    //console.log(q.fromEulerAngles(yRotationAmount, this.rotXAmount, 0))
-
-    // transform.rotation = q.mult(
-    //   transform.rotation,
-    //   q.inverse(transform.rotation)
-    // );
-      //console.log(transform.rotation)
-    const forwardSpeed = game.input.getAxisChange("vertical") * SPEED * delta;
+    // Translation
+    const forwardSpeed = game.input.getAxisChange("foward") * SPEED * delta;
     const sideSpeed = game.input.getAxisChange("horizontal") * SPEED * delta;
-    const direction = q.multVec3(
-      q.inverse(transform.rotation), //transform.rotation,//
-      v3.create(sideSpeed, 0, forwardSpeed)
-    );
+    const verticalSpeed = game.input.getAxisChange("vertical") * SPEED * delta;
 
-    // transform.z += forwardSpeed;
+    const direction = q.multVec3(
+      q.inverse(transform.rotation),
+      v3.create(sideSpeed, verticalSpeed, forwardSpeed)
+    );
+    
     transform.position = v3.add(transform.position, direction);
   }
 }
