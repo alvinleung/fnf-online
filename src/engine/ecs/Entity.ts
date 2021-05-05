@@ -25,12 +25,14 @@ class Entity {
    * @param id
    * @param components
    */
-  public static create(id: string, components: ComponentClass<any>[]): Entity {
+  public static create(id: string, components?: ComponentClass<any>[]): Entity {
     const entityInstance = new Entity();
     entityInstance.id = id;
-    components.forEach((component) => {
-      entityInstance.useComponent(component);
-    });
+
+    if (components)
+      components.forEach((component) => {
+        entityInstance.useComponent(component);
+      });
 
     return entityInstance;
   }

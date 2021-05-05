@@ -1,11 +1,12 @@
 import { Component } from "../ecs";
 import { m4, v3 } from "twgl.js";
 import * as q from "../utils/quaternion";
-import { Editable, Editor } from "../editor";
+import { EditableComponent, EditableField, Editor } from "../editor";
 
 /**
  * A component for 2d spatial manipulation
  */
+@EditableComponent
 export class TransformComponent implements Component {
   private _matrix = m4.translation(v3.create(0, 0, 0));
   private _changed = false;
@@ -18,7 +19,7 @@ export class TransformComponent implements Component {
   private _scaleZ: number = 1;
   private _rotationQuat: q.Quat = q.fromEulerAngles(0, 0, 0);
 
-  @Editable(Editor.VECTOR)
+  @EditableField(Editor.VECTOR)
   public set position([x, y, z]: v3.Vec3) {
     this._changed = true;
     this._x = x;
@@ -30,7 +31,7 @@ export class TransformComponent implements Component {
     return [this._x, this._y, this._z];
   }
 
-  @Editable(Editor.VECTOR)
+  @EditableField(Editor.VECTOR)
   public set scale([x, y, z]: v3.Vec3) {
     this._changed = true;
     this._scaleX = x;
@@ -42,7 +43,7 @@ export class TransformComponent implements Component {
     return [this._scaleX, this._scaleY, this._scaleZ];
   }
 
-  @Editable(Editor.QUATERNION)
+  @EditableField(Editor.QUATERNION)
   public set rotation(quaternion: q.Quat) {
     this._changed = true;
     this._rotationQuat = quaternion;

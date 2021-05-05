@@ -15,7 +15,10 @@ import { SoundLoader } from "./engine/assets/SoundLoader";
 import ASSET_DECLARATION from "./MyGameAssets";
 import { Renderer3D } from "./engine/graphics/3dRender/Renderer3D";
 import CameraComponent from "./engine/camera/CameraComponent";
-import { RenderableComponent } from "./engine/graphics/Renderable";
+import {
+  RenderableComponent,
+  RenderableObject,
+} from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
@@ -25,6 +28,7 @@ import { DebugComponent } from "./engine/core/DebugComponent";
 import { Cube } from "./engine/graphics/3dRender/objects/Cube";
 import EditorControlSystem from "./engine/core/EditorControlSystem";
 import { EditorControlComponent } from "./engine/core/EditorControlComponent";
+import { GameStateParser } from "./engine/utils/GameStateParser";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -91,10 +95,10 @@ class MyGame extends Game {
 
     //console.log(cameraEntity.listComponents());
 
-    const debugEntity = Entity.create("debug",[
+    const debugEntity = Entity.create("debug", [
       TransformComponent,
       DebugComponent,
-    ])
+    ]);
     debugEntity.useComponent(RenderableComponent).renderableObject = new Cube();
     debugEntity.getComponent(TransformComponent).position = [2, 1, 0];
     debugEntity.getComponent(TransformComponent).scale = [2, 2, 2];
@@ -108,6 +112,16 @@ class MyGame extends Game {
     // this.assets.sound.get("action-theme").play();
 
     // console.log(getPublicProperties(new TransformComponent));
+
+    const parser = GameStateParser.fromGame(this);
+    const entities = GameStateParser.fromString(
+      parser.getString()
+    ).getEntities();
+
+    // console.log(entities[1].getComponent(RenderableComponent));
+
+    // this.removeEntity(squareEntity2);
+    // this.addEntity(entities[1]);
   }
 
   // @override
@@ -135,7 +149,7 @@ class MyGame extends Game {
     input.bindAction("hoverMode", keyboard.createKeyBinding("ShiftLeft"));
     input.bindAction("speedMode", mouse.createKeyBinding("mouseright"));
 
-    input.bindAction("debug",keyboard.createKeyBinding("KeyX"));
+    input.bindAction("debug", keyboard.createKeyBinding("KeyX"));
 
     return input;
   }
@@ -179,9 +193,6 @@ class MyGame extends Game {
 
     return renderingSystem;
   }
-
-
-
 }
 
 export default MyGame;

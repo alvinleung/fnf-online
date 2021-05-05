@@ -1,10 +1,11 @@
 import { TransformComponent } from "../core/TransformComponent";
 import { Component, Entity } from "../ecs";
-import { Editable, Editor } from "../editor";
+import { EditableComponent, Editor } from "../editor";
 
 /**
  * This Component depends the TransformComponent
  */
+@EditableComponent
 export default class CameraComponent implements Component {
   public zoom: number = 0;
   public isActive: boolean = true;
