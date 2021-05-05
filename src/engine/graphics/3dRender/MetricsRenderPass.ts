@@ -46,8 +46,6 @@ export class MetricsRenderPass extends RenderPass {
 
     var gridVertices = xLinesVertices.concat(zLinesVertices);
 
-    console.log([...gridVertices].length);
-
     var gridColors = [];
     for (var i = 0; i < gridVertices.length / 3; i++) {
       gridColors.push(...this.GRID_COLOR);
