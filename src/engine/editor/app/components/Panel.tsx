@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { motion, useAnimation, useMotionValue } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { config } from "../AnimationConfig";
 import { HotkeyConfig } from "../Hotkeys";
@@ -29,16 +29,36 @@ export const Panel = ({
   const [panelSize, setPanelSize] = useState(collapsed ? 0 : minSize);
   const [isDragging, setIsDragging] = useState(false);
 
+  const panelHandleAnimator = useAnimation();
+  const panelSizeAnimator = useAnimation();
+  useEffect(() => {
+    panelSizeAnimator.set({
+      width: panelSize,
+    });
+  }, []); // set initial panel animator state base on panel size
+
   const resizableX =
     dockingSide === "left" || dockingSide === "right" ? true : false;
   const resizableY =
     dockingSide === "bottom" || dockingSide === "top" ? true : false;
 
   function onDragStart() {
+    panelSizeAnimator.set(getHandleBorderStyle());
     setIsDragging(true);
   }
   function onDragEnd() {
+    panelSizeAnimator.set({ borderRight: "none", borderLeft: "none" });
     setIsDragging(false);
+  }
+
+  function getHandleBorderStyle() {
+    const handleBorderSize = ".25rem";
+    switch (dockingSide) {
+      case "left":
+        return { borderRight: `${handleBorderSize} solid var(--clr-accent)` };
+      case "right":
+        return { borderLeft: `${handleBorderSize} solid var(--clr-accent)` };
+    }
   }
 
   function onDrag(event: DragEvent, info) {
@@ -48,16 +68,28 @@ export const Panel = ({
       case "left":
         if (mouseX < minSize) {
           setColapsed(true);
+          panelSizeAnimator.start({
+            width: 0,
+          });
         } else {
           setColapsed(false);
+          panelSizeAnimator.start({
+            width: mouseX,
+          });
         }
         setPanelSize(mouseX);
         break;
       case "right":
         if (window.innerWidth - mouseX < minSize) {
           setColapsed(true);
+          panelSizeAnimator.start({
+            width: 0,
+          });
         } else {
           setColapsed(false);
+          panelSizeAnimator.start({
+            width: window.innerWidth - mouseX,
+          });
         }
         setPanelSize(window.innerWidth - mouseX);
         break;
@@ -80,11 +112,49 @@ export const Panel = ({
     }
   }
 
+  useEffect(() => {
+    if (isDragging) return;
+
+    if (!collapsed) {
+      console.log(collapsed);
+      switch (dockingSide) {
+        case "left":
+          panelHandleAnimator.start({
+            x: panelSize,
+          });
+          break;
+        case "right":
+          panelHandleAnimator.start({
+            x: -panelSize,
+          });
+          break;
+      }
+      return;
+    }
+
+    // when collapsed
+    panelHandleAnimator.start({
+      x: 0,
+    });
+  }, [collapsed, isDragging]);
+
   const openPanel = () => {
+    panelSizeAnimator.start({
+      width: minSize,
+    });
+    panelHandleAnimator.start({
+      x: dockingSide === "right" ? -minSize : minSize,
+    });
     setPanelSize(minSize);
     setColapsed(false);
   };
   const closePanel = () => {
+    panelSizeAnimator.start({
+      width: 0,
+    });
+    panelHandleAnimator.start({
+      x: 0,
+    });
     setPanelSize(0);
     setColapsed(true);
   };
@@ -115,6 +185,7 @@ export const Panel = ({
         bottom: collapsed ? 0 : -offset,
       };
   };
+
   // configure hotkey state
   useHotkeys(
     HotkeyConfig.HIDE_UI,
@@ -128,6 +199,10 @@ export const Panel = ({
     [collapsed]
   );
 
+  // drag handle behaviour
+
+  const docBodyRef = useRef(document.body);
+
   return (
     <>
       <motion.button
@@ -138,34 +213,33 @@ export const Panel = ({
       >
         <img src={getArrow(dockingSide)} />
       </motion.button>
+
+      {/* resize handle */}
+      <motion.div
+        //@ts-ignore
+        drag={(resizableX && "x") || (resizableY && "y")}
+        style={{
+          cursor: "col-resize",
+        }}
+        className={`panel__drag-handle panel__drag-handle--${dockingSide}`}
+        animate={panelHandleAnimator}
+        whileHover={{
+          opacity: 1,
+        }}
+        dragMomentum={false}
+        dragConstraints={docBodyRef}
+        onDrag={onDrag}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        transition={config.DEFAULT_TRANSITION}
+      ></motion.div>
+
       <motion.div
         className={`panel panel--${dockingSide}`}
-        style={{
-          width: resizableX ? panelSize : "auto",
-          height: resizableY ? panelSize : "auto",
-          // overflowX: !isDragging || !collapsed ? "visible" : "hidden",
-        }}
-        animate={{
-          width: resizableX && collapsed ? 0 : panelSize,
-        }}
+        animate={panelSizeAnimator}
         transition={config.DEFAULT_TRANSITION}
       >
-        <motion.div
-          //@ts-ignore
-          drag={(resizableX && "x") || (resizableY && "y")}
-          className={`panel__drag-handle panel__drag-handle--${dockingSide}`}
-          animate={{
-            opacity: isDragging ? 1 : 0,
-          }}
-          whileHover={{
-            opacity: 1,
-          }}
-          onDrag={onDrag}
-          onDragStart={onDragStart}
-          onDragEnd={onDragEnd}
-          transition={config.DEFAULT_TRANSITION}
-          layout
-        ></motion.div>
+        {/* panel content */}
         {header && <h2 className="header-label panel-hor-spacing">{header}</h2>}
         {children}
       </motion.div>

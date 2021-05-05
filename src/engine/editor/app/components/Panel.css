@@ -30,32 +30,37 @@
 }
 
 .panel__drag-handle {
-  --drag-handle-size: 1rem;
-  background-color: var(--clr-accent);
+  --drag-handle-size: 0.75rem;
   position: absolute;
 
   width: var(--drag-handle-size);
   height: 100%;
 
   cursor: col-resize;
-  opacity: 0;
+
+  /* for debug */
+  /* background-color: var(--clr-accent);
+  opacity: 1; */
 
   z-index: 1000;
 }
 
 .panel__drag-handle--right {
   top: 0rem;
-  left: calc(0rem - var(--drag-handle-size) / 2);
+  right: 0rem;
+  /* left: calc(0rem - var(--drag-handle-size) / 2); */
 }
 
 .panel__drag-handle--left {
   top: 0rem;
-  right: calc(0rem - var(--drag-handle-size) / 2);
+  left: 0rem;
+  /* right: calc(0rem - var(--drag-handle-size) / 2); */
 }
 
 .panel--left {
   left: 0rem;
   max-height: 100vh;
+  min-height: 100vh;
 }
 .panel--top {
   top: 0rem;
