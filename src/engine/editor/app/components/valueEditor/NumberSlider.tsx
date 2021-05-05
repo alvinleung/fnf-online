@@ -47,12 +47,8 @@ export const NumberSlider = ({
    * @param _newVal
    * @returns
    */
-  const safelyUpdateValue = (_newVal) => {
-    console.log(_newVal);
-
-    if (isNaN(_newVal)) return;
-
-    const newVal = getRoundedValue(_newVal);
+  const safelyUpdateValue = (newVal) => {
+    if (isNaN(newVal)) return;
     setValue(newVal);
     // onChange && onChange(newVal);
   };
@@ -91,9 +87,7 @@ export const NumberSlider = ({
     // if the user didn't move the mouse
     // it suggest that the user is clicking the target
 
-    // use internal value rather than value to enable correct functioning of the feature
-    // even data is not changed
-    if (initialDragValue === internalValue) enterInputMode();
+    if (initialDragValue === value) enterInputMode();
 
     document.body.style.userSelect = "auto";
   };

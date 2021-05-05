@@ -11,21 +11,16 @@ interface Props {
 }
 
 export const VectorEditor = ({ name, onChange, value }: Props) => {
-  const [x, setX] = useState(value[0]);
-  const [y, setY] = useState(value[1]);
-  const [z, setZ] = useState(value[2]);
-
   const handleXChange = (val: number) => {
-    setX(val);
-    onChange && onChange([val, y, z]);
+    onChange && onChange([val, value[1], value[2]]);
   };
+
   const handleYChange = (val: number) => {
-    setY(val);
-    onChange && onChange([x, val, z]);
+    onChange && onChange([value[0], val, value[2]]);
   };
+
   const handleZChange = (val: number) => {
-    setZ(val);
-    onChange && onChange([x, y, val]);
+    onChange && onChange([value[0], value[1], val]);
   };
 
   return (
