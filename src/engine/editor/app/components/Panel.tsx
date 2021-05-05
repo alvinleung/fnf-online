@@ -42,12 +42,27 @@ export const Panel = ({
   const resizableY =
     dockingSide === "bottom" || dockingSide === "top" ? true : false;
 
-  function onDragStart() {
+  function showHandle() {
     panelSizeAnimator.set(getHandleBorderStyle());
+  }
+
+  function hideHandle() {
+    panelSizeAnimator.set({ borderRight: "none", borderLeft: "none" });
+  }
+
+  function onHandleMouseOver() {
+    showHandle();
+  }
+  function onHandleMouseOut() {
+    hideHandle();
+  }
+
+  function onDragStart() {
+    showHandle();
     setIsDragging(true);
   }
   function onDragEnd() {
-    panelSizeAnimator.set({ borderRight: "none", borderLeft: "none" });
+    hideHandle();
     setIsDragging(false);
   }
 
@@ -55,7 +70,9 @@ export const Panel = ({
     const handleBorderSize = ".25rem";
     switch (dockingSide) {
       case "left":
-        return { borderRight: `${handleBorderSize} solid var(--clr-accent)` };
+        return {
+          borderRight: `${handleBorderSize} solid var(--clr-accent)`,
+        };
       case "right":
         return { borderLeft: `${handleBorderSize} solid var(--clr-accent)` };
     }
@@ -230,6 +247,8 @@ export const Panel = ({
         onDrag={onDrag}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
+        onMouseOver={onHandleMouseOver}
+        onMouseOut={onHandleMouseOut}
         transition={config.DEFAULT_TRANSITION}
       ></motion.div>
 

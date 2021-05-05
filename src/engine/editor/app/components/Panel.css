@@ -3,6 +3,9 @@
 
   position: absolute;
 
+  /* the border handle is outside the box */
+  box-sizing: content-box;
+
   /* min-width: 12rem; */
   color: var(--clr-text);
   background-color: var(--clr-bg);
