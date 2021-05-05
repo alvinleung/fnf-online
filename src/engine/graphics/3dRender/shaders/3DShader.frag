@@ -14,7 +14,7 @@ void main()
 
     float dist = length(cameraPosition - fWorldPosition);
     float alpha = 1.0 - dist / 40.0;
-    gl_FragColor = fColor; //vec4(fColor.rgb, max(min(alpha,1.0),0.0)); 
+    gl_FragColor = vec4(fColor.rgb, max(min(alpha,1.0),0.0)); 
 
     if(useTexture){
         gl_FragColor = texture2D(uTexture, fTextureCoords);
