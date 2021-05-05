@@ -17,7 +17,7 @@ export const NumberSlider = ({
   onChange,
   sensitivity = 0.1,
   axis = "x",
-  precision = 3,
+  precision = 5,
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +40,7 @@ export const NumberSlider = ({
     setInternalValue(val);
   };
   // make the component still editable without data supplying from the parent component
-  value = getRoundedValue(value === null ? internalValue : value);
+  value = value === null ? internalValue : value;
 
   /**
    * update value with number format check
@@ -48,6 +48,8 @@ export const NumberSlider = ({
    * @returns
    */
   const safelyUpdateValue = (_newVal) => {
+    console.log(_newVal);
+
     if (isNaN(_newVal)) return;
 
     const newVal = getRoundedValue(_newVal);
@@ -165,7 +167,7 @@ export const NumberSlider = ({
         className="number-slider__value"
         style={{ display: isInputMode ? "none" : "block" }}
       >
-        {value}
+        {getRoundedValue(value)}
       </div>
       <input
         className="number-slider__value"
