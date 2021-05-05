@@ -9,7 +9,7 @@ interface Props {
   onChange?: (value: number) => void;
   sensitivity?: number;
   axis?: "x" | "y";
-  decimal?: number; // correct to certain decimal place
+  precision?: number; // correct to certain decimal place
 }
 
 export const NumberSlider = ({
@@ -17,7 +17,7 @@ export const NumberSlider = ({
   onChange,
   sensitivity = 0.1,
   axis = "x",
-  decimal = 3,
+  precision = 3,
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -30,13 +30,17 @@ export const NumberSlider = ({
   const [isInputMode, setIsInputMode] = useState(false);
   const [inputValue, setInputValue] = useState(value + "");
 
+  const getRoundedValue = (val) => {
+    return round(val, precision);
+  };
+
   // hijack the setvalue function, instead setting state, it propogate the change
   const setValue = (val: number) => {
     onChange && onChange(val);
     setInternalValue(val);
   };
   // make the component still editable without data supplying from the parent component
-  value = value === null ? internalValue : value;
+  value = getRoundedValue(value === null ? internalValue : value);
 
   /**
    * update value with number format check
@@ -46,7 +50,7 @@ export const NumberSlider = ({
   const safelyUpdateValue = (_newVal) => {
     if (isNaN(_newVal)) return;
 
-    const newVal = round(_newVal, decimal);
+    const newVal = getRoundedValue(_newVal);
     setValue(newVal);
     // onChange && onChange(newVal);
   };
