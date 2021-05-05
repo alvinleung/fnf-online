@@ -77,9 +77,6 @@ export class SpriteSheetAnimator {
   private isPlaying: boolean = false;
   private loopAnimation: boolean = false;
 
-  private _frameBuffer: FrameBuffer;
-  private _spriteSheetTexture: Texture;
-
   private animationLookupTable: {
     [animationName: string]: SpriteSheetAnimationSequence;
   } = {};

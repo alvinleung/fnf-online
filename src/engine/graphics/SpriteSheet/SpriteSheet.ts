@@ -1,4 +1,4 @@
-import { Image } from "../Image";
+import { Image } from "../Image/Image";
 import { Texture } from "../Texture";
 import { SpriteSheetAnimationSequence } from "./SpriteSheetAnimation";
 
