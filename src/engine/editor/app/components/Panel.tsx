@@ -1,8 +1,6 @@
-import { motion, useAnimation, useMotionValue } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { config } from "../AnimationConfig";
-import { HotkeyConfig } from "../Hotkeys";
 import "./Panel.css";
 
 const ARROW_RIGHT = require("url:../images/arrow-right-nav.svg");
@@ -250,21 +248,6 @@ export const PanelResizableContainer = ({
         bottom: collapsed ? 0 : -offset,
       };
   };
-
-  // configure hotkey state
-  // useHotkeys(
-  //   HotkeyConfig.HIDE_UI,
-  //   () => {
-  //     if (collapsed) {
-  //       openPanel();
-  //       return;
-  //     }
-  //     closePanel();
-  //   },
-  //   [collapsed]
-  // );
-
-  // drag handle behaviour
 
   const docBodyRef = useRef(document.body);
 
