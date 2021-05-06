@@ -11,7 +11,7 @@ const ARROW_LEFT = require("url:../images/arrow-left-nav.svg");
 const ARROW_UP = require("url:../images/arrow-up-nav.svg");
 
 interface Props {
-  children?: React.ReactNode;
+  children?: React.ReactElement | React.ReactElement[] | null;
   header?: string;
   dockingSide: "left" | "right" | "bottom" | "top";
   minSize?: number;
@@ -26,7 +26,13 @@ interface Props {
   ) => boolean;
 }
 
-export const Panel = ({
+// for client use
+export const Panel: React.FC<Props> = ({ children }: Props) => {
+  return <>{children}</>;
+};
+
+// for internal logic
+export const PanelResizableContainer = ({
   children,
   header,
   dockingSide,

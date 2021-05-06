@@ -13,6 +13,7 @@ import useForceUpdate from "./hooks/useForceUpdate";
 import { ComponentInspector } from "./ComponentInspector";
 import { useHotkeys } from "react-hotkeys-hook";
 import { HotkeyConfig } from "./Hotkeys";
+import { PanelGroup } from "./components/PanelGroup";
 
 interface Props {
   game: Game;
@@ -54,48 +55,9 @@ const App = ({ game }: Props): JSX.Element => {
     });
   }, []);
 
-  const [shouldAllPanelCollapse, setShouldAllPanelsCollapse] = useState(true);
-  const [shouldLeftPanelCollapse, setShouldLeftPanelCollapse] = useState(true);
-  const [shouldRightPanelCollapse, setShouldRightPanelCollapse] = useState(
-    true
-  );
-  const collapseStateChange = (collapse: boolean, side: string) => {
-    if (side === "left") setShouldLeftPanelCollapse(collapse);
-    if (side === "right") setShouldRightPanelCollapse(collapse);
-
-    // if both side are at the same state, update the general state
-    if (
-      (side === "left" && collapse === shouldRightPanelCollapse) ||
-      (side === "right" && collapse === shouldLeftPanelCollapse)
-    )
-      setShouldAllPanelsCollapse(collapse);
-
-    return collapse;
-  };
-
-  useEffect(() => {
-    setShouldLeftPanelCollapse(shouldAllPanelCollapse);
-    setShouldRightPanelCollapse(shouldAllPanelCollapse);
-  }, [shouldAllPanelCollapse]);
-
-  useHotkeys(
-    HotkeyConfig.HIDE_UI,
-    () => {
-      setShouldAllPanelsCollapse(!shouldAllPanelCollapse);
-    },
-    [shouldAllPanelCollapse]
-  );
-
   return (
-    <>
-      <Panel
-        header="Entity List"
-        dockingSide="left"
-        minSize={150}
-        initialState="collapsed"
-        onCollapseStateChange={collapseStateChange}
-        shouldCollapse={shouldLeftPanelCollapse}
-      >
+    <PanelGroup>
+      <Panel dockingSide="left">
         <List onSelect={handleEntityListSelect}>
           {game.entities.map((entity, index) => {
             return (
@@ -106,19 +68,13 @@ const App = ({ game }: Props): JSX.Element => {
           })}
         </List>
       </Panel>
-      <Panel
-        dockingSide="right"
-        initialState="collapsed"
-        minSize={250}
-        onCollapseStateChange={collapseStateChange}
-        shouldCollapse={shouldRightPanelCollapse}
-      >
+      <Panel dockingSide="right">
         <EntityInspectorHead
           selectedEntity={selectedEntity && (selectedEntity.id as string)}
         />
         <ComponentInspector game={game} selectedEntity={selectedEntity} />
       </Panel>
-    </>
+    </PanelGroup>
   );
 };
 
