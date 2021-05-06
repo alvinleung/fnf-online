@@ -9,7 +9,17 @@
   min-width: 15rem;
 }
 
+.entity-inspector-head--empty {
+  border-top-width: 0px;
+}
+
 .entity-inspector-head__entity-name {
   margin-top: var(--spacing-xs);
   /* font-weight: bold; */
+}
+
+.entity-inspector-empty-state {
+  padding: var(--spacing-m);
+  opacity: 0.5;
+  font-size: 1rem;
 }
