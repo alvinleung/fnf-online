@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import "./style/typography.css";
 import "./style/layout.css";
@@ -7,13 +7,10 @@ import { Panel } from "./components/Panel";
 import { List } from "./components/List";
 import { ListItem } from "./components/ListItem";
 import { EntityInspectorHead } from "./components/EntityInspectorHead";
-import { CollapsableSection } from "./components/CollapsableSection";
-import { v3 } from "twgl.js";
 import { Game } from "../../Game";
-import { Component, ComponentClass, Entity } from "../../ecs";
-import * as EditorDecorators from "../EditorDecorators";
-import { ValueEditor } from "./components/valueEditor/ValueEditor";
+import { Entity } from "../../ecs";
 import useForceUpdate from "./hooks/useForceUpdate";
+import { ComponentInspector } from "./ComponentInspector";
 
 interface Props {
   game: Game;
@@ -22,10 +19,6 @@ interface Props {
 const App = ({ game }: Props): JSX.Element => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
-  const editableComponent = useMemo(
-    () => EditorDecorators.getEditableComponentMap(),
-    []
-  );
 
   const handleEntityAdded = (entity: Entity) => {
     setEntities([...entities, entity]);
@@ -37,16 +30,6 @@ const App = ({ game }: Props): JSX.Element => {
   const handleEntityListSelect = (val: string) => {
     const selectedEntity = game.getEntityById(val);
     setSelectedEntity(selectedEntity);
-  };
-
-  const handleEntityValueUpdate = (
-    entity: Entity,
-    currentComponent: Component,
-    field: any,
-    val: any
-  ) => {
-    // change in game component field value
-    currentComponent[field] = val;
   };
 
   const forceUpdate = useForceUpdate();
@@ -69,22 +52,6 @@ const App = ({ game }: Props): JSX.Element => {
     });
   }, []);
 
-  // get the informaiton of component whne component changed
-  const getEntityComponent = useCallback(() => {
-    if (!selectedEntity) return;
-
-    const componentList = game
-      .getEntityById(selectedEntity.id as string)
-      .listComponents();
-    const editableComponentList = componentList.filter((c) => {
-      if (EditorDecorators.isComponentEditable(c)) {
-        return true;
-      }
-    });
-
-    return editableComponentList;
-  }, [selectedEntity]);
-
   return (
     <>
       <Panel
@@ -103,67 +70,14 @@ const App = ({ game }: Props): JSX.Element => {
           })}
         </List>
       </Panel>
-      <Panel dockingSide="right" initialState="collapsed">
+      <Panel dockingSide="right" initialState="collapsed" minSize={250}>
         <EntityInspectorHead
           selectedEntity={selectedEntity && (selectedEntity.id as string)}
         />
-        {getEntityComponent() &&
-          getEntityComponent().map((componentInstance, index) => {
-            if (!componentInstance)
-              return <div>No editable fields in this component</div>;
-
-            const fields = EditorDecorators.getComponentEditableFields(
-              componentInstance
-            );
-            const componentName = componentInstance.constructor.name;
-            const fieldNames = Object.keys(fields);
-            return (
-              <CollapsableSection
-                key={index}
-                header={camelCaseToSentenceCase(
-                  componentInstance.constructor.name
-                )}
-              >
-                {fieldNames.map((fieldName, index) => {
-                  const fieldType = EditorDecorators.getComponentFieldEditor(
-                    componentInstance,
-                    fieldName
-                  );
-                  const currentComponent = selectedEntity.getComponent(
-                    EditorDecorators.getComponentClass(componentName)
-                  );
-                  const currentComponentVal = currentComponent[fieldName];
-                  const handleEditorValueChange = (val) => {
-                    handleEntityValueUpdate(
-                      selectedEntity,
-                      componentInstance,
-                      fieldName,
-                      val
-                    );
-                  };
-
-                  return (
-                    <ValueEditor
-                      fieldName={fieldName}
-                      fieldType={fieldType}
-                      value={currentComponentVal}
-                      key={index}
-                      onChange={handleEditorValueChange}
-                    />
-                  );
-                })}
-              </CollapsableSection>
-            );
-          })}
+        <ComponentInspector game={game} selectedEntity={selectedEntity} />
       </Panel>
     </>
   );
 };
-
-function camelCaseToSentenceCase(text: string) {
-  const result = text.replace(/([A-Z])/g, " $1");
-  const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
-  return finalResult;
-}
 
 export default App;
