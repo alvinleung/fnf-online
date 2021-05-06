@@ -28,12 +28,12 @@ export const ComponentInspector = ({ selectedEntity, game }: Props) => {
   }, [selectedEntity]);
 
   const onEntityValueUpdate = (
-    currentComponentInstance: ComponentClass<any>,
+    liveComponentInstance: ComponentClass<any>,
     field: any,
     val: any
   ) => {
     // write change to the in game component field value
-    currentComponentInstance[field] = val;
+    liveComponentInstance[field] = val;
   };
 
   return (
