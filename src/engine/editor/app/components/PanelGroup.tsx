@@ -8,10 +8,23 @@ interface Props {
 }
 
 export const PanelGroup = ({ children }: Props) => {
-  const [shouldAllPanelCollapse, setShouldAllPanelsCollapse] = useState(true);
-  const [shouldLeftPanelCollapse, setShouldLeftPanelCollapse] = useState(true);
+  let leftPanel: React.ReactElement = { props: {}, key: null, type: null };
+  let rightPanel: React.ReactElement = { props: {}, key: null, type: null };
+  children.forEach((panel) => {
+    if (panel.props.dockingSide === "left") leftPanel = panel;
+    if (panel.props.dockingSide === "right") rightPanel = panel;
+  });
+
+  const leftPanelInitialCollapse = leftPanel.props.initialState === "collapsed";
+  const rightPanelInitialCollapse =
+    rightPanel.props.initialState === "collapsed";
+
+  const [shouldAllPanelCollapse, setShouldAllPanelsCollapse] = useState(null);
+  const [shouldLeftPanelCollapse, setShouldLeftPanelCollapse] = useState(
+    leftPanelInitialCollapse
+  );
   const [shouldRightPanelCollapse, setShouldRightPanelCollapse] = useState(
-    true
+    rightPanelInitialCollapse
   );
   const collapseStateChange = (collapse: boolean, side: string) => {
     if (side === "left") setShouldLeftPanelCollapse(collapse);
@@ -28,6 +41,7 @@ export const PanelGroup = ({ children }: Props) => {
   };
 
   useEffect(() => {
+    if (shouldAllPanelCollapse === null) return;
     setShouldLeftPanelCollapse(shouldAllPanelCollapse);
     setShouldRightPanelCollapse(shouldAllPanelCollapse);
   }, [shouldAllPanelCollapse]);
@@ -35,25 +49,21 @@ export const PanelGroup = ({ children }: Props) => {
   useHotkeys(
     HotkeyConfig.HIDE_UI,
     () => {
+      if (shouldAllPanelCollapse === null) {
+        // not initialised
+        // console.log(!leftPanelInitialCollapse);
+        setShouldAllPanelsCollapse(leftPanelInitialCollapse);
+      }
       setShouldAllPanelsCollapse(!shouldAllPanelCollapse);
     },
-    [shouldAllPanelCollapse]
+    [shouldAllPanelCollapse, leftPanelInitialCollapse]
   );
-
-  let leftPanel, rightPanel;
-
-  children.forEach((panel) => {
-    if (panel.props.dockingSide === "left") leftPanel = panel;
-    if (panel.props.dockingSide === "right") rightPanel = panel;
-  });
 
   return (
     <>
       <PanelResizableContainer
-        header="Entity List"
         dockingSide="left"
-        minSize={150}
-        initialState="collapsed"
+        {...leftPanel.props}
         onCollapseStateChange={collapseStateChange}
         shouldCollapse={shouldLeftPanelCollapse}
       >
@@ -61,8 +71,7 @@ export const PanelGroup = ({ children }: Props) => {
       </PanelResizableContainer>
       <PanelResizableContainer
         dockingSide="right"
-        initialState="collapsed"
-        minSize={250}
+        {...rightPanel.props}
         onCollapseStateChange={collapseStateChange}
         shouldCollapse={shouldRightPanelCollapse}
       >

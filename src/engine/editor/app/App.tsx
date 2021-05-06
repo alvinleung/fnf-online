@@ -57,7 +57,12 @@ const App = ({ game }: Props): JSX.Element => {
 
   return (
     <PanelGroup>
-      <Panel dockingSide="left">
+      <Panel
+        dockingSide="left"
+        minSize={150}
+        initialState="collapsed"
+        header="Entity List"
+      >
         <List onSelect={handleEntityListSelect}>
           {game.entities.map((entity, index) => {
             return (
@@ -68,7 +73,7 @@ const App = ({ game }: Props): JSX.Element => {
           })}
         </List>
       </Panel>
-      <Panel dockingSide="right">
+      <Panel dockingSide="right" initialState="collapsed" minSize={250}>
         <EntityInspectorHead
           selectedEntity={selectedEntity && (selectedEntity.id as string)}
         />
