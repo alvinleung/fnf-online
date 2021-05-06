@@ -25,6 +25,7 @@ import { DebugComponent } from "./engine/core/DebugComponent";
 import { Cube } from "./engine/graphics/3dRender/objects/Cube";
 import EditorControlSystem from "./engine/core/EditorControlSystem";
 import { EditorControlComponent } from "./engine/core/EditorControlComponent";
+import { DebugSystem } from "./engine/core/DebugSystem";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -96,8 +97,8 @@ class MyGame extends Game {
       DebugComponent,
     ])
     debugEntity.useComponent(RenderableComponent).renderableObject = new Cube();
-    debugEntity.getComponent(TransformComponent).position = [2, 1, 0];
-    debugEntity.getComponent(TransformComponent).scale = [2, 2, 2];
+    debugEntity.getComponent(TransformComponent).position = [1, 0, 1];
+    debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
 
     this.addEntity(cameraEntity);
     this.addEntity(squareEntity2);
@@ -176,12 +177,10 @@ class MyGame extends Game {
     ];
     const renderingSystem = new RenderingSystem(renderers);
     this.addSystem(renderingSystem);
+    this.addSystem(new DebugSystem());
 
     return renderingSystem;
   }
-
-
-
 }
 
 export default MyGame;

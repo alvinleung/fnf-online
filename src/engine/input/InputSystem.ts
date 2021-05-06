@@ -11,6 +11,7 @@ interface KeyBinding {
 interface AxisBinding {
   axis: string;
   getAxisChange(key: string): number;
+  getAxis(key: string): number;
 }
 
 abstract class InputSourceFactory {
@@ -23,6 +24,7 @@ abstract class InputSourceFactory {
     return {
       axis: axis,
       getAxisChange: this.getAxisChange.bind(this),
+      getAxis: this.getAxisChange.bind(this),
     };
   }
 
@@ -74,6 +76,19 @@ class InputSystem {
 
     return axisBindingLookup.getAxisChange(axisBindingLookup.axis);
   }
+
+  public getAxis(axisName: string): number {
+    const axisBindingLookup = this.axisBindingLookup[axisName];
+    if (!axisBindingLookup) {
+      console.warn(`Input System:  ${axisName} not found`);
+      return 0;
+    }
+
+    //console.log(axisName);
+
+    return axisBindingLookup.getAxis(axisBindingLookup.axis);
+  }
+
 }
 
 export { KeyBinding, AxisBinding, InputSourceFactory };

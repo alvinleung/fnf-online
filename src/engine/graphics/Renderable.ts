@@ -28,7 +28,7 @@ export abstract class RenderableObject {
     this.objectCoords = objectCoords;
     this.textureCoords = textureCoords;
     this.textureImage = textureImage;
-    console.log(objectColors)
+    
     if(objectColors) {
       this.objectColors = objectColors;
     } else {

@@ -91,6 +91,8 @@ class MouseInput extends InputSourceFactory {
       document.mozPointerLockElement === canvas) {
         console.log('The pointer lock status is now locked');
         // Do something useful in response
+        this.currentMouse.x = canvas.width / 2;
+        this.currentMouse.y = canvas.height / 2;
         this.cacheMouse.x = this.currentMouse.x;
         this.cacheMouse.y = this.currentMouse.y;
         this.pointerLocked = true;

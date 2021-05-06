@@ -42,6 +42,7 @@ class KeyboardInput extends InputSourceFactory {
       positiveKey: positiveKey,
       negativeKey: negativekey,
       getAxisChange: this.getAxisChange.bind(this),
+      getAxis: this.getAxisChange.bind(this),
     };
 
     this.axisBindings[axis] = axisBinding;

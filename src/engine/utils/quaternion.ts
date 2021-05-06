@@ -133,9 +133,56 @@ export function mat4ToQuat(m: m4.Mat4): Quat {
     q1 = (m02 + m20) / (4 * q3);
     q2 = (m21 + m12) / (4 * q3);
     q0 = (m10 - m01) / (4 * q3);
-  } else throw Error("unreachable point");
+  } else throw Error("unreachable point" + m);
   const q = [q0, q1, q2, q3];
   return q0 < 0 ? negate(q) : q;
+}
+
+export function mat4ToQuatv2(m: m4.Mat4): Quat {
+  // https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+  const m00 = m[0],
+    m01 = m[1],
+    m02 = m[2];
+  const m10 = m[4],
+    m11 = m[5],
+    m12 = m[6];
+  const m20 = m[8],
+    m21 = m[9],
+    m22 = m[10];
+
+  let tr = m00 + m11 + m22;
+  let qw = 0;
+  let qx = 0;
+  let qy = 0;
+  let qz = 0;
+
+  if (tr > 0) { 
+    let S = Math.sqrt(tr+1.0) * 2; // S=4*qw 
+    qw = 0.25 * S;
+    qx = (m21 - m12) / S;
+    qy = (m02 - m20) / S; 
+    qz = (m10 - m01) / S; 
+  } else if ((m00 > m11)&&(m00 > m22)) { 
+    let S = Math.sqrt(1.0 + m00 - m11 - m22) * 2; // S=4*qx 
+    qw = (m21 - m12) / S;
+    qx = 0.25 * S;
+    qy = (m01 + m10) / S; 
+    qz = (m02 + m20) / S; 
+  } else if (m11 > m22) { 
+    let S = Math.sqrt(1.0 + m11 - m00 - m22) * 2; // S=4*qy
+    qw = (m02 - m20) / S;
+    qx = (m01 + m10) / S; 
+    qy = 0.25 * S;
+    qz = (m12 + m21) / S; 
+  } else { 
+    let S = Math.sqrt(1.0 + m22 - m00 - m11) * 2; // S=4*qz
+    qw = (m10 - m01) / S;
+    qx = (m02 + m20) / S;
+    qy = (m12 + m21) / S;
+    qz = 0.25 * S;
+  }
+  const q = [qw,qx,qy,qz];
+  return qw < 0 ? negate(q) : q;
 }
 
 export function lerp(s: Quat, e: Quat, t: number): Quat {
