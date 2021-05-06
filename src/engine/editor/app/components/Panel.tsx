@@ -16,6 +16,14 @@ interface Props {
   dockingSide: "left" | "right" | "bottom" | "top";
   minSize?: number;
   initialState?: "collapsed" | "expanded";
+  shouldCollapse?: boolean;
+  /**
+   * @return Boolean - should panel collapse or not
+   */
+  onCollapseStateChange?: (
+    isCollapsed: boolean,
+    dockingSide?: string
+  ) => boolean;
 }
 
 export const Panel = ({
@@ -24,8 +32,35 @@ export const Panel = ({
   dockingSide,
   initialState,
   minSize = 200,
+  onCollapseStateChange,
+  shouldCollapse = true,
 }: Props) => {
-  const [collapsed, setColapsed] = useState(initialState === "collapsed");
+  const [interalCollapsedState, setInteralCollapsedState] = useState(
+    initialState === "collapsed"
+  );
+
+  const collapsed = shouldCollapse || interalCollapsedState;
+  const setColapsed = (collapse: boolean) => {
+    if (interalCollapsedState !== collapse) {
+      setInteralCollapsedState(collapse);
+    }
+
+    const _shouldCollapse =
+      onCollapseStateChange && onCollapseStateChange(collapse, dockingSide);
+
+    if (collapse === _shouldCollapse) return;
+
+    if (_shouldCollapse) closePanel();
+    else openPanel();
+  };
+
+  useEffect(() => {
+    if (shouldCollapse !== interalCollapsedState) {
+      if (shouldCollapse) closePanel();
+      else openPanel();
+    }
+  }, [shouldCollapse]);
+
   const [panelSize, setPanelSize] = useState(collapsed ? 0 : minSize);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -77,6 +112,14 @@ export const Panel = ({
         return { borderLeft: `${handleBorderSize} solid var(--clr-accent)` };
     }
   }
+
+  useEffect(() => {
+    // if (onCollapseStateChange) {
+    //   const shouldCollapse = onCollapseStateChange(collapsed, dockingSide);
+    //   if (shouldCollapse) closePanel();
+    //   else openPanel();
+    // }
+  }, [collapsed]);
 
   function onDrag(event: DragEvent, info) {
     const mouseX = info.point.x;
@@ -203,17 +246,17 @@ export const Panel = ({
   };
 
   // configure hotkey state
-  useHotkeys(
-    HotkeyConfig.HIDE_UI,
-    () => {
-      if (collapsed) {
-        openPanel();
-        return;
-      }
-      closePanel();
-    },
-    [collapsed]
-  );
+  // useHotkeys(
+  //   HotkeyConfig.HIDE_UI,
+  //   () => {
+  //     if (collapsed) {
+  //       openPanel();
+  //       return;
+  //     }
+  //     closePanel();
+  //   },
+  //   [collapsed]
+  // );
 
   // drag handle behaviour
 
