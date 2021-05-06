@@ -6,26 +6,21 @@ import "./valueEditor.css";
 
 interface Props {
   name: string;
-  initialValue: v3.Vec3;
+  value: v3.Vec3;
   onChange?: (value: v3.Vec3) => void;
 }
 
-export const VectorEditor = ({ name, onChange, initialValue }: Props) => {
-  const [x, setX] = useState(initialValue[0]);
-  const [y, setY] = useState(initialValue[1]);
-  const [z, setZ] = useState(initialValue[2]);
-
+export const VectorEditor = ({ name, onChange, value }: Props) => {
   const handleXChange = (val: number) => {
-    setX(val);
-    onChange && onChange([val, y, z]);
+    onChange && onChange([val, value[1], value[2]]);
   };
+
   const handleYChange = (val: number) => {
-    setY(val);
-    onChange && onChange([x, val, z]);
+    onChange && onChange([value[0], val, value[2]]);
   };
+
   const handleZChange = (val: number) => {
-    setZ(val);
-    onChange && onChange([x, y, val]);
+    onChange && onChange([value[0], value[1], val]);
   };
 
   return (
@@ -34,24 +29,15 @@ export const VectorEditor = ({ name, onChange, initialValue }: Props) => {
       <div className="value-editor__group-container">
         <label className="value-editor__field">
           <div className="value-editor__label">x</div>
-          <NumberSlider
-            onChange={handleXChange}
-            initialValue={initialValue[0]}
-          />
+          <NumberSlider onChange={handleXChange} value={value[0]} />
         </label>
         <label className="value-editor__field">
           <div className="value-editor__label">y</div>
-          <NumberSlider
-            onChange={handleYChange}
-            initialValue={initialValue[1]}
-          />
+          <NumberSlider onChange={handleYChange} value={value[1]} />
         </label>
         <label className="value-editor__field">
           <div className="value-editor__label">z</div>
-          <NumberSlider
-            onChange={handleZChange}
-            initialValue={initialValue[2]}
-          />
+          <NumberSlider onChange={handleZChange} value={value[2]} />
         </label>
       </div>
     </div>

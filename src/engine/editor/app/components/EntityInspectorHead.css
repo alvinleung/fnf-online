@@ -1,16 +1,15 @@
 .entity-inspector-head {
-  background-color: var(--clr-accent);
+  background-color: var(--clr-bg);
+
+  border-top: 4px solid var(--clr-accent);
   padding-top: var(--spacing-m);
   padding-bottom: var(--spacing-m);
 
-  font-size: 1.5rem;
+  font-size: 2em;
   min-width: 15rem;
-}
-
-.entity-inspector-head__label {
-  text-transform: uppercase;
 }
 
 .entity-inspector-head__entity-name {
   margin-top: var(--spacing-xs);
+  /* font-weight: bold; */
 }

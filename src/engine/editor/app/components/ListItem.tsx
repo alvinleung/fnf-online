@@ -2,7 +2,7 @@ import React from "react";
 
 interface Props {
   children: string;
-  onSelect?: (value: string, index: string) => {};
+  onSelect?: (value: string, index?: string) => void;
   value: string;
   isSelected?: boolean;
   index?: string;

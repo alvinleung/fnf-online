@@ -3,6 +3,8 @@
   font-size: 0.75rem;
   letter-spacing: 0.065em;
   text-transform: uppercase;
+
+  opacity: 0.5;
 }
 
 #editor-ui {

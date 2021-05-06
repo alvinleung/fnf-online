@@ -13,6 +13,8 @@ export abstract class Game extends Engine {
 
   private _entitiesRefMap: { [name: string]: Entity } = {};
 
+  private _onUpdateCallback = (game: Game, delta: number) => {};
+
   // when enabled, it will render more pixels to make things
   // look cleaner in retina display, but it will increase
   // rendering cost
@@ -97,6 +99,10 @@ export abstract class Game extends Engine {
     // can probably do some
   }
 
+  public onUpdate(callback: (game: Game, delta: number) => void) {
+    this._onUpdateCallback = callback;
+  }
+
   public getCanvas(): HTMLCanvasElement {
     // return this.renderer.domElement;
     return this.canvasElement;
@@ -142,7 +148,11 @@ export abstract class Game extends Engine {
     // update here
     const currentTick = Date.now();
     const deltaTimeInSeconds = (currentTick - this.previousTick) * 0.001;
+
+    // update systems
     this.update(deltaTimeInSeconds);
+    this._onUpdateCallback(this, deltaTimeInSeconds);
+
     this.previousTick = currentTick;
 
     // get ready for next update

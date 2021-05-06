@@ -6,7 +6,7 @@ import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Image } from "./Image/Image";
 import { Texture } from "./Texture";
 
-const VERBOSE = true;
+const VERBOSE = false;
 
 export class RenderableComponent implements Component {
   renderableObject: RenderableObject;
@@ -23,18 +23,18 @@ export abstract class RenderableObject {
     objectCoords: number[],
     textureCoords: number[],
     textureImage?: Image, // texture name
-    objectColors?: number[],
+    objectColors?: number[]
   ) {
     this.objectCoords = objectCoords;
     this.textureCoords = textureCoords;
     this.textureImage = textureImage;
-    
-    if(objectColors) {
+    if (objectColors) {
       this.objectColors = objectColors;
     } else {
-      this.objectColors = spreadArrayRecusively(Array(objectCoords.length / 3).fill(COLORS_VEC4.grayFromPercent(0.5)));
+      this.objectColors = spreadArrayRecusively(
+        Array(objectCoords.length / 3).fill(COLORS_VEC4.grayFromPercent(0.5))
+      );
     }
-
   }
   public readonly objectCoords: number[];
   public readonly textureImage: Image;
@@ -51,7 +51,7 @@ export abstract class RenderableObject {
   private _texCoordsBuffer: AttribDataBuffer;
   private _colorBuffer: AttribDataBuffer;
   private _texture: Texture;
-  
+
   public loadIntoGPU(gl: WebGLRenderingContext) {
     this.createBufferObjectsInGPU(gl);
     this._isLoadedIntoGPUMemory = true;
@@ -144,7 +144,7 @@ export abstract class RenderableObject {
     return this._texture ? true : false;
   }
 
-  public getObjectVerticeSize(){
+  public getObjectVerticeSize() {
     return this.objectCoords.length / 3;
   }
 }

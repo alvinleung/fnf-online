@@ -7,27 +7,29 @@ import { HotkeyConfig } from "../../Hotkeys";
 
 interface Props {
   name: string;
-  initialValue?: { r: number; g: number; b: number; a: number };
+  value?: { r: number; g: number; b: number; a: number };
   onChange?: ({ r, g, b, a }) => void;
 }
 
-export const ColorEditor = ({ name, onChange, initialValue }: Props) => {
+export const ColorEditor = ({ name, onChange, value }: Props) => {
   const colorPickerRef = useRef();
-  const [color, setColor] = useState(
-    initialValue || { r: 200, g: 150, b: 35, a: 0.5 }
+  const [internalColor, setInternalColor] = useState(
+    value || { r: 200, g: 150, b: 35, a: 0.5 }
   );
+
   const [openingMousePos, setOpeningMousePos] = useState({ x: 0, y: 0 });
   const [colorPickerPos, setColorPickerPos] = useState({ x: 0, y: 0 });
   const [isShowingPicker, setIsShowingPicker] = useState(false);
 
+  const setColor = (val) => {
+    onChange(val);
+    setInternalColor(val);
+  };
+  value = value === null ? value : internalColor;
+
   useClickOutside(colorPickerRef, () => {
     setIsShowingPicker(false);
   });
-
-  useEffect(() => {
-    // when color change
-    onChange && onChange(color);
-  }, [color]);
 
   // process the colour picker position to make sure it is on screen
   useEffect(() => {
@@ -81,12 +83,12 @@ export const ColorEditor = ({ name, onChange, initialValue }: Props) => {
             zIndex: 1000000,
           }}
         >
-          <RgbaColorPicker color={color} onChange={setColor} />
+          <RgbaColorPicker color={value} onChange={setColor} />
         </motion.div>
         <div
           style={{
             cursor: "pointer",
-            backgroundColor: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
+            backgroundColor: `rgba(${value.r}, ${value.g}, ${value.b}, ${value.a})`,
           }}
           onClick={handleColorSwatchClick}
         ></div>

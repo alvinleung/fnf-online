@@ -4,19 +4,19 @@ import { config } from "../../AnimationConfig";
 
 interface Props {
   name: string;
-  initialValue?: boolean;
+  value?: boolean;
+  onChange: (val: boolean) => void;
 }
 
-export const BooleanEditor = (props: Props) => {
-  const [on, setOn] = useState(props.initialValue);
+export const BooleanEditor = ({ value = false, onChange, name }: Props) => {
   const toggleCheck = () => {
-    setOn(!on);
+    onChange && onChange(!value);
   };
 
   return (
     <div className="value-editor">
       <label className="value-editor__field">
-        <div className="value-editor__label">{props.name}</div>
+        <div className="value-editor__label">{name}</div>
         <motion.div
           style={{
             cursor: "pointer",
@@ -27,15 +27,15 @@ export const BooleanEditor = (props: Props) => {
             animate={{
               height: "100%",
               width: "50%",
-              backgroundColor: on ? "var(--clr-accent)" : "#333",
-              x: on ? "100%" : "0%",
+              backgroundColor: value ? "var(--clr-accent)" : "#333",
+              x: value ? "100%" : "0%",
             }}
             transition={config.DEFAULT_TRANSITION}
           />
           <input
             type="checkbox"
             onChange={toggleCheck}
-            checked={on}
+            checked={value}
             style={{ display: "none" }}
           />
         </motion.div>

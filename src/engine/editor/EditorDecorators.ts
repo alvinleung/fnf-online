@@ -1,3 +1,5 @@
+import { Component, ComponentClass } from "../ecs";
+
 /**
  * Editable Map Structure
  * {
@@ -13,13 +15,26 @@ interface ComponentField {
   [propsName: string]: Editor;
 }
 const editableMap: { [name: string]: ComponentField } = {};
+const editableComponentClassRefs = {};
+
+/**
+ * Decorator to declare a level editor editable component
+ * @param target
+ * @param propertyKey
+ * @param descriptor
+ */
+function EditableComponent(constructor: Function) {
+  if (!editableComponentClassRefs[constructor.name])
+    editableComponentClassRefs[constructor.name] = constructor;
+  if (!editableMap[constructor.name]) editableMap[constructor.name] = {};
+}
 
 /**
  * Decorator Factory function to declare a level editor editable component property
  * @param type
  * @returns
  */
-function Editable(type: Editor) {
+function EditableField(type: Editor) {
   return function (
     target: any,
     propertyKey: string,
@@ -44,6 +59,7 @@ function Editable(type: Editor) {
 
     // put the entr
     editableMap[componentName][propName] = type;
+    editableComponentClassRefs[componentName] = target.constructor;
   };
 }
 
@@ -60,8 +76,26 @@ function getParamNames(func) {
   return result;
 }
 
-function getEditableComponentMap() {
+function getEditableComponentMap(): { [name: string]: ComponentField } {
   return Object.freeze({ ...editableMap });
+}
+
+function isComponentEditable(componentClass): boolean {
+  return editableComponentClassRefs[componentClass.constructor.name]
+    ? true
+    : false;
+}
+
+function getComponentEditableFields(componentClass: Component) {
+  return editableMap[componentClass.constructor.name];
+}
+
+function getComponentFieldEditor(componentClass: Component, fieldName: string) {
+  return editableMap[componentClass.constructor.name][fieldName];
+}
+
+function getComponentClass(className: string) {
+  return editableComponentClassRefs[className];
 }
 
 enum Editor {
@@ -78,4 +112,13 @@ enum Editor {
   FUNCTION,
 }
 
-export { Editable, Editor, getEditableComponentMap };
+export {
+  EditableField,
+  EditableComponent,
+  Editor,
+  getEditableComponentMap,
+  getComponentClass,
+  isComponentEditable,
+  getComponentEditableFields,
+  getComponentFieldEditor,
+};

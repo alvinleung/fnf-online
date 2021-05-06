@@ -48,14 +48,19 @@
 
 /* the toggle icon */
 .collapsable-section__toggle > img {
-  margin-right: var(--spacing-m);
+  margin-right: var(--spacing-s);
 }
 
 .collapsable-section__group {
   position: relative;
   /* reset the padding */
-  padding: var(--spacing-m);
+  padding-top: var(--spacing-m);
+  padding-left: var(--spacing-m);
+  padding-right: var(--spacing-m);
   width: 100%;
+}
+.collapsable-section__group:last-child {
+  padding-bottom: var(--spacing-m);
 }
 
 .collapsable-section__group-container {

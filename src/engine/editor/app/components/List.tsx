@@ -4,7 +4,7 @@ import { ListItem } from "./ListItem";
 import "./List.css";
 
 interface Props {
-  onSelect?: (value: string, index: number) => {};
+  onSelect?: (value: string, index?: number) => void;
   children?: React.ReactElement[] | React.ReactElement;
 }
 

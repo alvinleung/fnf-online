@@ -35,20 +35,21 @@ export const CollapsableSection = ({ header, children }: Props) => {
         />
         {header}
       </motion.button>
-      {childrenArr.map((children, index) => {
-        return (
-          <motion.div
-            key={index}
-            className="collapsable-section__group-container"
-            animate={{
-              height: collapsed ? "0rem" : "auto",
-            }}
-            transition={config.DEFAULT_TRANSITION}
-          >
-            <div className="collapsable-section__group">{children}</div>
-          </motion.div>
-        );
-      })}
+      <motion.div
+        className="collapsable-section__group-container"
+        animate={{
+          height: collapsed ? "0rem" : "auto",
+        }}
+        transition={config.DEFAULT_TRANSITION}
+      >
+        {childrenArr.map((children, index) => {
+          return (
+            <div className="collapsable-section__group" key={index}>
+              {children}
+            </div>
+          );
+        })}
+      </motion.div>
     </div>
   );
 };
