@@ -8,6 +8,7 @@ function useBinding(mac: string, windows: string) {
 const HotkeyConfig = {
   HIDE_UI: useBinding("cmd+\\", "ctrl+\\"),
   ESCAPE: useBinding("esc", "esc"),
+  DELETE: useBinding("backspace", "del"),
 };
 
 export { HotkeyConfig };

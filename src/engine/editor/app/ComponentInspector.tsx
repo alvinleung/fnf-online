@@ -7,7 +7,7 @@ import * as EditorDecorators from "../EditorDecorators";
 import { camelCaseToSentenceCase } from "../../utils/StringUtils";
 
 interface Props {
-  selectedEntity: Entity;
+  selectedEntity?: Entity;
   game: Game;
 }
 
