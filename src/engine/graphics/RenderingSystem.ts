@@ -3,7 +3,7 @@ import { Game } from "../Game";
 import { Image } from "./Image/Image";
 import { ShaderProgram } from "./ShaderProgram";
 import { TransformComponent } from "../core/TransformComponent";
-import { m4} from "twgl.js";
+import { m4 } from "twgl.js";
 import CameraComponent from "../camera/CameraComponent";
 import { RenderableComponent } from "./Renderable";
 import { Texture } from "./Texture";
@@ -19,7 +19,7 @@ export module RenderingConfig {
   const CLIP_NEAR = 1;
   const CLIP_FAR = 2000;
 
-  export function getPerspectiveMatrix(aspectRatio:number){
+  export function getPerspectiveMatrix(aspectRatio: number) {
     return m4.perspective(
       (FOV * Math.PI) / 180, // field of view
       aspectRatio, // aspect ratio
@@ -27,7 +27,7 @@ export module RenderingConfig {
       CLIP_FAR // farZ: clip space properties
     );
   }
-} 
+}
 
 export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
@@ -147,12 +147,19 @@ export class RenderingSystem extends System {
     }
 
     // camera matrix
-    const cameraMatrix = cameraMatrixFromTransform(mainCamera.getComponent(TransformComponent));
+    const cameraMatrix = cameraMatrixFromTransform(
+      mainCamera.getComponent(TransformComponent)
+    );
+    const cameraSetting = mainCamera.getComponent(CameraComponent);
 
     // perspective matrix
     const aspectRatio = game.getCanvas().width / game.getCanvas().height;
-    const perspectiveMatrix = RenderingConfig.getPerspectiveMatrix(aspectRatio);
-    
+    const perspectiveMatrix = m4.perspective(
+      (cameraSetting.fov * Math.PI) / 180, // field of view
+      aspectRatio, // aspect ratio
+      cameraSetting.clipNear, // nearZ: clip space properties
+      cameraSetting.clipFar // farZ: clip space properties
+    );
 
     // setup the renederableObject inside for rendering
     const renderablObjects = this._renderList.entities.map((e) => {
@@ -181,12 +188,19 @@ export class RenderingSystem extends System {
   }
 
   private getMainCamera() {
-    if (this._cameras.entities.length === 1) {
+    if (
+      this._cameras.entities.length === 1 &&
+      this._cameras.entities[0].getComponent(CameraComponent).isActive
+    ) {
       return this._cameras.entities[0];
     }
 
     return this._cameras.entities.find((e: Entity) => {
-      if (!e.getComponent(CameraComponent)) return;
+      if (
+        e.getComponent(CameraComponent) &&
+        e.getComponent(CameraComponent).isActive
+      )
+        return;
     });
   }
 }

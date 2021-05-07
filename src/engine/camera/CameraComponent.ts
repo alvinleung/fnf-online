@@ -1,14 +1,24 @@
 import { TransformComponent } from "../core/TransformComponent";
 import { Component, Entity } from "../ecs";
-import { EditableComponent, Editor } from "../editor";
+import { EditableComponent, EditableField, Editor } from "../editor";
 
 /**
  * This Component depends the TransformComponent
  */
 @EditableComponent
 export default class CameraComponent implements Component {
-  public zoom: number = 0;
+  @EditableField(Editor.NUMBER)
+  public fov: number = 54.4;
+
+  @EditableField(Editor.NUMBER)
+  public clipNear: number = 1;
+
+  @EditableField(Editor.NUMBER)
+  public clipFar: number = 2000;
+
+  @EditableField(Editor.BOOLEAN)
   public isActive: boolean = true;
+
   private _followingEntity: Entity = null;
 
   public setFollowingEntity(entityToFollow: Entity) {
