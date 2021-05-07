@@ -11,24 +11,26 @@ interface Props {
   value: v3.Vec3;
   name?: string;
   onChange?: (quat: v3.Vec3) => void;
-  unitSetting: "radian" | "degree";
+  displayUnit: "radian" | "degree";
   sensitivity: number;
+  stepSize: number; // in radian
 }
 
 export const RotationEditor = ({
   value,
   name,
   onChange,
-  unitSetting = "degree",
+  displayUnit = "degree",
   sensitivity = DEFAULT_SENSITIVITY,
+  stepSize = degToRad(10), // in radian
 }: Props) => {
   let eulerRot2: v3.Vec3 = q.quatToAngleAxis(value);
 
-  const convertedUnit = unitSetting === "degree" ? radToDegVec3(value) : value;
+  const convertedUnit = displayUnit === "degree" ? radToDegVec3(value) : value;
 
   const handleChange = (changedVal: v3.Vec3) => {
     const convertedUnit =
-      unitSetting === "degree" ? degToRadVec3(changedVal) : changedVal;
+      displayUnit === "degree" ? degToRadVec3(changedVal) : changedVal;
     onChange && onChange(convertedUnit);
   };
 
@@ -38,8 +40,9 @@ export const RotationEditor = ({
       value={convertedUnit}
       onChange={handleChange}
       sensitivity={
-        unitSetting === "degree" ? radToDeg(sensitivity) : sensitivity
+        displayUnit === "degree" ? radToDeg(sensitivity) : sensitivity
       }
+      stepSize={displayUnit === "degree" ? radToDeg(stepSize) : stepSize}
     />
   );
 };

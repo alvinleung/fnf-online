@@ -10,6 +10,7 @@ interface Props {
   onChange?: (value: v3.Vec3) => void;
   onAxisChange?: (value: number, delta: number, axis: number) => void;
   sensitivity?: number;
+  stepSize?: number;
 }
 
 export const VectorEditor = ({
@@ -18,6 +19,7 @@ export const VectorEditor = ({
   onAxisChange,
   value,
   sensitivity,
+  stepSize,
 }: Props) => {
   const x = useRef(value[0]);
   const y = useRef(value[1]);
@@ -54,6 +56,7 @@ export const VectorEditor = ({
             onChange={handleXChange}
             value={value[0]}
             sensitivity={sensitivity}
+            stepSize={stepSize}
           />
         </label>
         <label className="value-editor__field">
@@ -62,6 +65,7 @@ export const VectorEditor = ({
             onChange={handleYChange}
             value={value[1]}
             sensitivity={sensitivity}
+            stepSize={stepSize}
           />
         </label>
         <label className="value-editor__field">
@@ -70,6 +74,7 @@ export const VectorEditor = ({
             onChange={handleZChange}
             value={value[2]}
             sensitivity={sensitivity}
+            stepSize={stepSize}
           />
         </label>
       </div>

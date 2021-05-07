@@ -133,6 +133,12 @@ export const NumberSlider = ({
    * Controlling input mode
    */
   const exitInputMode = () => {
+    // the user intention is to clear the value here
+    if (inputValue === "") {
+      safelyUpdateValue(0);
+      setIsInputMode(false);
+    }
+
     if (!isOnlyNumericSymbols(inputValue + "")) {
       setIsInputMode(false);
       return;
@@ -162,16 +168,41 @@ export const NumberSlider = ({
   };
 
   const inputFieldKeyDown = (e: React.KeyboardEvent) => {
+    e.stopPropagation();
+
     if (e.code === "Enter") {
       // commit change
       exitInputMode();
+      return;
     }
     if (e.code === "Escape") {
       // set the value to initial if cancel
       setInputValue(value + "");
       exitInputMode();
+      return;
     }
-    e.stopPropagation();
+
+    if (e.code === "ArrowUp") {
+      const num = Number(inputValue);
+      if (isNaN(num)) return;
+
+      const newVal = num + stepSize;
+
+      // set the input box value as well as write it
+      setInputValue(newVal + "");
+      setValue(newVal);
+    }
+
+    if (e.code === "ArrowDown") {
+      const num = Number(inputValue);
+      if (isNaN(num)) return;
+
+      const newVal = num - stepSize;
+
+      // set the input box value as well as write it
+      setInputValue(newVal + "");
+      setValue(newVal);
+    }
   };
 
   const inputFieldBlur = (e: React.FocusEvent) => {
