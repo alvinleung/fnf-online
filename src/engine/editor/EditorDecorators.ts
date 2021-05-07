@@ -100,7 +100,7 @@ function getComponentClass(className: string) {
 
 enum Editor {
   VECTOR,
-  QUATERNION,
+  ROTATION,
   STRING,
   NUMBER,
   BOOLEAN,

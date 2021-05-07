@@ -17,7 +17,6 @@ export class TransformComponent implements Component {
   private _scaleX: number = 1;
   private _scaleY: number = 1;
   private _scaleZ: number = 1;
-  private _rotationQuat: q.Quat = q.fromEulerAngles(0, 0, 0);
 
   @EditableField(Editor.VECTOR)
   public set position([x, y, z]: v3.Vec3) {
@@ -43,7 +42,28 @@ export class TransformComponent implements Component {
     return [this._scaleX, this._scaleY, this._scaleZ];
   }
 
-  @EditableField(Editor.QUATERNION)
+  /**
+   * The initial euler angles for the component.
+   */
+  private _initialRotation: v3.Vec3 = [0, 0, 0];
+
+  @EditableField(Editor.ROTATION)
+  public set initialRotation(angles: v3.Vec3) {
+    this._changed = true;
+    this._initialRotation = angles;
+    this.rotation = q.fromEulerAngles(angles[0], angles[1], angles[2]);
+  }
+
+  public get initialRotation() {
+    return this._initialRotation;
+  }
+
+  private _rotationQuat: q.Quat = q.fromEulerAngles(
+    this.initialRotation[0],
+    this.initialRotation[1],
+    this.initialRotation[2]
+  );
+
   public set rotation(quaternion: q.Quat) {
     this._changed = true;
     this._rotationQuat = quaternion;

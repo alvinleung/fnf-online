@@ -4,6 +4,7 @@ import { Game } from "../../Game";
 import { CollapsableSection } from "./components/CollapsableSection";
 import { ValueEditor } from "./components/valueEditor/ValueEditor";
 import * as EditorDecorators from "../EditorDecorators";
+import { camelCaseToSentenceCase } from "../../utils/StringUtils";
 
 interface Props {
   selectedEntity: Entity;
@@ -88,9 +89,3 @@ export const ComponentInspector = ({ selectedEntity, game }: Props) => {
     </>
   );
 };
-
-function camelCaseToSentenceCase(text: string) {
-  const result = text.replace(/([A-Z])/g, " $1");
-  const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
-  return finalResult;
-}

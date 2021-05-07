@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useRef, useState } from "react";
 import { v3 } from "twgl.js";
 import { NumberSlider } from "./NumberSlider";
 
@@ -8,18 +8,37 @@ interface Props {
   name: string;
   value: v3.Vec3;
   onChange?: (value: v3.Vec3) => void;
+  onAxisChange?: (value: number, delta: number, axis: number) => void;
 }
 
-export const VectorEditor = ({ name, onChange, value }: Props) => {
+export const VectorEditor = ({
+  name,
+  onChange,
+  onAxisChange,
+  value,
+}: Props) => {
+  const x = useRef(value[0]);
+  const y = useRef(value[1]);
+  const z = useRef(value[2]);
+
   const handleXChange = (val: number) => {
+    const delta = val - x.current;
+    x.current = val;
+    onAxisChange && onAxisChange(val, delta, 0);
     onChange && onChange([val, value[1], value[2]]);
   };
 
   const handleYChange = (val: number) => {
+    const delta = val - y.current;
+    y.current = val;
+    onAxisChange && onAxisChange(val, delta, 1);
     onChange && onChange([value[0], val, value[2]]);
   };
 
   const handleZChange = (val: number) => {
+    const delta = val - z.current;
+    z.current = val;
+    onAxisChange && onAxisChange(val, delta, 2);
     onChange && onChange([value[0], value[1], val]);
   };
 

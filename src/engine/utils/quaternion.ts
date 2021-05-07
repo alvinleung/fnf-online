@@ -138,6 +138,108 @@ export function mat4ToQuat(m: m4.Mat4): Quat {
   return q0 < 0 ? negate(q) : q;
 }
 
+//https://stackoverflow.com/questions/3684269/component-of-a-quaternion-rotation-around-an-axis
+const ORTHO_X = m4.rotationX((90 * Math.PI) / 180);
+const ORTHO_Y = m4.rotationY((90 * Math.PI) / 180);
+
+export function getAxisAngle(q: Quat, axis: v3.Vec3): number {
+  axis = v3.normalize(axis);
+
+  // Get the plane the axis is a normal of
+  const [orthonormal1, orthonormal2] = findOrthonormals(axis);
+
+  const transformed = multVec3(q, orthonormal1);
+
+  // Project transformed vector onto plane
+  let flattened = v3.subtract(
+    transformed,
+    v3.mulScalar(axis, v3.dot(transformed, axis))
+  );
+
+  flattened = v3.normalize(flattened);
+
+  // Get angle between original vector and projected transform to get angle around normal
+  const a = Math.acos(v3.dot(orthonormal1, flattened));
+
+  return a;
+}
+
+/**
+ *
+ * @param normal
+ * @returns [orthonormal1, orthonomal2]
+ */
+function findOrthonormals(normal: v3.Vec3): v3.Vec3[] {
+  let w = m4.transformNormal(ORTHO_X, normal);
+  const dot = v3.dot(normal, w);
+  if (Math.abs(dot) > 0.6) {
+    w = m4.transformNormal(ORTHO_Y, normal);
+  }
+  w = v3.normalize(w);
+
+  let orthonormal1 = v3.cross(normal, w);
+  let orthonormal2 = v3.cross(normal, orthonormal1);
+
+  return [v3.normalize(orthonormal1), v3.normalize(orthonormal2)];
+}
+
+/**
+inline void QuaternionToAngleAxis(const T* quaternion, T* angle_axis) {
+  const T &q1 = quaternion[1];
+  const T &q2 = quaternion[2];
+  const T &q3 = quaternion[3];
+  const T sin_squared = q1 * q1 + q2 * q2 + q3 * q3;
+
+  // For quaternions representing non-zero rotation, the conversion
+  // is numerically stable.
+  if (sin_squared > T(0.0)) {
+    const T sin_theta = sqrt(sin_squared);
+    const T k = T(2.0) * atan2(sin_theta, quaternion[0]) / sin_theta;
+    angle_axis[0] = q1 * k;
+    angle_axis[1] = q2 * k;
+    angle_axis[2] = q3 * k;
+  } else {
+    // For zero rotation, sqrt() will produce NaN in the derivative since
+    // the argument is zero.  By approximating with a Taylor series,
+    // and truncating at one term, the value and first derivatives will be
+    // computed correctly when Jets are used.
+    const T k(2.0);
+    angle_axis[0] = q1 * k;
+    angle_axis[1] = q2 * k;
+    angle_axis[2] = q3 * k;
+  }
+}*/
+
+export function quatToAngleAxis(quaternion: Quat) {
+  const [q0, q1, q2, q3] = quaternion;
+  const sinSquared = q1 * q2 + q2 * q2 + q3 * q3;
+
+  const angleAxis = [];
+
+  // For quaternions representing non-zero rotation, the conversion
+  // is numerically stable.
+  if (sinSquared > 0) {
+    const sinTheta = Math.sqrt(sinSquared);
+    const k = (2 * Math.atan2(sinTheta, q0)) / sinTheta;
+
+    angleAxis[0] = q1 * k;
+    angleAxis[1] = q2 * k;
+    angleAxis[2] = q3 * k;
+  } else {
+    // For zero rotation, sqrt() will produce NaN in the derivative since
+    // the argument is zero.  By approximating with a Taylor series,
+    // and truncating at one term, the value and first derivatives will be
+    // computed correctly when Jets are used.
+    // const T k(2.0);
+    const k = 2;
+    angleAxis[0] = q1 * k;
+    angleAxis[1] = q2 * k;
+    angleAxis[2] = q3 * k;
+  }
+
+  return angleAxis;
+}
+
 export function lerp(s: Quat, e: Quat, t: number): Quat {
   var ps = 1 - t;
   var pe = t;
