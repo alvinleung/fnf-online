@@ -149,10 +149,15 @@ class MyGame extends Game {
     input.bindAxis("vertical", keyboard.createAxisBinding("KeyC|Space"));
     input.bindAxis("yawX", mouse.createAxisBinding("x"));
     input.bindAxis("yawY", mouse.createAxisBinding("y"));
+
     input.bindAction("hoverMode", keyboard.createKeyBinding("ShiftLeft"));
     input.bindAction("speedMode", mouse.createKeyBinding("mouseright"));
+    input.bindAction("editor:pan", keyboard.createKeyBinding("ShiftLeft"));
+
     input.bindAction("select", mouse.createKeyBinding("mouseleft"));
-    mouse.setPointerLockButton("mouseright");
+
+    // hold middle button to look around
+    mouse.setPointerLockButton("mousemiddle", true);
 
     input.bindAction("debug", keyboard.createKeyBinding("KeyX"));
 
@@ -184,8 +189,6 @@ class MyGame extends Game {
     this.addSystem(new EditorSystem());
     this.addSystem(new EditorControlSystem());
     this.addSystem(new DebugSystem());
-
-
   }
 
   protected setupRendering(): RenderingSystem {

@@ -22,16 +22,34 @@ export default class EditorControlSystem extends System {
   }
   update(game: Game, delta: number): void {
     // assuming there is only one Editor in the scene
-    if (!this.mainCameraEntity.entities || this.mainCameraEntity.entities.length === 0)
+    if (
+      !this.mainCameraEntity.entities ||
+      this.mainCameraEntity.entities.length === 0
+    )
       return;
 
     const cameraEntity = this.mainCameraEntity.entities[0];
 
     const transform = cameraEntity.getComponent(TransformComponent);
 
+    const panMode = game.input.isActive("editor:pan");
+
     // Rotation
-    this.rotXAmount += game.input.getAxisChange("yawX") * ROT_SPEED * delta;
-    this.rotYAmount = Math.max(Math.min(this.rotYAmount - game.input.getAxisChange("yawY") * ROT_SPEED * delta, Math.PI / 2),-Math.PI / 2);
+    this.rotXAmount = panMode
+      ? this.rotXAmount
+      : this.rotXAmount + game.input.getAxisChange("yawX") * ROT_SPEED * delta;
+
+    this.rotYAmount = panMode
+      ? this.rotYAmount
+      : Math.max(
+          Math.min(
+            this.rotYAmount -
+              game.input.getAxisChange("yawY") * ROT_SPEED * delta,
+            Math.PI / 2
+          ),
+          -Math.PI / 2
+        );
+
     transform.rotation = q.fromEulerAngles(0, this.rotXAmount, 0);
     transform.rotation = q.mult(
       q.fromEulerAngles(this.rotYAmount, 0, 0),
@@ -39,25 +57,41 @@ export default class EditorControlSystem extends System {
     );
 
     // Translation
-    const hoveMode = game.input.isActive("hoverMode");
+    const hoveMode = false; //game.input.isActive("hoverMode");
     const speedMode = game.input.isActive("speedMode");
-    const speedCoefficent = SPEED * delta * (speedMode?SPEED_MODIFIER:1);
+    const speedCoefficent = SPEED * delta * (speedMode ? SPEED_MODIFIER : 1);
     const forwardSpeed = game.input.getAxisChange("foward") * speedCoefficent;
     const sideSpeed = game.input.getAxisChange("horizontal") * speedCoefficent;
-    const verticalSpeed = game.input.getAxisChange("vertical") * speedCoefficent;
+    const verticalSpeed =
+      game.input.getAxisChange("vertical") * speedCoefficent;
 
     let direction: any;
-    if(hoveMode){
+    if (hoveMode) {
       direction = q.multVec3(
         q.inverse(transform.rotation),
         v3.create(sideSpeed, verticalSpeed, forwardSpeed)
       );
     } else {
       direction = v3.create(0, verticalSpeed, 0);
-      direction = v3.add(q.multVec3(
-        q.inverse(q.fromEulerAngles(0, this.rotXAmount, 0)), 
-        v3.create(sideSpeed, 0, forwardSpeed)
-      ), direction);
+      direction = v3.add(
+        q.multVec3(
+          q.inverse(q.fromEulerAngles(0, this.rotXAmount, 0)),
+          v3.create(sideSpeed, 0, forwardSpeed)
+        ),
+        direction
+      );
+    }
+
+    // Translation with mouse
+    if (panMode) {
+      direction = direction = q.multVec3(
+        q.inverse(transform.rotation),
+        v3.create(
+          -game.input.getAxisChange("yawX") * speedCoefficent,
+          -game.input.getAxisChange("yawY") * speedCoefficent,
+          0
+        )
+      );
     }
 
     transform.position = v3.add(transform.position, direction);

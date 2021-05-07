@@ -6,7 +6,7 @@ interface KeyBinding {
   // the processor of the binding, eg. keyboard
   key: string;
   isActive(key: string): boolean;
-  wasClicked(key:string):boolean;
+  wasClicked(key: string): boolean;
 }
 
 interface AxisBinding {
@@ -43,7 +43,6 @@ class InputSystem {
   // action > binding name lookup
   private actionBindingLookup: { [actionName: string]: KeyBinding } = {};
   private axisBindingLookup: { [axisName: string]: AxisBinding } = {};
-  
 
   public bindAction(actionName: string, binding: KeyBinding) {
     this.actionBindingLookup[actionName] = binding;
@@ -102,7 +101,6 @@ class InputSystem {
 
     return actionBindingLookup.wasClicked(actionBindingLookup.key);
   }
-
 }
 
 export { KeyBinding, AxisBinding, InputSourceFactory };
