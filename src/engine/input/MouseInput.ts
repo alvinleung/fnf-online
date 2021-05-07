@@ -30,6 +30,7 @@ class MouseInput extends InputSourceFactory {
   private pointerLocked: boolean;
   private pointerLockingButton: string;
   private pointerLockingButtonHold: boolean;
+  private ignoreNextMovement: boolean;
 
   // constants
   private SENSITIVITY = 0.08;
@@ -46,6 +47,7 @@ class MouseInput extends InputSourceFactory {
     this.initCacheMouse();
     this.pointerLockingButton = "all";
     this.pointerLockingButtonHold = true;
+    this.ignoreNextMovement = false;
   }
 
   public createAxisBinding(axis: string): MouseAxisBinding {
@@ -62,16 +64,24 @@ class MouseInput extends InputSourceFactory {
 
   protected getAxisChange(axis: string): number {
     if (!this.axisBindings[axis] || !this.currentMouse) return 0;
+
+    let velocity = 0;
+    const axisBinding = this.axisBindings[axis].axis;
+
     if (this.usePointerLocking) {
       if (!this.pointerLocked) {
-        //console.log("return 0")
+        this.cacheMouse[axisBinding] = this.currentMouse[axisBinding];
         return 0;
       }
     }
-    let velocity = 0;
-    const axisBinding = this.axisBindings[axis].axis;
+
     velocity = this.currentMouse[axisBinding] - this.cacheMouse[axisBinding];
+    const val1 = this.currentMouse[axisBinding];
+    const val2 = this.cacheMouse[axisBinding];
     this.cacheMouse[axisBinding] = this.currentMouse[axisBinding];
+
+//    console.log(axisBinding + ":" + velocity)
+//    console.log("current: " + val1 + ", cache: " + val2);
 
     velocity = velocity * this.SENSITIVITY * 0.5;
     return velocity;
@@ -79,6 +89,9 @@ class MouseInput extends InputSourceFactory {
   protected getAxis(axis: string): number {
     if (!this.axisBindings[axis] || !this.currentMouse) return 0;
     const axisBinding = this.axisBindings[axis].axis;
+    if (this.pointerLocked){
+      return this.getAbsoluteCenter(axisBinding);
+    }
     return this.currentMouse[axisBinding];
   }
 
@@ -105,7 +118,7 @@ class MouseInput extends InputSourceFactory {
       false
     );
   }
-  private lockChangeAlert() {
+  private lockChangeAlert(event:MouseEvent) {
     const canvas = this.game.getCanvas();
     if (
       document.pointerLockElement === canvas ||
@@ -114,10 +127,8 @@ class MouseInput extends InputSourceFactory {
     ) {
       VERBOSE && console.log("The pointer lock status is now locked");
       // Do something useful in response
-      this.currentMouse.x = canvas.width / 2;
-      this.currentMouse.y = canvas.height / 2;
-      this.cacheMouse.x = this.currentMouse.x;
-      this.cacheMouse.y = this.currentMouse.y;
+      
+      this.ignoreNextMovement = true;
       this.pointerLocked = true;
     } else {
       VERBOSE && console.log("The pointer lock status is now unlocked");
@@ -126,11 +137,10 @@ class MouseInput extends InputSourceFactory {
     }
   }
   private initCacheMouse() {
-    const newMousePosition: MousePosition = {
+    this.cacheMouse = {
       x: 0,
       y: 0,
     };
-    this.cacheMouse = newMousePosition;
   }
 
   public enablePointerLockSetting() {
@@ -144,14 +154,14 @@ class MouseInput extends InputSourceFactory {
   private handleMouseDown(e: MouseEvent) {
     this.mouseActiveParts.buttons[e.button] = true;
     if (!this.mouseDown) {
-      const newMousePosition: MousePosition = {
+      this.mouseDown = {
         x: this.currentMouse.x,
         y: this.currentMouse.y,
       };
-      this.mouseDown = newMousePosition;
     }
     this.mouseDown.x = this.currentMouse.x;
     this.mouseDown.y = this.currentMouse.y;
+
   }
   private handleMouseDownInCanvas(e: MouseEvent) {
     this.mouseActivePartsInCanvas.buttons[e.button] = true;
@@ -192,20 +202,27 @@ class MouseInput extends InputSourceFactory {
   }
   private handleMouseMove(e: MouseEvent) {
     if (!this.currentMouse) {
-      const newCurrentMouse: MousePosition = {
+      this.currentMouse = {
         x: e.clientX,
         y: e.clientY,
       };
-      this.currentMouse = newCurrentMouse;
     }
+
+    if(this.ignoreNextMovement){
+      // a possible bug with HTML5 movement
+      // will inconsistently have movement values that jumps the current x y to center
+      this.ignoreNextMovement = false;
+      return;
+    }
+
+    this.currentMouse.x = e.clientX;
+    this.currentMouse.y = e.clientY;
+    //console.log(this.currentMouse)
 
     if (this.pointerLocked) {
       this.cacheMouse.x -= e.movementX;
-      this.cacheMouse.y += e.movementY;
-    } else {
-      this.currentMouse.x = e.clientX;
-      this.currentMouse.y = e.clientY;
-    }
+      this.cacheMouse.y -= e.movementY;
+    } 
   }
 
   protected isActive(key: string): boolean {
@@ -220,6 +237,13 @@ class MouseInput extends InputSourceFactory {
       this.mouseClickRegister.buttons[buttonNum] = 0;
       return true;
     }
+  }
+
+  private getAbsoluteCenter(axis:string): number{
+    const canvas = this.game.getCanvas();
+    if(axis == "x") return canvas.width / 2;
+    if(axis == "y") return canvas.height / 2;
+    return -1;
   }
 }
 

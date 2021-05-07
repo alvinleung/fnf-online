@@ -43,7 +43,7 @@ export default class EditorControlSystem extends System {
       ? this.rotYAmount
       : Math.max(
           Math.min(
-            this.rotYAmount -
+            this.rotYAmount +
               game.input.getAxisChange("pointerY") * ROT_SPEED * delta,
             Math.PI / 2
           ),
