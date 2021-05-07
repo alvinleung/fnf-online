@@ -29,8 +29,8 @@ export default class PlayerControlSystem extends System {
     const transform = playerEntity.getComponent(TransformComponent);
 
     // Rotation
-    this.rotXAmount += game.input.getAxisChange("yawX") * ROT_SPEED * delta;
-    this.rotYAmount = Math.max(Math.min(this.rotYAmount - game.input.getAxisChange("yawY") * ROT_SPEED * delta, Math.PI / 2),-1.0);
+    this.rotXAmount += game.input.getAxisChange("pointerX") * ROT_SPEED * delta;
+    this.rotYAmount = Math.max(Math.min(this.rotYAmount - game.input.getAxisChange("pointerY") * ROT_SPEED * delta, Math.PI / 2),-1.0);
     transform.rotation = q.fromEulerAngles(0, this.rotXAmount, 0);
     transform.rotation = q.mult(
       q.fromEulerAngles(this.rotYAmount, 0, 0),

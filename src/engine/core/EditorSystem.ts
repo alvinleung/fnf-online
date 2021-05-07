@@ -60,8 +60,8 @@ export default class EditorSystem extends System {
     const cameraTransform = mainCamera.getComponent(TransformComponent)
     const cameraMatrix = cameraMatrixFromTransform(cameraTransform);
 
-    const screenX = (game.input.getAxis("yawX") / clientwidth) * 2 - 1;
-    const screenY = - ((game.input.getAxis("yawY") / clientHeight) * 2 - 1);
+    const screenX = (game.input.getAxis("pointerX") / clientwidth) * 2 - 1;
+    const screenY = - ((game.input.getAxis("pointerY") / clientHeight) * 2 - 1);
     
 
     // calculate cursor direction vector

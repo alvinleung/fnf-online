@@ -37,14 +37,14 @@ export default class EditorControlSystem extends System {
     // Rotation
     this.rotXAmount = panMode
       ? this.rotXAmount
-      : this.rotXAmount + game.input.getAxisChange("yawX") * ROT_SPEED * delta;
+      : this.rotXAmount + game.input.getAxisChange("pointerX") * ROT_SPEED * delta;
 
     this.rotYAmount = panMode
       ? this.rotYAmount
       : Math.max(
           Math.min(
             this.rotYAmount -
-              game.input.getAxisChange("yawY") * ROT_SPEED * delta,
+              game.input.getAxisChange("pointerY") * ROT_SPEED * delta,
             Math.PI / 2
           ),
           -Math.PI / 2
@@ -87,8 +87,8 @@ export default class EditorControlSystem extends System {
       direction = direction = q.multVec3(
         q.inverse(transform.rotation),
         v3.create(
-          -game.input.getAxisChange("yawX") * speedCoefficent,
-          -game.input.getAxisChange("yawY") * speedCoefficent,
+          -game.input.getAxisChange("pointerX") * speedCoefficent,
+          -game.input.getAxisChange("pointerY") * speedCoefficent,
           0
         )
       );

@@ -62,8 +62,8 @@ export class DebugSystem extends System {
       this.elapsed * 1
     );*/
 
-    let absoulteX = (game.input.getAxis("yawX") / clientwidth) * 2 - 1;
-    let absoulteY = - ((game.input.getAxis("yawY") / clientHeight) * 2 - 1);
+    let absoulteX = (game.input.getAxis("pointerX") / clientwidth) * 2 - 1;
+    let absoulteY = - ((game.input.getAxis("pointerY") / clientHeight) * 2 - 1);
 
     // Vector of the direction the camera is looking at
     let cameraFrontVector = v3.negate( m4.multiply( q.quatToMat4(cameraTranform.rotation), [0,0,1,1]).slice(0,3) );

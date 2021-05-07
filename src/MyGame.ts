@@ -147,8 +147,8 @@ class MyGame extends Game {
     input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
     input.bindAxis("foward", keyboard.createAxisBinding("KeyW|KeyS"));
     input.bindAxis("vertical", keyboard.createAxisBinding("KeyC|Space"));
-    input.bindAxis("yawX", mouse.createAxisBinding("x"));
-    input.bindAxis("yawY", mouse.createAxisBinding("y"));
+    input.bindAxis("pointerX", mouse.createAxisBinding("x"));
+    input.bindAxis("pointerY", mouse.createAxisBinding("y"));
 
     input.bindAction("hoverMode", keyboard.createKeyBinding("ShiftLeft"));
     input.bindAction("speedMode", mouse.createKeyBinding("mouseright"));
