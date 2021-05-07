@@ -1,0 +1,26 @@
+.modal-container {
+  position: fixed;
+  left: 0rem;
+  top: 0rem;
+  right: 0rem;
+  bottom: 0rem;
+  z-index: 100000;
+}
+
+.modal-content {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 4rem;
+
+  min-width: 20rem;
+  max-width: 40rem;
+
+  padding: var(--spacing-m);
+
+  background-color: var(--clr-bg);
+
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 8px;
+}
