@@ -76,6 +76,7 @@ const App = ({ game }: Props): JSX.Element => {
           })}
         </List>
       </Panel>
+
       <Panel dockingSide="right" initialState="expanded" minSize={250}>
         <EntityInspectorHead
           selectedEntity={selectedEntity && (selectedEntity.id as string)}

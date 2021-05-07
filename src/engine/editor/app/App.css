@@ -25,3 +25,37 @@
 #editor-ui > * {
   pointer-events: all;
 }
+
+:root {
+  --border: 1px solid var(--clr-accent);
+  --border-muted: 0.5px solid var(--clr-bg-lighter);
+}
+.react-contextmenu--visible {
+  cursor: default;
+
+  background-color: var(--clr-bg);
+  border: var(--border);
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+}
+
+.react-contextmenu-item {
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+  padding-left: var(--spacing-s);
+  padding-right: var(--spacing-s);
+}
+.react-contextmenu-item:hover {
+  background-color: var(--clr-accent-muted);
+}
+
+.react-contextmenu-item--divider {
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+  background-color: transparent !important;
+}
+.react-contextmenu-item--divider::after {
+  content: "";
+  display: block;
+  border: var(--border-muted);
+}
