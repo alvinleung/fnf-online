@@ -77,6 +77,7 @@ class MyGame extends Game {
     squareEntity2.id = "square-entity-2";
     const transform2 = squareEntity2.useComponent(TransformComponent);
     transform2.position = [0, -1, -1];
+    transform2.initialRotation = [0, 1, 1];
 
     squareEntity2.useComponent(
       RenderableComponent
@@ -93,7 +94,7 @@ class MyGame extends Game {
     ]);
     const cameraTransform = cameraEntity.getComponent(TransformComponent);
     cameraTransform.position = [0, 1, 5];
-    cameraTransform.rotation = fromEulerAngles(0.2, 0, 4);
+    cameraTransform.rotation = fromEulerAngles(0, 0, 0);
 
     //console.log(cameraEntity.listComponents());
 

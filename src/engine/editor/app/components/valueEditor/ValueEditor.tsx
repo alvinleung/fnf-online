@@ -3,6 +3,7 @@ import { RotationEditor } from "./RotationEditor";
 import { VectorEditor } from "./VectorEditor";
 import { Editor } from "../../../EditorDecorators";
 import { BooleanEditor } from "./BooleanEditor";
+import { camelCaseToSentenceCase } from "../../../../utils/StringUtils";
 
 interface Props {
   fieldType: number;
@@ -17,24 +18,21 @@ export const ValueEditor = ({
   value,
   onChange,
 }: Props) => {
-  return <div>{getEditorByType(fieldName, fieldType, value, onChange)}</div>;
-};
+  const formattedName = camelCaseToSentenceCase(fieldName);
 
-function getEditorByType(
-  fieldName: string,
-  fieldType: number,
-  value: any,
-  onChange: (val: any) => {}
-) {
   if (fieldType === Editor.VECTOR)
-    return <VectorEditor name={fieldName} value={value} onChange={onChange} />;
-
-  if (fieldType === Editor.QUATERNION)
     return (
-      <RotationEditor name={fieldName} value={value} onChange={onChange} />
+      <VectorEditor name={formattedName} value={value} onChange={onChange} />
+    );
+
+  if (fieldType === Editor.ROTATION)
+    return (
+      <RotationEditor name={formattedName} value={value} onChange={onChange} />
     );
   if (fieldType === Editor.BOOLEAN)
-    return <BooleanEditor name={fieldName} value={value} onChange={onChange} />;
+    return (
+      <BooleanEditor name={formattedName} value={value} onChange={onChange} />
+    );
 
-  return <div>{fieldName} not supported yet</div>;
-}
+  return <div>"{formattedName}" not supported yet</div>;
+};
