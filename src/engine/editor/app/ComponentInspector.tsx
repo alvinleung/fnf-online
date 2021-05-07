@@ -14,7 +14,8 @@ interface Props {
 export const ComponentInspector = ({ selectedEntity, game }: Props) => {
   // get the informaiton of component whne component changed
   const getEntityComponent = useCallback(() => {
-    if (!selectedEntity) return;
+    if (!selectedEntity || !game.getEntityById(selectedEntity.id as string))
+      return;
 
     const componentList = game
       .getEntityById(selectedEntity.id as string)

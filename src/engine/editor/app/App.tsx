@@ -11,8 +11,6 @@ import { Game } from "../../Game";
 import { Entity } from "../../ecs";
 import useForceUpdate from "./hooks/useForceUpdate";
 import { ComponentInspector } from "./ComponentInspector";
-import { useHotkeys } from "react-hotkeys-hook";
-import { HotkeyConfig } from "./Hotkeys";
 import { PanelGroup } from "./components/PanelGroup";
 
 interface Props {
@@ -55,15 +53,20 @@ const App = ({ game }: Props): JSX.Element => {
     });
   }, []);
 
+  const handleItemRemove = (entityId: string) => {
+    setSelectedEntity(null);
+    game.removeEntity(game.getEntityById(entityId));
+  };
+
   return (
     <PanelGroup>
       <Panel
         dockingSide="left"
         minSize={150}
-        initialState="collapsed"
+        initialState="expanded"
         header="Entity List"
       >
-        <List onSelect={handleEntityListSelect}>
+        <List onSelect={handleEntityListSelect} onItemRemove={handleItemRemove}>
           {game.entities.map((entity, index) => {
             return (
               <ListItem value={entity.id as string} key={index}>
@@ -73,7 +76,7 @@ const App = ({ game }: Props): JSX.Element => {
           })}
         </List>
       </Panel>
-      <Panel dockingSide="right" initialState="collapsed" minSize={250}>
+      <Panel dockingSide="right" initialState="expanded" minSize={250}>
         <EntityInspectorHead
           selectedEntity={selectedEntity && (selectedEntity.id as string)}
         />

@@ -38,7 +38,12 @@ export const List = ({ children, onSelect, onItemRemove }: Props) => {
   useHotkeys(
     HotkeyConfig.DELETE,
     () => {
-      onItemRemove && onItemRemove(selectedItemValue);
+      if (isListFocused) {
+        onItemRemove && onItemRemove(selectedItemValue);
+        // clear the selection
+        setSelectedItemIndex(null);
+        setSelectedItemValue("");
+      }
     },
     [selectedItemValue]
   );
