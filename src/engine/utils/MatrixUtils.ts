@@ -1,5 +1,6 @@
 import { m4, v3 } from "twgl.js";
-
+import { TransformComponent } from "../core/TransformComponent";
+import * as q from "../utils/quaternion";
 
 export module v4 {
   export type Vec4 = number[] | Float32Array;
@@ -72,5 +73,11 @@ export module v4 {
   export function isPoint(v4:v4.Vec4): boolean{
     return v4[3] != 0.0;
   }
+}
+
+export function cameraMatrixFromTransform(transform:TransformComponent){
+  const negativeOffsetPos = v3.negate(transform.position);
+  const cameraRotMat = m4.inverse(q.quatToMat4(transform.rotation));
+  return m4.translate(cameraRotMat, negativeOffsetPos);
 }
 

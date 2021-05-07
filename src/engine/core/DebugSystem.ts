@@ -82,7 +82,7 @@ export class DebugSystem extends System {
       //console.log(point);
       //console.log(absoulteX,absoulteY);
       //console.log("cameraFront:", roundVec3(cameraFrontVector,1),"\nscreenFront:\n",roundVec3(direction,1));
-   
+      return;
       positionDirectionPlaneIntersect(
         cameraTranform.position,
         direction

@@ -30,6 +30,7 @@ import EditorControlSystem from "./engine/core/EditorControlSystem";
 import { EditorControlComponent } from "./engine/core/EditorControlComponent";
 import { GameStateParser } from "./engine/utils/GameStateParser";
 import { DebugSystem } from "./engine/core/DebugSystem";
+import EditorSystem from "./engine/core/EditorSystem";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -73,7 +74,7 @@ class MyGame extends Game {
     spriteSheetAnimation.loop("idle");
 
     const squareEntity2 = new Entity();
-    squareEntity2.id = "square-entity-3";
+    squareEntity2.id = "square-entity-2";
     const transform2 = squareEntity2.useComponent(TransformComponent);
     transform2.position = [0, -1, -1];
 
@@ -102,12 +103,12 @@ class MyGame extends Game {
     ]);
     debugEntity.useComponent(RenderableComponent).renderableObject = new Cube();
     debugEntity.getComponent(TransformComponent).position = [1, 0, 1];
-    debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
+    //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
 
     this.addEntity(cameraEntity);
-    this.addEntity(squareEntity2);
-    //this.addEntity(squareEntity3);
     this.addEntity(squareEntity);
+    this.addEntity(squareEntity2);
+    this.addEntity(squareEntity3);
     this.addEntity(debugEntity);
     // this.assets.sound.get("action-theme").play();
     // this.assets.sound.get("action-theme").play();
@@ -177,7 +178,11 @@ class MyGame extends Game {
   protected setupSystems() {
     // setup game logic
     //this.addSystem(new PlayerControlSystem());
+    this.addSystem(new EditorSystem());
     this.addSystem(new EditorControlSystem());
+    this.addSystem(new DebugSystem());
+
+
   }
 
   protected setupRendering(): RenderingSystem {
@@ -191,7 +196,6 @@ class MyGame extends Game {
     ];
     const renderingSystem = new RenderingSystem(renderers);
     this.addSystem(renderingSystem);
-    this.addSystem(new DebugSystem());
 
     return renderingSystem;
   }
