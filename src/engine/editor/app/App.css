@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Roboto+Mono&display=swap");
+
 #editor-ui {
   position: absolute;
   left: 0;
@@ -5,7 +7,7 @@
   bottom: 0;
   top: 0;
 
-  font-family: sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--clr-text);
 }
 

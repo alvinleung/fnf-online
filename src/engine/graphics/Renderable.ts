@@ -1,5 +1,6 @@
 import { m4, v3 } from "twgl.js";
 import { Component } from "../ecs";
+import { EditableField, Editor } from "../editor";
 import { spreadArrayRecusively } from "../utils/ArrayUtils";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { AttribDataBuffer } from "./AttribDataBuffer";
@@ -9,6 +10,7 @@ import { Texture } from "./Texture";
 const VERBOSE = false;
 
 export class RenderableComponent implements Component {
+  @EditableField(Editor.CLASS)
   renderableObject: RenderableObject;
 }
 

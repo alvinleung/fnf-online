@@ -1,5 +1,5 @@
 .number-slider {
-  font-family: monospace;
+  font-family: "Roboto Mono", monospace;
 
   position: relative;
 
@@ -28,7 +28,7 @@
 
   color: #fff;
 
-  font-family: monospace;
+  font-family: "Roboto Mono", monospace;
   font-size: 14px;
 }
 
