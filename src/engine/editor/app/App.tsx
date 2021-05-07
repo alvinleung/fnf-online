@@ -60,9 +60,12 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedEntity(null);
     game.removeEntity(game.getEntityById(entityId));
   };
+
   const [isCreatingEntity, setIsCreatingEntity] = useState(false);
   const [entityCreationName, setEntityCreationName] = useState("");
   const createEntity = (name: string) => {
+    if (!name) return;
+
     // when the entity create
     game.addEntity(Entity.create(name));
     setIsCreatingEntity(false);
