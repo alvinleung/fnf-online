@@ -90,6 +90,8 @@ class MouseInput extends InputSourceFactory {
     window.addEventListener("mouseup", this.handleMouseUp.bind(this));
     window.addEventListener("mousemove", this.handleMouseMove.bind(this));
 
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
     document.addEventListener('pointerlockchange', this.lockChangeAlert.bind(this), false);
     document.addEventListener('mozpointerlockchange', this.lockChangeAlert.bind(this), false);
   }
