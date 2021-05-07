@@ -7,6 +7,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { HotkeyConfig } from "../Hotkeys";
 
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import { Modal } from "./Modal";
 
 interface Props {
   onSelect?: (value: string, index?: number) => void;
@@ -58,38 +59,19 @@ export const List = ({ children, onSelect, onItemRemove }: Props) => {
 
   return (
     <>
-      <ContextMenuTrigger id="item-menu-trigger">
-        <div className="list" onClick={handleListClick} ref={listContainerRef}>
-          {listItems.map((listItem, index) => {
-            return (
-              <ListItem
-                {...listItem.props}
-                index={index}
-                key={index}
-                isSelected={index === selectedItemIndex}
-                onSelect={handleListItemSelect}
-              />
-            );
-          })}
-        </div>
-      </ContextMenuTrigger>
-      <ContextMenu id="item-menu-trigger">
-        <MenuItem
-          data={{ action: "add-entity" }}
-          onClick={handleContextMenuClick}
-        >
-          Add Entity
-        </MenuItem>
-        <MenuItem divider={true} />
-        <MenuItem
-          data={{ action: "remove-entity" }}
-          onClick={() => {
-            removeSelectedEntity();
-          }}
-        >
-          Remove Entity
-        </MenuItem>
-      </ContextMenu>
+      <div className="list" onClick={handleListClick} ref={listContainerRef}>
+        {listItems.map((listItem, index) => {
+          return (
+            <ListItem
+              {...listItem.props}
+              index={index}
+              key={index}
+              isSelected={index === selectedItemIndex}
+              onSelect={handleListItemSelect}
+            />
+          );
+        })}
+      </div>
     </>
   );
 };

@@ -1,3 +1,10 @@
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 400;
+}
+
 .header-label {
   font-weight: normal;
   font-size: 0.75rem;
@@ -8,5 +15,11 @@
 }
 
 #editor-ui {
+  font-size: 14px;
+}
+
+.typography-base {
+  font-family: "Inter", sans-serif;
+  color: var(--clr-text);
   font-size: 14px;
 }

@@ -1,0 +1,78 @@
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"],
+input[type="password"] {
+  font-family: "Inter", sans-serif;
+
+  padding-left: var(--spacing-s);
+  padding-right: var(--spacing-s);
+  padding-top: var(--spacing-s);
+  padding-bottom: var(--spacing-s);
+
+  background-color: var(--clr-bg);
+  border: 1px solid var(--clr-bg-lighter);
+  font-size: 14px;
+
+  border-radius: 4px;
+
+  color: var(--clr-text);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border: 1px solid var(--clr-text);
+  /* background-color: var(--clr-bg-lighter); */
+  background-color: var(--clr-bg-lighter);
+  border-color: rgba(255, 255, 255, 0.5);
+  outline: none;
+}
+
+.field {
+  margin-bottom: var(--spacing-m);
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  color: rgba(255, 255, 255, 0.5);
+
+  font-size: 12px;
+  letter-spacing: 0.065em;
+}
+
+label > *:first-child {
+  margin-top: 4px;
+}
+
+label:focus-within {
+  color: var(--clr-text);
+}
+
+button,
+button.btn-primary {
+  padding: var(--spacing-s);
+
+  color: var(--clr-text);
+  background-color: var(--clr-accent);
+  border: 1px solid var(--clr-accent);
+
+  font-family: "Inter", sans-serif;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.065em;
+
+  border-radius: 4px;
+}
+
+button:hover,
+button.btn-primary:hover {
+  background-color: var(--clr-accent-lighter);
+}
+
+button:active,
+button.btn-primary:active {
+  background-color: var(--clr-accent-muted);
+}

@@ -1,6 +1,7 @@
 :root {
   --clr-text: #fff;
   --clr-accent: #9b51e0;
+  --clr-accent-lighter: #b773f7;
   --clr-accent-muted: rgba(155, 81, 224, 0.5);
   --clr-bg: #292929;
   --clr-bg-lighter: #3b3b3b;
