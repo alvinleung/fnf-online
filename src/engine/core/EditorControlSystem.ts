@@ -31,7 +31,7 @@ export default class EditorControlSystem extends System {
 
     // Rotation
     this.rotXAmount += game.input.getAxisChange("yawX") * ROT_SPEED * delta;
-    this.rotYAmount = Math.max(Math.min(this.rotYAmount - game.input.getAxisChange("yawY") * ROT_SPEED * delta, Math.PI / 2),-1.0);
+    this.rotYAmount = Math.max(Math.min(this.rotYAmount - game.input.getAxisChange("yawY") * ROT_SPEED * delta, Math.PI / 2),-Math.PI / 2);
     transform.rotation = q.fromEulerAngles(0, this.rotXAmount, 0);
     transform.rotation = q.mult(
       q.fromEulerAngles(this.rotYAmount, 0, 0),

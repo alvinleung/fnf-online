@@ -2,13 +2,13 @@ import { spreadArrayRecusively } from "../../../utils/ArrayUtils";
 
 export const plane = [
   // Front face
-  -1.0, -1.0,  0.0,
-   1.0, -1.0,  0.0,
-   1.0,  1.0,  0.0,
+  -1.0, -1.0,  0.0, // bottomleft
+   1.0, -1.0,  0.0, // bottomright
+   1.0,  1.0,  0.0, // topright
 
-   1.0,  1.0,  0.0,
-   -1.0,  1.0,  0.0,
-   -1.0, -1.0,  0.0,
+   1.0,  1.0,  0.0, // topright
+   -1.0,  1.0,  0.0, // topleft
+   -1.0, -1.0,  0.0, // bottomleft
 ]
 
 export const plane_colors = [
@@ -18,6 +18,7 @@ export const plane_colors = [
   0.0,0.0,1.0,1.0,
   1.0,1.0,1.0,1.0,
   1.0,0.0,0.0,1.0,
+
 ]
 
 // export const quad_2d = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];

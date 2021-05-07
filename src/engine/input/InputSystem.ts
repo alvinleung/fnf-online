@@ -6,11 +6,13 @@ interface KeyBinding {
   // the processor of the binding, eg. keyboard
   key: string;
   isActive(key: string): boolean;
+  wasClicked(key:string):boolean;
 }
 
 interface AxisBinding {
   axis: string;
   getAxisChange(key: string): number;
+  getAxis(key: string): number;
 }
 
 abstract class InputSourceFactory {
@@ -18,11 +20,13 @@ abstract class InputSourceFactory {
 
   protected abstract getAxisChange(axis: string): number;
   protected abstract isActive(axis: string): boolean;
+  protected abstract wasClicked(axis: string): boolean;
 
   public createAxisBinding(axis: string): AxisBinding {
     return {
       axis: axis,
       getAxisChange: this.getAxisChange.bind(this),
+      getAxis: this.getAxisChange.bind(this),
     };
   }
 
@@ -30,6 +34,7 @@ abstract class InputSourceFactory {
     return {
       key: key,
       isActive: this.isActive.bind(this),
+      wasClicked: this.wasClicked.bind(this),
     };
   }
 }
@@ -38,6 +43,7 @@ class InputSystem {
   // action > binding name lookup
   private actionBindingLookup: { [actionName: string]: KeyBinding } = {};
   private axisBindingLookup: { [axisName: string]: AxisBinding } = {};
+  
 
   public bindAction(actionName: string, binding: KeyBinding) {
     this.actionBindingLookup[actionName] = binding;
@@ -74,6 +80,29 @@ class InputSystem {
 
     return axisBindingLookup.getAxisChange(axisBindingLookup.axis);
   }
+
+  public getAxis(axisName: string): number {
+    const axisBindingLookup = this.axisBindingLookup[axisName];
+    if (!axisBindingLookup) {
+      console.warn(`Input System:  ${axisName} not found`);
+      return 0;
+    }
+
+    //console.log(axisName);
+
+    return axisBindingLookup.getAxis(axisBindingLookup.axis);
+  }
+
+  public wasClicked(actionName: string): boolean {
+    const actionBindingLookup = this.actionBindingLookup[actionName];
+    if (!actionBindingLookup || !actionBindingLookup.wasClicked) {
+      console.warn(`Input System: Action ${actionName} not found`);
+      return false;
+    }
+
+    return actionBindingLookup.wasClicked(actionBindingLookup.key);
+  }
+
 }
 
 export { KeyBinding, AxisBinding, InputSourceFactory };

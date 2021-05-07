@@ -3,20 +3,31 @@ import { Game } from "../Game";
 import { Image } from "./Image/Image";
 import { ShaderProgram } from "./ShaderProgram";
 import { TransformComponent } from "../core/TransformComponent";
-import { m4, v3 } from "twgl.js";
-import * as q from "../utils/quaternion";
+import { m4} from "twgl.js";
 import CameraComponent from "../camera/CameraComponent";
 import { RenderableComponent } from "./Renderable";
 import { Texture } from "./Texture";
 import { RenderPass } from "./RenderPass";
 import { FrameBuffer } from "./FrameBuffer";
+import { cameraMatrixFromTransform } from "../utils/MatrixUtils";
 
 /**
  * RENDERING CONFIG
  */
-const FOV = 54.4;
-const CLIP_NEAR = 1;
-const CLIP_FAR = 2000;
+export module RenderingConfig {
+  const FOV = 54.4;
+  const CLIP_NEAR = 1;
+  const CLIP_FAR = 2000;
+
+  export function getPerspectiveMatrix(aspectRatio:number){
+    return m4.perspective(
+      (FOV * Math.PI) / 180, // field of view
+      aspectRatio, // aspect ratio
+      CLIP_NEAR, // nearZ: clip space properties
+      CLIP_FAR // farZ: clip space properties
+    );
+  }
+} 
 
 export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
@@ -135,21 +146,13 @@ export class RenderingSystem extends System {
       return;
     }
 
-    // TODO: finish implementation of the camera features
-    //const cameraComponent = mainCamera.getComponent(CameraComponent);
-    const cameraTransform = mainCamera.getComponent(TransformComponent);
-    const negativeOffsetPos = v3.negate(cameraTransform.position);
-
-    const cameraRotMat = m4.inverse(q.quatToMat4(cameraTransform.rotation));
-    let cameraMatrix = m4.translate(cameraRotMat, negativeOffsetPos);
+    // camera matrix
+    const cameraMatrix = cameraMatrixFromTransform(mainCamera.getComponent(TransformComponent));
 
     // perspective matrix
-    const perspectiveMatrix = m4.perspective(
-      (FOV * Math.PI) / 180, // field of view
-      game.getCanvas().width / game.getCanvas().height, // aspect ratio
-      CLIP_NEAR, // nearZ: clip space properties
-      CLIP_FAR // farZ: clip space properties
-    );
+    const aspectRatio = game.getCanvas().width / game.getCanvas().height;
+    const perspectiveMatrix = RenderingConfig.getPerspectiveMatrix(aspectRatio);
+    
 
     // setup the renederableObject inside for rendering
     const renderablObjects = this._renderList.entities.map((e) => {
