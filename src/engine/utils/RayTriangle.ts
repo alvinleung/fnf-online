@@ -11,7 +11,7 @@ export module RayTriangle {
   export type Triangle = v3.Vec3[];
   //export type Ray = v3.Vec3[];
   const EPSILON = 0.00000001 // a very small number used to check zero which accounts for floating point percision 
-  const DEFAULT_RAY_TRIANGLE_INTERSECTION_FUNCTION = mollerTruboreFrontFace;
+  const DEFAULT_RAY_TRIANGLE_INTERSECTION_FUNCTION = mollerTruboreTwoSided;
   
   /*
   export function createRay(point:v3.Vec3, direction:v3.Vec3){

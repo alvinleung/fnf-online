@@ -24,12 +24,32 @@ export default class EditorSystem extends System {
     this.systemRenderables = new FamilyBuilder(game)
     .include(RenderableComponent)
     .build();
-
     this.frameCount = 0;
   }
   update(game: Game, delta: number): void {
 
+    let clicked = game.input.wasClicked("select");
+    if(clicked){
+      let targetEntity = this.castRayOnCursor(game);
+      if(targetEntity){
+        console.log((targetEntity as Entity).id);
+        //targetEntity.useComponent(SelectionComponent)
+        // EVENT TODO:
+      } else {
+        console.log("not found");
+      }
+
+    }
+
     this.frameCount++;
+    if(this.frameCount % 30 == 0){
+      return;
+    }
+
+  }
+
+  private castRayOnCursor(game:Game):Entity{
+
     // set up required variables
     const mainCamera = this.editorCameras.entities[0];
     if(!mainCamera) return;
@@ -42,6 +62,7 @@ export default class EditorSystem extends System {
 
     const screenX = (game.input.getAxis("yawX") / clientwidth) * 2 - 1;
     const screenY = - ((game.input.getAxis("yawY") / clientHeight) * 2 - 1);
+    
 
     // calculate cursor direction vector
     const screenToWorldMatrix = m4.inverse( m4.multiply(perspectiveMatrix,cameraMatrix) );
@@ -53,7 +74,6 @@ export default class EditorSystem extends System {
 
     let targetEntity = null;
     let maxlength = 0;
-    let entityChecked = 0;
 
     // cast ray onto the world with direction and cameraPosition
     this.systemRenderables.entities.forEach(renderableEntity => {
@@ -113,16 +133,8 @@ export default class EditorSystem extends System {
         }
 
       }
-      entityChecked++;
     });
 
-    if(this.frameCount % 30 == 0){
-      if(targetEntity){
-        console.log((targetEntity as Entity).id);
-      } else {
-        console.log(entityChecked + " checked but not found");
-      }
-    }
-
+    return targetEntity;
   }
 }

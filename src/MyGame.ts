@@ -150,6 +150,8 @@ class MyGame extends Game {
     input.bindAxis("yawY", mouse.createAxisBinding("y"));
     input.bindAction("hoverMode", keyboard.createKeyBinding("ShiftLeft"));
     input.bindAction("speedMode", mouse.createKeyBinding("mouseright"));
+    input.bindAction("select", mouse.createKeyBinding("mouseleft"));
+    mouse.setPointerLockButton("mouseright");
 
     input.bindAction("debug", keyboard.createKeyBinding("KeyX"));
 

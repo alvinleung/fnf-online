@@ -14,7 +14,6 @@ import { cameraMatrixFromTransform } from "../utils/MatrixUtils";
 /**
  * RENDERING CONFIG
  */
-
 export module RenderingConfig {
   const FOV = 54.4;
   const CLIP_NEAR = 1;

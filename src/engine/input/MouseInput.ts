@@ -8,6 +8,7 @@ const VERBOSE = false;
 interface MouseAxisBinding extends AxisBinding {
   axis: string;
   getAxis(key: string): number;
+  
 }
 
 interface MousePosition {
@@ -17,16 +18,21 @@ interface MousePosition {
 
 class MouseInput extends InputSourceFactory {
 
+  private game: Game;
+  private axisBindings: { [axis: string]: MouseAxisBinding } = {};
+  private mouseActiveParts = { buttons:{} };
+  private mouseActivePartsInCanvas = { buttons:{} };
+  private mouseClickRegister = { buttons:{} };
+
   private currentMouse: MousePosition;
   private cacheMouse: MousePosition;
   private mouseDown: MousePosition;
-
-  private axisBindings: { [axis: string]: MouseAxisBinding } = {};
-  private mouseActiveParts = { buttons:{} };
-  private game: Game;
+  // pointers
   private usePointerLocking: boolean;
   private pointerLocked: boolean;
+  private pointerLockingButton: string;
 
+  // constants
   private SENSITIVITY = 0.08;
   private MOUSE_BUTTON_NAME_MAP = {
     mouseleft:0,
@@ -39,6 +45,7 @@ class MouseInput extends InputSourceFactory {
     this.addEventListeners(game);
     this.game = game;
     this.initCacheMouse()
+    this.pointerLockingButton = "all";
   }
 
   public createAxisBinding(axis: string): MouseAxisBinding {
@@ -115,6 +122,9 @@ class MouseInput extends InputSourceFactory {
   public enablePointerLockSetting(){
     this.usePointerLocking = true;
   }
+  public setPointerLockButton(button:string){
+    this.pointerLockingButton = button;
+  }
 
   private handleMouseDown(e: MouseEvent) {
     this.mouseActiveParts.buttons[e.button] = true;
@@ -129,13 +139,28 @@ class MouseInput extends InputSourceFactory {
     this.mouseDown.y = this.currentMouse.y;
   }
   private handleMouseDownInCanvas(e: MouseEvent) {
-    if(this.usePointerLocking){
-      const element = this.game.getCanvas() as Element;
-      element.requestPointerLock();
+    this.mouseActivePartsInCanvas.buttons[e.button] = true;
+
+    // lock pointer
+    const button = this.MOUSE_BUTTON_NAME_MAP[this.pointerLockingButton];
+    if(this.usePointerLocking ){
+      if(e.button == button || this.pointerLockingButton == "all" ){
+        e.preventDefault();
+        const element = this.game.getCanvas() as Element;
+        element.requestPointerLock();
+      }
+    }
+
+    // mouse click register
+    if(this.mouseClickRegister.buttons[e.button] != 0 && !this.mouseClickRegister.buttons[e.button]){
+      this.mouseClickRegister.buttons[e.button] = 1;
+    } else {
+      this.mouseClickRegister.buttons[e.button] = this.mouseClickRegister.buttons[e.button] + 1;
     }
   }
   private handleMouseUp(e: MouseEvent) {
     this.mouseActiveParts.buttons[e.button] = false;
+    this.mouseActivePartsInCanvas.buttons[e.button] = false;
   }
   private handleMouseMove(e: MouseEvent) {
     if(!this.currentMouse){
@@ -158,6 +183,15 @@ class MouseInput extends InputSourceFactory {
   protected isActive(key: string): boolean {
     const buttonNum = this.MOUSE_BUTTON_NAME_MAP[key];
     return this.mouseActiveParts.buttons[buttonNum];
+  }
+  protected wasClicked(key: string): boolean {
+    const buttonNum = this.MOUSE_BUTTON_NAME_MAP[key];
+    if(!this.mouseClickRegister.buttons[buttonNum]){
+      return false;
+    } else {
+      this.mouseClickRegister.buttons[buttonNum] = 0;
+      return true;
+    }
   }
 
 }

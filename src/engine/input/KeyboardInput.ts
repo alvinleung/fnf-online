@@ -29,6 +29,10 @@ class KeyboardInput extends InputSourceFactory {
   protected isActive(key: string): boolean {
     return this.asciiActiveKeys[key];
   }
+  protected wasClicked(key: string): boolean{
+    //TODO: not implemented yet
+    return this.asciiActiveKeys[key];
+  }
 
   // eg KeyA|KeyB means A is negative, B is positive
   public createAxisBinding(axis: string): KeyboardAxisBinding {
