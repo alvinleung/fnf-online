@@ -9,6 +9,7 @@ interface Props {
   value: v3.Vec3;
   onChange?: (value: v3.Vec3) => void;
   onAxisChange?: (value: number, delta: number, axis: number) => void;
+  sensitivity?: number;
 }
 
 export const VectorEditor = ({
@@ -16,6 +17,7 @@ export const VectorEditor = ({
   onChange,
   onAxisChange,
   value,
+  sensitivity,
 }: Props) => {
   const x = useRef(value[0]);
   const y = useRef(value[1]);
@@ -48,15 +50,27 @@ export const VectorEditor = ({
       <div className="value-editor__group-container">
         <label className="value-editor__field">
           <div className="value-editor__label">x</div>
-          <NumberSlider onChange={handleXChange} value={value[0]} />
+          <NumberSlider
+            onChange={handleXChange}
+            value={value[0]}
+            sensitivity={sensitivity}
+          />
         </label>
         <label className="value-editor__field">
           <div className="value-editor__label">y</div>
-          <NumberSlider onChange={handleYChange} value={value[1]} />
+          <NumberSlider
+            onChange={handleYChange}
+            value={value[1]}
+            sensitivity={sensitivity}
+          />
         </label>
         <label className="value-editor__field">
           <div className="value-editor__label">z</div>
-          <NumberSlider onChange={handleZChange} value={value[2]} />
+          <NumberSlider
+            onChange={handleZChange}
+            value={value[2]}
+            sensitivity={sensitivity}
+          />
         </label>
       </div>
     </div>

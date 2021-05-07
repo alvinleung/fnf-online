@@ -16,10 +16,12 @@ interface Props {
   precision?: number; // correct to certain decimal place
 }
 
+export const DEFAULT_SENSITIVITY = 0.1;
+
 export const NumberSlider = ({
   value = 0,
   onChange,
-  sensitivity = 0.1,
+  sensitivity = DEFAULT_SENSITIVITY,
   precisionModeScale = 0.025,
   stepSize = 0.5,
   axis = "x",
