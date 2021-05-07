@@ -3,11 +3,11 @@ import { NumberSlider } from "./NumberSlider";
 
 interface Props {
   name: string;
-  initialValue?: number;
+  value?: number;
   onChange?: (val: number) => void;
 }
 
-export const NumberEditor = ({ onChange, name, initialValue }: Props) => {
+export const NumberEditor = ({ onChange, name, value }: Props) => {
   const handleChange = (val: number) => {
     onChange && onChange(val);
   };
@@ -17,7 +17,7 @@ export const NumberEditor = ({ onChange, name, initialValue }: Props) => {
       <div className="value-editor__group-container">
         <label className="value-editor__field">
           <div className="value-editor__label">{name}</div>
-          <NumberSlider initialValue={initialValue} onChange={handleChange} />
+          <NumberSlider value={value} onChange={handleChange} />
         </label>
       </div>
     </div>

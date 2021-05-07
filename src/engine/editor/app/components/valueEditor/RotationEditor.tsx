@@ -11,9 +11,9 @@ interface Props {
   value: v3.Vec3;
   name?: string;
   onChange?: (quat: v3.Vec3) => void;
-  displayUnit: "radian" | "degree";
-  sensitivity: number;
-  stepSize: number; // in radian
+  displayUnit?: "radian" | "degree";
+  sensitivity?: number;
+  stepSize?: number; // in radian
 }
 
 export const RotationEditor = ({
