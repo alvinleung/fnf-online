@@ -51,8 +51,8 @@ label:focus-within {
   color: var(--clr-text);
 }
 
-button,
-button.btn-primary {
+button[type="submit"],
+.btn-primary {
   padding: var(--spacing-s);
 
   color: var(--clr-text);
@@ -67,12 +67,12 @@ button.btn-primary {
   border-radius: 4px;
 }
 
-button:hover,
-button.btn-primary:hover {
+button[type="submit"]:hover,
+.btn-primary:hover {
   background-color: var(--clr-accent-lighter);
 }
 
-button:active,
-button.btn-primary:active {
+button[type="submit"]:active,
+.btn-primary:active {
   background-color: var(--clr-accent-muted);
 }
