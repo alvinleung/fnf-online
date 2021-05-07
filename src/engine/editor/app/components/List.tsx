@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { ListItem } from "./ListItem";
 
 import "./List.css";
@@ -37,14 +37,18 @@ export const List = ({ children, onSelect, onItemRemove }: Props) => {
     setIsListFocused(false);
   });
 
+  const removeSelectedEntity = () => {
+    onItemRemove && onItemRemove(selectedItemValue);
+    // clear the selection
+    setSelectedItemIndex(null);
+    setSelectedItemValue("");
+  };
+
   useHotkeys(
     HotkeyConfig.DELETE,
     () => {
       if (isListFocused) {
-        onItemRemove && onItemRemove(selectedItemValue);
-        // clear the selection
-        setSelectedItemIndex(null);
-        setSelectedItemValue("");
+        removeSelectedEntity();
       }
     },
     [selectedItemValue]
@@ -54,10 +58,10 @@ export const List = ({ children, onSelect, onItemRemove }: Props) => {
 
   return (
     <>
-      <div className="list" onClick={handleListClick} ref={listContainerRef}>
-        {listItems.map((listItem, index) => {
-          return (
-            <ContextMenuTrigger id="item-menu-trigger" key={index}>
+      <ContextMenuTrigger id="item-menu-trigger">
+        <div className="list" onClick={handleListClick} ref={listContainerRef}>
+          {listItems.map((listItem, index) => {
+            return (
               <ListItem
                 {...listItem.props}
                 index={index}
@@ -65,10 +69,10 @@ export const List = ({ children, onSelect, onItemRemove }: Props) => {
                 isSelected={index === selectedItemIndex}
                 onSelect={handleListItemSelect}
               />
-            </ContextMenuTrigger>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </ContextMenuTrigger>
       <ContextMenu id="item-menu-trigger">
         <MenuItem
           data={{ action: "add-entity" }}
@@ -79,7 +83,9 @@ export const List = ({ children, onSelect, onItemRemove }: Props) => {
         <MenuItem divider={true} />
         <MenuItem
           data={{ action: "remove-entity" }}
-          onClick={handleContextMenuClick}
+          onClick={() => {
+            removeSelectedEntity();
+          }}
         >
           Remove Entity
         </MenuItem>
