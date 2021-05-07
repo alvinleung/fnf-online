@@ -31,7 +31,28 @@ input[type="password"]:focus {
 }
 
 .field {
+  display: flex;
+  flex-direction: row;
   margin-bottom: var(--spacing-m);
+}
+.field > * {
+  flex-grow: 1;
+  margin-right: var(--spacing-s);
+}
+
+.field:last-child {
+  margin-bottom: var(--spacing-s);
+}
+
+.field--stack {
+  flex-direction: column;
+}
+
+.field--stack > * {
+  margin-bottom: var(--spacing-s);
+}
+.field--stack > *:last-child {
+  margin-bottom: 0rem;
 }
 
 label {
@@ -52,7 +73,8 @@ label:focus-within {
 }
 
 button[type="submit"],
-.btn-primary {
+.btn-primary,
+.btn-secondary {
   padding: var(--spacing-s);
 
   color: var(--clr-text);
@@ -74,5 +96,15 @@ button[type="submit"]:hover,
 
 button[type="submit"]:active,
 .btn-primary:active {
+  background-color: var(--clr-accent-muted);
+}
+
+.btn-secondary {
+  color: var(--clr-accent-lighter);
+  background-color: var(--clr-bg);
+  border: 1px solid var(--clr-accent);
+}
+
+.btn-secondary:hover {
   background-color: var(--clr-accent-muted);
 }

@@ -1,19 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ReactDOM from "react-dom";
 import "./Modal.css";
 import { config } from "../../AnimationConfig";
 import { useHotkeys } from "react-hotkeys-hook";
 import { HotkeyConfig } from "../../Hotkeys";
+import useClickOutside from "../../hooks/useClickOutside";
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
   show: boolean;
   onHide: () => void;
   width: string | number;
+  canDismiss?: boolean;
 }
 
-export const Modal = ({ children, show, onHide, width }: Props) => {
+export const Modal = ({
+  children,
+  show,
+  onHide,
+  width,
+  canDismiss = true,
+}: Props) => {
   useHotkeys(
     HotkeyConfig.ESCAPE,
     () => {
