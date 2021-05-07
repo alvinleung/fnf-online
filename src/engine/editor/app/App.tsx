@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import "./style/typography.css";
 import "./style/layout.css";
@@ -61,6 +61,9 @@ const App = ({ game }: Props): JSX.Element => {
     game.removeEntity(game.getEntityById(entityId));
   };
 
+  /**
+   * Logic for creating an entity
+   */
   const [isCreatingEntity, setIsCreatingEntity] = useState(false);
   const [entityCreationName, setEntityCreationName] = useState("");
   const createEntity = (name: string) => {
@@ -70,6 +73,11 @@ const App = ({ game }: Props): JSX.Element => {
     game.addEntity(Entity.create(name));
     setIsCreatingEntity(false);
   };
+  const entityNameInputRef = useRef<HTMLInputElement>();
+  useEffect(() => {
+    if (isCreatingEntity && entityNameInputRef.current)
+      entityNameInputRef.current.focus();
+  }, [isCreatingEntity]);
 
   return (
     <PanelGroup>
@@ -127,16 +135,28 @@ const App = ({ game }: Props): JSX.Element => {
               createEntity(entityCreationName);
             }}
           >
-            <h2>Create an Entity</h2>
-            <label className="field">
-              Entity Name
-              <input
-                type="text"
-                value={entityCreationName}
-                onChange={(e) => setEntityCreationName(e.target.value)}
-              />
-            </label>
-            <button type="submit">Create</button>
+            <h2>Create Entity</h2>
+            <div className="field">
+              <label>
+                Entity Name
+                <input
+                  ref={entityNameInputRef}
+                  type="text"
+                  value={entityCreationName}
+                  onChange={(e) => setEntityCreationName(e.target.value)}
+                />
+              </label>
+            </div>
+            <div className="field">
+              <button type="submit">Create</button>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={(e) => setIsCreatingEntity(false)}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         </Modal>
       </Panel>

@@ -39,6 +39,9 @@ input[type="password"]:focus {
   flex-grow: 1;
   margin-right: var(--spacing-s);
 }
+.field > *:last-child {
+  margin-right: 0rem;
+}
 
 .field:last-child {
   margin-bottom: var(--spacing-s);

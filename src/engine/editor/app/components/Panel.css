@@ -85,3 +85,8 @@
   padding-left: var(--spacing-m);
   padding-right: var(--spacing-m);
 }
+
+.panel__header {
+  margin-bottom: var(--spacing-m);
+  margin-top: var(--spacing-m);
+}

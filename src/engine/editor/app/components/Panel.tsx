@@ -290,7 +290,11 @@ export const PanelResizableContainer = ({
         transition={config.DEFAULT_TRANSITION}
       >
         {/* panel content */}
-        {header && <h2 className="header-label panel-hor-spacing">{header}</h2>}
+        {header && (
+          <div className="header-label panel__header panel-hor-spacing">
+            {header}
+          </div>
+        )}
         {children}
       </motion.div>
     </>
