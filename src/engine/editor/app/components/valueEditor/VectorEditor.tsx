@@ -13,6 +13,10 @@ interface Props {
   stepSize?: number;
 }
 
+const X_AXIS_COLOR = "rgb(255, 50, 100)";
+const Y_AXIS_COLOR = "rgb(144, 255, 100)";
+const Z_AXIS_COLOR = "rgb(51, 190, 255)";
+
 export const VectorEditor = ({
   name,
   onChange,
@@ -51,33 +55,39 @@ export const VectorEditor = ({
       <div className="value-editor__group-name">{name}</div>
       <div className="value-editor__group-container--3-col">
         <label className="value-editor__field--3-col">
-          <div className="value-editor__label">x</div>
+          <div className="value-editor__label" style={{ color: X_AXIS_COLOR }}>
+            x
+          </div>
           <NumberSlider
             onChange={handleXChange}
             value={value[0]}
             sensitivity={sensitivity}
             stepSize={stepSize}
-            color="rgb(255,50,100)"
+            color={X_AXIS_COLOR}
           />
         </label>
         <label className="value-editor__field--3-col">
-          <div className="value-editor__label">y</div>
+          <div className="value-editor__label" style={{ color: Y_AXIS_COLOR }}>
+            y
+          </div>
           <NumberSlider
             onChange={handleYChange}
             value={value[1]}
             sensitivity={sensitivity}
             stepSize={stepSize}
-            color="#90ff64"
+            color={Y_AXIS_COLOR}
           />
         </label>
         <label className="value-editor__field--3-col">
-          <div className="value-editor__label">z</div>
+          <div className="value-editor__label" style={{ color: Z_AXIS_COLOR }}>
+            z
+          </div>
           <NumberSlider
             onChange={handleZChange}
             value={value[2]}
             sensitivity={sensitivity}
             stepSize={stepSize}
-            color="rgb(51, 190, 255)"
+            color={Z_AXIS_COLOR}
           />
         </label>
       </div>
