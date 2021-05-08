@@ -14,6 +14,7 @@ interface Props {
   axis?: "x" | "y";
   stepSize?: number;
   precision?: number; // correct to certain decimal place
+  color?: string;
 }
 
 export const DEFAULT_SENSITIVITY = 0.1;
@@ -26,6 +27,7 @@ export const NumberSlider = ({
   stepSize = 0.5,
   axis = "x",
   precision = 5,
+  color = "var(--clr-accent-lighter)",
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -227,14 +229,18 @@ export const NumberSlider = ({
     >
       <div
         className="number-slider__value"
-        style={{ display: isInputMode ? "none" : "block" }}
+        style={{ display: isInputMode ? "none" : "block", color: color }}
       >
         {getRoundedValue(value)}
       </div>
       <input
         className="number-slider__value"
         ref={inputRef}
-        style={{ display: isInputMode ? "block" : "none" }}
+        style={{
+          display: isInputMode ? "block" : "none",
+          color: "#FFF",
+          borderColor: color,
+        }}
         type="text"
         value={inputValue}
         onChange={inputFieldValueChange}

@@ -49,32 +49,35 @@ export const VectorEditor = ({
   return (
     <div className="value-editor">
       <div className="value-editor__group-name">{name}</div>
-      <div className="value-editor__group-container">
-        <label className="value-editor__field">
+      <div className="value-editor__group-container--3-col">
+        <label className="value-editor__field--3-col">
           <div className="value-editor__label">x</div>
           <NumberSlider
             onChange={handleXChange}
             value={value[0]}
             sensitivity={sensitivity}
             stepSize={stepSize}
+            color="rgb(255,50,100)"
           />
         </label>
-        <label className="value-editor__field">
+        <label className="value-editor__field--3-col">
           <div className="value-editor__label">y</div>
           <NumberSlider
             onChange={handleYChange}
             value={value[1]}
             sensitivity={sensitivity}
             stepSize={stepSize}
+            color="#90ff64"
           />
         </label>
-        <label className="value-editor__field">
+        <label className="value-editor__field--3-col">
           <div className="value-editor__label">z</div>
           <NumberSlider
             onChange={handleZChange}
             value={value[2]}
             sensitivity={sensitivity}
             stepSize={stepSize}
+            color="rgb(51, 190, 255)"
           />
         </label>
       </div>
