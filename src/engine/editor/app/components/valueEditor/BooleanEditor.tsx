@@ -21,6 +21,7 @@ export const BooleanEditor = ({ value = false, onChange, name }: Props) => {
           style={{
             cursor: "pointer",
             border: "1px solid #333",
+            borderRadius: "4px",
           }}
         >
           <motion.div
@@ -29,6 +30,7 @@ export const BooleanEditor = ({ value = false, onChange, name }: Props) => {
               width: "50%",
               backgroundColor: value ? "var(--clr-accent)" : "#333",
               x: value ? "100%" : "0%",
+              borderRadius: "4px",
             }}
             transition={config.DEFAULT_TRANSITION}
           />

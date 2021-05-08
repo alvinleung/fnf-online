@@ -46,6 +46,8 @@
   border: var(--border);
   padding-top: var(--spacing-xs);
   padding-bottom: var(--spacing-xs);
+
+  border-radius: 4px;
 }
 
 .react-contextmenu-item {
