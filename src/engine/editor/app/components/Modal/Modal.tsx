@@ -9,15 +9,15 @@ import useClickOutside from "../../hooks/useClickOutside";
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
-  show: boolean;
-  onHide: () => void;
-  width: string | number;
+  isVisible: boolean;
+  onHide?: () => void;
+  width?: string | number;
   canDismiss?: boolean;
 }
 
 export const Modal = ({
   children,
-  show,
+  isVisible,
   onHide,
   width,
   canDismiss = true,
@@ -25,7 +25,7 @@ export const Modal = ({
   useHotkeys(
     HotkeyConfig.ESCAPE,
     () => {
-      onHide && onHide();
+      canDismiss && onHide && onHide();
     },
     {
       enableOnTags: ["INPUT", "TEXTAREA"],
@@ -35,7 +35,7 @@ export const Modal = ({
 
   return ReactDOM.createPortal(
     <AnimatePresence>
-      {show && (
+      {isVisible && (
         <motion.div
           className={"modal-container typography-base"}
           initial={{

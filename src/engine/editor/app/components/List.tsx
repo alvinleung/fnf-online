@@ -12,10 +12,16 @@ import { Modal } from "./Modal";
 interface Props {
   onSelect?: (value: string, index?: number) => void;
   children?: React.ReactElement[] | React.ReactElement;
-  onItemRemove: (itemValue: string) => void;
+  onItemRemove?: (itemValue: string) => void;
+  removable?: boolean;
 }
 
-export const List = ({ children, onSelect, onItemRemove }: Props) => {
+export const List = ({
+  children,
+  onSelect,
+  removable = true,
+  onItemRemove,
+}: Props) => {
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   const [selectedItemValue, setSelectedItemValue] = useState("");
   const listItems = children instanceof Array ? children : [children];
@@ -39,7 +45,7 @@ export const List = ({ children, onSelect, onItemRemove }: Props) => {
   });
 
   const removeSelectedEntity = () => {
-    onItemRemove && onItemRemove(selectedItemValue);
+    removable && onItemRemove && onItemRemove(selectedItemValue);
     // clear the selection
     setSelectedItemIndex(null);
     setSelectedItemValue("");

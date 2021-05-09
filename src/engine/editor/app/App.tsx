@@ -123,7 +123,7 @@ const App = ({ game }: Props): JSX.Element => {
         </ContextMenu>
 
         <Modal
-          show={isCreatingEntity}
+          isVisible={isCreatingEntity}
           onHide={() => {
             setIsCreatingEntity(false);
           }}

@@ -4,6 +4,14 @@ export default {
       name: "test",
       path: require("url:../assets/images/Adventurer/adventurer-Sheet.png"),
     },
+    {
+      name: "test2",
+      path: require("url:../assets/images/Adventurer-Bow/adventurer-bow-Sheet.png"),
+    },
+    {
+      name: "test3",
+      path: require("url:../assets/images/Adventurer-Hand-Combat/adventurer-hand-combat-Sheet.png"),
+    },
   ],
   sounds: [
     {

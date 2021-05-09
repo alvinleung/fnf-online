@@ -58,6 +58,10 @@ input[type="password"]:focus {
   margin-bottom: 0rem;
 }
 
+.field--no-stretch > * {
+  flex-grow: 0;
+}
+
 label {
   display: flex;
   flex-direction: column;

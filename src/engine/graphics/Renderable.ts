@@ -1,6 +1,6 @@
 import { m4, v3 } from "twgl.js";
 import { Component } from "../ecs";
-import { EditableField, Editor } from "../editor";
+import { EditableField, Editor, InstantiableObject } from "../editor";
 import { spreadArrayRecusively } from "../utils/ArrayUtils";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { AttribDataBuffer } from "./AttribDataBuffer";
@@ -10,7 +10,7 @@ import { Texture } from "./Texture";
 const VERBOSE = false;
 
 export class RenderableComponent implements Component {
-  @EditableField(Editor.CLASS)
+  @EditableField(Editor.INSTANCE)
   renderableObject: RenderableObject;
 }
 
@@ -20,7 +20,8 @@ export class RenderableComponent implements Component {
  *
  * If possible, try to decouple the object behaviour logic from this class.
  */
-export abstract class RenderableObject {
+@InstantiableObject(Editor.VECTOR, Editor.VECTOR, Editor.VECTOR, Editor.RGBA)
+export class RenderableObject {
   constructor(
     objectCoords: number[],
     textureCoords: number[],

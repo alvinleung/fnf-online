@@ -14,7 +14,10 @@ import { Component, ComponentClass } from "../ecs";
 interface ComponentField {
   [propsName: string]: Editor;
 }
-const editableMap: { [name: string]: ComponentField } = {};
+interface EditableComponentMap {
+  [componentName: string]: ComponentField;
+}
+const editableMap: EditableComponentMap = {};
 const editableComponentClassRefs = {};
 
 /**
@@ -52,22 +55,51 @@ function EditableField(type: Editor) {
       editableMap[componentName] = {};
     }
 
-    if (type == Editor.FUNCTION) {
-      // log the function variables name
-      console.log(getParamNames(target[propertyKey]));
-    }
-
     // put the entr
     editableMap[componentName][propName] = type;
     editableComponentClassRefs[componentName] = target.constructor;
   };
 }
 
+/** fields of instantiableClass */
+interface InstantiableObjectMap {
+  [className: string]: {
+    constructorParams: {
+      [paramName: string]: Editor;
+    };
+    constructor: Function;
+  };
+}
+
+const instantiableObjects: InstantiableObjectMap = {};
+/**
+ * Decorator for classes that are unrelated to an entity to be editable
+ */
+function InstantiableObject(...constructorVaribleTypes: Editor[]) {
+  return function (constructor: Function) {
+    const paramNames = getParamNames(constructor);
+    const className = constructor.name;
+    instantiableObjects[className] = {
+      constructorParams: {},
+      constructor: constructor,
+    };
+
+    paramNames.forEach((paramName, index) => {
+      instantiableObjects[className].constructorParams[paramName] =
+        constructorVaribleTypes[index];
+    });
+  };
+}
+
+function getInstantiableObjects() {
+  return Object.freeze(instantiableObjects);
+}
+
 //https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically
 //The following function will return an array of the parameter names of any function passed in
-var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
-var ARGUMENT_NAMES = /([^\s,]+)/g;
-function getParamNames(func) {
+function getParamNames(func: Function) {
+  var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
+  var ARGUMENT_NAMES = /([^\s,]+)/g;
   var fnStr = func.toString().replace(STRIP_COMMENTS, "");
   var result = fnStr
     .slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")"))
@@ -109,6 +141,7 @@ enum Editor {
   ENTITY,
   SOURCE_CODE,
   INSTANCE,
+  RESOURCE_IMAGE,
   FUNCTION,
 }
 
@@ -121,4 +154,6 @@ export {
   isComponentEditable,
   getComponentEditableFields,
   getComponentFieldEditor,
+  InstantiableObject,
+  getInstantiableObjects,
 };
