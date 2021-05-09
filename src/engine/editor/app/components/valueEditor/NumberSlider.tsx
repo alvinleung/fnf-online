@@ -15,6 +15,7 @@ interface Props {
   stepSize?: number;
   precision?: number; // correct to certain decimal place
   color?: string;
+  stepMode: boolean;
 }
 
 export const DEFAULT_SENSITIVITY = 0.1;
@@ -28,6 +29,7 @@ export const NumberSlider = ({
   axis = "x",
   precision = 5,
   color = "var(--clr-accent-lighter)",
+  stepMode = false,
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -101,7 +103,7 @@ export const NumberSlider = ({
     // update the value
     if (axis === "x") {
       const newVal = value + e.movementX * sensitivity;
-      if (isStepMode) {
+      if (stepMode || isStepMode) {
         safelyUpdateValue(stepSize * Math.round(newVal / stepSize));
         return;
       }
@@ -109,7 +111,7 @@ export const NumberSlider = ({
     }
     if (axis === "y") {
       const newVal = value + e.movementY * sensitivity;
-      if (isStepMode) {
+      if (stepMode || isStepMode) {
         safelyUpdateValue(stepSize * Math.round(newVal / stepSize));
         return;
       }

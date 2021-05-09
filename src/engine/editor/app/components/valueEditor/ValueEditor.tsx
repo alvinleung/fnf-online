@@ -42,6 +42,17 @@ export const ValueEditor = ({
       <NumberEditor name={formattedName} value={value} onChange={onChange} />
     );
 
+  if (fieldType === Editor.INTEGER)
+    return (
+      <NumberEditor
+        name={formattedName}
+        value={value}
+        onChange={onChange}
+        stepMode={true}
+        stepSize={1}
+      />
+    );
+
   if (fieldType === Editor.INSTANCE)
     return (
       <InstanceEditor name={formattedName} value={value} onChange={onChange} />
