@@ -130,16 +130,14 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
                 // console.log(inferredConfig);
 
                 return (
-                  <div className="field" key={index}>
-                    <ValueEditor
-                      fieldName={key}
-                      fieldType={type}
-                      value={value}
-                      onChange={(val) =>
-                        setInstanceConfig({ ...inferredConfig, [key]: val })
-                      }
-                    />
-                  </div>
+                  <ValueEditor
+                    fieldName={key}
+                    fieldType={type}
+                    value={value}
+                    onChange={(val) =>
+                      setInstanceConfig({ ...inferredConfig, [key]: val })
+                    }
+                  />
                 );
               })}
             </div>

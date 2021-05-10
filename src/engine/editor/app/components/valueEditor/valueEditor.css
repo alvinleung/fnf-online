@@ -10,7 +10,7 @@
 }
 
 .value-editor__group-container {
-  margin-top: var(--spacing-xs);
+  /* margin-top: var(--spacing-xs); */
   width: 100%;
 }
 
@@ -19,7 +19,7 @@
   grid-template-columns: repeat(3, 1fr);
   column-gap: var(--spacing-xs);
 
-  margin-top: var(--spacing-xs);
+  /* margin-top: var(--spacing-xs); */
   width: 100%;
 }
 
