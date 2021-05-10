@@ -138,7 +138,18 @@ function getInstantiableObjects() {
   return Object.freeze(instantiableObjects);
 }
 
+function isInstantiableObject(className: string) {
+  return instantiableObjects[className] ? true : false;
+}
+
 function getObjectDefaultParams(className: string) {
+  if (!instantiableObjects[className]) {
+    console.warn(
+      `${className} not found in instantiable object registry, abort returning default params`
+    );
+    return;
+  }
+
   return Object.values(instantiableObjects[className].constructorParams).map(
     ({ defaultValue }) => {
       return defaultValue;
@@ -210,4 +221,5 @@ export {
   getInstantiableObjects,
   ObjectField,
   getObjectDefaultParams,
+  isInstantiableObject,
 };

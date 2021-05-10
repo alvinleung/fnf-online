@@ -5,6 +5,7 @@ import { camelCaseToSentenceCase } from "../../../../utils/StringUtils";
 import {
   getInstantiableObjects,
   getObjectDefaultParams,
+  isInstantiableObject,
 } from "../../../EditorDecorators";
 import { DropDownItem } from "../../DropDownSelect/DropDownItem";
 import { DropDownSelect } from "../../DropDownSelect/DropDownSelect";
@@ -76,7 +77,12 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
 
   // send the update to the engine if there is change
   useEffect(() => {
-    if (!instanceConstructorParams || !afterEditConfig) return;
+    if (
+      !instanceConstructorParams ||
+      !afterEditConfig ||
+      !isInstantiableObject(instanceName)
+    )
+      return;
 
     // check if there are changes, if not then return
     const isNotSame = inferredValues.some(({ key, value }) => {
@@ -130,7 +136,12 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
   };
 
   useEffect(() => {
-    if (!selectedInstanceType || selectedInstanceType === "") return;
+    if (
+      !selectedInstanceType ||
+      selectedInstanceType === "" ||
+      !isInstantiableObject(selectedInstanceType)
+    )
+      return;
 
     const instanceParams = getObjectDefaultParams(selectedInstanceType);
     const newInstance = getNewInstance(selectedInstanceType, instanceParams);
