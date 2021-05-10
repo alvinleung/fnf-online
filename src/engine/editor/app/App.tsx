@@ -15,6 +15,7 @@ import { ComponentInspector } from "./ComponentInspector";
 import { PanelGroup } from "./components/PanelGroup";
 import { Modal } from "./components/Modal";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
+import { ComponentRegistry } from "../EditorDecorators";
 
 interface Props {
   game: Game;
@@ -89,6 +90,16 @@ const App = ({ game }: Props): JSX.Element => {
   const handleComponentSelection = (component: string) => {
     setSelectedComponent(component);
   };
+  const handleComponentAdd = () => {
+    setSelectedComponent("new-component");
+  };
+  const handleComponentRemove = useCallback(() => {
+    const componentClass = ComponentRegistry.getComponentClass(
+      selectedComponent
+    );
+    // remove the current component in the
+    selectedEntity.removeComponent(componentClass);
+  }, [selectedEntity, selectedComponent]);
 
   return (
     <GameContext.Provider value={game}>
@@ -185,12 +196,16 @@ const App = ({ game }: Props): JSX.Element => {
               />
               {selectedEntity && (
                 <ContextMenu id="entity-component-inspector">
-                  <MenuItem>Add Component</MenuItem>
+                  <MenuItem onClick={handleComponentAdd}>
+                    Add Component
+                  </MenuItem>
 
                   {selectedComponent !== "" && (
                     <>
                       <MenuItem divider={true} />
-                      <MenuItem>Remove "{selectedComponent}"</MenuItem>
+                      <MenuItem onClick={handleComponentRemove}>
+                        Remove "{selectedComponent}"
+                      </MenuItem>
                     </>
                   )}
                 </ContextMenu>

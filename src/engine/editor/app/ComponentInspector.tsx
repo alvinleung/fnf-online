@@ -3,7 +3,7 @@ import { Component, ComponentClass, Entity } from "../../ecs";
 import { Game } from "../../Game";
 import { CollapsableSection } from "./components/CollapsableSection";
 import { ValueEditor } from "./components/valueEditor/ValueEditor";
-import * as EditorDecorators from "../EditorDecorators";
+import { ComponentRegistry } from "../EditorDecorators";
 import { camelCaseToSentenceCase } from "../../utils/StringUtils";
 import useClickOutside from "./hooks/useClickOutside";
 
@@ -27,7 +27,7 @@ export const ComponentInspector = ({
       .getEntityById(selectedEntity.id as string)
       .listComponents();
     const editableComponentList = componentList.filter((c) => {
-      if (EditorDecorators.isComponentEditable(c)) {
+      if (ComponentRegistry.isComponentEditable(c)) {
         return true;
       }
     });
@@ -64,7 +64,7 @@ export const ComponentInspector = ({
           if (!componentInstance)
             return <div>No editable fields in this component</div>;
 
-          const fields = EditorDecorators.getComponentEditableFields(
+          const fields = ComponentRegistry.getComponentEditableFields(
             componentInstance
           );
           const componentName = componentInstance.constructor.name;
@@ -84,12 +84,12 @@ export const ComponentInspector = ({
                 header={camelCaseToSentenceCase(componentName)}
               >
                 {fieldNames.map((fieldName, index) => {
-                  const fieldType = EditorDecorators.getComponentFieldEditor(
+                  const fieldType = ComponentRegistry.getComponentFieldEditor(
                     componentInstance,
                     fieldName
                   );
                   const currentComponent = selectedEntity.getComponent(
-                    EditorDecorators.getComponentClass(componentName)
+                    ComponentRegistry.getComponentClass(componentName)
                   );
                   const currentComponentVal = currentComponent[fieldName];
                   const handleEditorValueChange = (val) => {

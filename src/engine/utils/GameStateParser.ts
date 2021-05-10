@@ -1,6 +1,6 @@
 import { TransformComponent } from "../core/TransformComponent";
 import { Component, ComponentClass, Entity } from "../ecs";
-import { getComponentClass, getEditableComponentMap } from "../editor";
+import { ComponentRegistry } from "../editor";
 import { Game } from "../Game";
 
 /**
@@ -32,7 +32,7 @@ export class GameStateParser {
     const entities = [...game.entities];
 
     // step 1 - get all the editable components
-    const editableComponentMap = getEditableComponentMap();
+    const editableComponentMap = ComponentRegistry.getEditableComponentMap();
 
     const formattedEntityData: EntityEntry[] = entities.map((entity) => {
       // STEP 1 - compile a list of relevent(editable) components
@@ -89,7 +89,9 @@ export class GameStateParser {
 
       // add components to the entity
       entityEntry.components.forEach((componentEntry) => {
-        const componentClass = getComponentClass(componentEntry.name);
+        const componentClass = ComponentRegistry.getComponentClass(
+          componentEntry.name
+        );
         const componentInstance = entity.useComponent(componentClass);
 
         componentEntry.fields.forEach((componentFieldEntry) => {

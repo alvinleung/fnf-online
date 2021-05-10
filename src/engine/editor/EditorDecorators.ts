@@ -170,26 +170,33 @@ function getParamNames(func: Function) {
   return result;
 }
 
-function getEditableComponentMap(): { [name: string]: ComponentField } {
-  return Object.freeze({ ...editableMap });
-}
+export module ComponentRegistry {
+  export function getEditableComponentMap(): {
+    [name: string]: ComponentField;
+  } {
+    return Object.freeze({ ...editableMap });
+  }
 
-function isComponentEditable(componentClass): boolean {
-  return editableComponentClassRefs[componentClass.constructor.name]
-    ? true
-    : false;
-}
+  export function isComponentEditable(componentClass): boolean {
+    return editableComponentClassRefs[componentClass.constructor.name]
+      ? true
+      : false;
+  }
 
-function getComponentEditableFields(componentClass: Component) {
-  return editableMap[componentClass.constructor.name];
-}
+  export function getComponentEditableFields(componentClass: Component) {
+    return editableMap[componentClass.constructor.name];
+  }
 
-function getComponentFieldEditor(componentClass: Component, fieldName: string) {
-  return editableMap[componentClass.constructor.name][fieldName];
-}
+  export function getComponentFieldEditor(
+    componentClass: Component,
+    fieldName: string
+  ) {
+    return editableMap[componentClass.constructor.name][fieldName];
+  }
 
-function getComponentClass(className: string) {
-  return editableComponentClassRefs[className];
+  export function getComponentClass(className: string): ComponentClass<any> {
+    return editableComponentClassRefs[className];
+  }
 }
 
 enum Editor {
@@ -212,11 +219,11 @@ export {
   EditableField,
   EditableComponent,
   Editor,
-  getEditableComponentMap,
-  getComponentClass,
-  isComponentEditable,
-  getComponentEditableFields,
-  getComponentFieldEditor,
+  // getEditableComponentMap,
+  // getComponentClass,
+  // isComponentEditable,
+  // getComponentEditableFields,
+  // getComponentFieldEditor,
   InstantiableObject,
   getInstantiableObjects,
   ObjectField,
