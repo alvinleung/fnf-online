@@ -20,6 +20,9 @@ interface Props {
   game: Game;
 }
 
+const GameContext = React.createContext<Game>(null);
+export const useGameContext = () => React.useContext(GameContext);
+
 const App = ({ game }: Props): JSX.Element => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
@@ -79,100 +82,124 @@ const App = ({ game }: Props): JSX.Element => {
       entityNameInputRef.current.focus();
   }, [isCreatingEntity]);
 
+  /**
+   * For component selection
+   */
+  const [selectedComponent, setSelectedComponent] = useState("");
+  const handleComponentSelection = (component: string) => {
+    setSelectedComponent(component);
+  };
+
   return (
-    <PanelGroup>
-      <Panel
-        dockingSide="left"
-        minSize={150}
-        initialState="expanded"
-        header="Entity List"
-      >
-        <ContextMenuTrigger id="item-menu-trigger">
-          <List
-            onSelect={handleEntityListSelect}
-            onItemRemove={handleItemRemove}
-          >
-            {game.entities.map((entity, index) => {
-              return (
-                <ListItem value={entity.id as string} key={index}>
-                  {entity.id as string}
-                </ListItem>
-              );
-            })}
-          </List>
-        </ContextMenuTrigger>
-
-        <ContextMenu id="item-menu-trigger">
-          <MenuItem
-            data={{ action: "add-entity" }}
-            onClick={() => {
-              setIsCreatingEntity(true);
-            }}
-          >
-            Add Entity
-          </MenuItem>
-          <MenuItem divider={true} />
-          <MenuItem
-            data={{ action: "remove-entity" }}
-            onClick={() => {
-              handleItemRemove(selectedEntity.id as string);
-            }}
-          >
-            Remove Entity
-          </MenuItem>
-        </ContextMenu>
-
-        <Modal
-          isVisible={isCreatingEntity}
-          onHide={() => {
-            setIsCreatingEntity(false);
-          }}
-          width="10rem"
+    <GameContext.Provider value={game}>
+      <PanelGroup>
+        <Panel
+          dockingSide="left"
+          minSize={150}
+          initialState="expanded"
+          header="Entity List"
         >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              createEntity(entityCreationName);
+          <ContextMenuTrigger id="item-menu-trigger">
+            <List
+              onSelect={handleEntityListSelect}
+              onItemRemove={handleItemRemove}
+            >
+              {game.entities.map((entity, index) => {
+                return (
+                  <ListItem value={entity.id as string} key={index}>
+                    {entity.id as string}
+                  </ListItem>
+                );
+              })}
+            </List>
+          </ContextMenuTrigger>
+
+          <ContextMenu id="item-menu-trigger">
+            <MenuItem
+              data={{ action: "add-entity" }}
+              onClick={() => {
+                setIsCreatingEntity(true);
+              }}
+            >
+              Add Entity
+            </MenuItem>
+            <MenuItem divider={true} />
+            <MenuItem
+              data={{ action: "remove-entity" }}
+              onClick={() => {
+                handleItemRemove(selectedEntity.id as string);
+              }}
+            >
+              Remove Entity
+            </MenuItem>
+          </ContextMenu>
+
+          <Modal
+            isVisible={isCreatingEntity}
+            onHide={() => {
+              setIsCreatingEntity(false);
             }}
+            width="10rem"
           >
-            <h2>Create Entity</h2>
-            <div className="field">
-              <label>
-                Entity Name
-                <input
-                  ref={entityNameInputRef}
-                  type="text"
-                  value={entityCreationName}
-                  onChange={(e) => setEntityCreationName(e.target.value)}
-                />
-              </label>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                createEntity(entityCreationName);
+              }}
+            >
+              <h2>Create Entity</h2>
+              <div className="field">
+                <label>
+                  Entity Name
+                  <input
+                    ref={entityNameInputRef}
+                    type="text"
+                    value={entityCreationName}
+                    onChange={(e) => setEntityCreationName(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div className="field">
+                <button type="submit">Create</button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={(e) => setIsCreatingEntity(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </Modal>
+        </Panel>
+        <Panel dockingSide="right" initialState="expanded" minSize={250}>
+          <ContextMenuTrigger id="entity-component-inspector">
+            <div className="inspector-container">
+              <EntityInspectorHead
+                selectedEntity={selectedEntity && (selectedEntity.id as string)}
+              />
+              <ComponentInspector
+                game={game}
+                selectedEntity={selectedEntity}
+                onSelectComponent={handleComponentSelection}
+              />
+              {selectedEntity && (
+                <ContextMenu id="entity-component-inspector">
+                  <MenuItem>Add Component</MenuItem>
+
+                  {selectedComponent !== "" && (
+                    <>
+                      <MenuItem divider={true} />
+                      <MenuItem>Remove "{selectedComponent}"</MenuItem>
+                    </>
+                  )}
+                </ContextMenu>
+              )}
             </div>
-            <div className="field">
-              <button type="submit">Create</button>
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={(e) => setIsCreatingEntity(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </Modal>
-      </Panel>
-      <Panel dockingSide="right" initialState="expanded" minSize={250}>
-        <ContextMenuTrigger id="entity-component-inspector">
-          <EntityInspectorHead
-            selectedEntity={selectedEntity && (selectedEntity.id as string)}
-          />
-          <ComponentInspector game={game} selectedEntity={selectedEntity} />
-        </ContextMenuTrigger>
-        <ContextMenu id="entity-component-inspector">
-          <MenuItem>Add Component</MenuItem>
-          <MenuItem>Remove Component</MenuItem>
-        </ContextMenu>
-      </Panel>
-    </PanelGroup>
+          </ContextMenuTrigger>
+        </Panel>
+      </PanelGroup>
+    </GameContext.Provider>
   );
 };
 

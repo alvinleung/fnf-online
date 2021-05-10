@@ -71,3 +71,7 @@
   display: block;
   border: var(--border-muted);
 }
+
+.inspector-container {
+  height: 100vh;
+}
