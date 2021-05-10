@@ -11,6 +11,7 @@
 
 .entity-inspector-head--empty {
   border-top-width: 0px;
+  background-color: transparent;
 }
 
 .entity-inspector-head__entity-name {
