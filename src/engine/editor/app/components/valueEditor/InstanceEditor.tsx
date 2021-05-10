@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import { element } from "prop-types";
 import React, { useEffect, useMemo, useState } from "react";
+import { camelCaseToSentenceCase } from "../../../../utils/StringUtils";
 import { getInstantiableObjects } from "../../../EditorDecorators";
+import { CollapsableSection } from "../CollapsableSection";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 import { Modal } from "../Modal";
@@ -99,7 +101,7 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
     <>
       <div className="value-editor">
         <div className="value-editor__label">{name}</div>
-        <motion.button
+        {/* <motion.button
           style={{
             width: "100%",
             backgroundColor: "var(--clr-bg-lighter)",
@@ -114,10 +116,38 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
           onClick={() => showModal()}
         >
           {instanceName}
-        </motion.button>
+        </motion.button> */}
+        <CollapsableSection header={camelCaseToSentenceCase(instanceName)}>
+          {!instanceConstructorParams && (
+            <div>Editing {instanceName} is not currently supported.</div>
+          )}
+
+          {inferredValues && (
+            <div>
+              {inferredValues.map(({ key, value, type }, index) => {
+                // Attempt accesing the value by inferring the current constructor value name
+                // const inferredValue = value[name];
+                // console.log(inferredConfig);
+
+                return (
+                  <div className="field" key={index}>
+                    <ValueEditor
+                      fieldName={key}
+                      fieldType={type}
+                      value={value}
+                      onChange={(val) =>
+                        setInstanceConfig({ ...inferredConfig, [key]: val })
+                      }
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CollapsableSection>
       </div>
 
-      <Modal isVisible={isVisible} onHide={hideModal}>
+      {/* <Modal isVisible={isVisible} onHide={hideModal}>
         <h2>Edit {instanceName}</h2>
 
         {!instanceConstructorParams && (
@@ -144,17 +174,9 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
                 </div>
               );
             })}
-            <div className="field field--no-stretch">
-              <button className="btn-primary" onClick={hideModal}>
-                Save
-              </button>
-              <button className="btn-secondary" onClick={hideModal}>
-                Cancel
-              </button>
-            </div>
           </div>
         )}
-      </Modal>
+      </Modal> */}
     </>
   );
 };

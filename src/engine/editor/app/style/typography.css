@@ -12,6 +12,7 @@ h4 {
   font-size: 0.75rem;
   letter-spacing: 0.065em;
   text-transform: uppercase;
+  font-weight: 500;
 
   opacity: 0.5;
 }

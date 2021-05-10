@@ -2,6 +2,7 @@
   /* reset the padding */
   padding-left: 0rem;
   width: 100%;
+  border: 1px solid var(--clr-bg-lighter);
 }
 
 .collapsable-section__toggle {
@@ -15,8 +16,8 @@
   width: 100%;
   padding-left: var(--spacing-m);
   padding-right: var(--spacing-m);
-  padding-top: var(--spacing-s);
-  padding-bottom: var(--spacing-s);
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
   text-align: left;
 
   color: var(--clr-text);
@@ -54,13 +55,13 @@
 .collapsable-section__group {
   position: relative;
   /* reset the padding */
-  padding-top: var(--spacing-m);
+  padding-top: var(--spacing-s);
   padding-left: var(--spacing-m);
   padding-right: var(--spacing-m);
   width: 100%;
 }
 .collapsable-section__group:last-child {
-  padding-bottom: var(--spacing-m);
+  padding-bottom: var(--spacing-s);
 }
 
 .collapsable-section__group-container {

@@ -6,7 +6,7 @@ import { BooleanEditor } from "./BooleanEditor";
 import { camelCaseToSentenceCase } from "../../../../utils/StringUtils";
 import { NumberEditor } from "./NumberEditor";
 import { InstanceEditor } from "./InstanceEditor";
-import { ResourceEditor } from "./ResourceEditor";
+import { ImageResourceEditor } from "./ImageResourceEditor";
 
 interface Props {
   fieldType: number;
@@ -59,7 +59,11 @@ export const ValueEditor = ({
     );
   if (fieldType === Editor.RESOURCE_IMAGE)
     return (
-      <ResourceEditor name={formattedName} value={value} onChange={onChange} />
+      <ImageResourceEditor
+        name={formattedName}
+        value={value}
+        onChange={onChange}
+      />
     );
 
   return <div>"{formattedName}" not supported yet</div>;
