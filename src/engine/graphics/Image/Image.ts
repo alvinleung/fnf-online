@@ -6,6 +6,10 @@ export class Image implements Asset {
   public readonly name: string;
   public readonly useSmoothScaling: boolean;
 
+  public static createEmpty(): Image {
+    return new Image("", "", document.createElement("img"), false);
+  }
+
   constructor(
     name: string,
     path: string,

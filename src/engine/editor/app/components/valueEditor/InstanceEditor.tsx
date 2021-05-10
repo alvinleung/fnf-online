@@ -2,7 +2,12 @@ import { motion } from "framer-motion";
 import { element } from "prop-types";
 import React, { useEffect, useMemo, useState } from "react";
 import { camelCaseToSentenceCase } from "../../../../utils/StringUtils";
-import { getInstantiableObjects } from "../../../EditorDecorators";
+import {
+  getInstantiableObjects,
+  getObjectDefaultParams,
+} from "../../../EditorDecorators";
+import { DropDownItem } from "../../DropDownSelect/DropDownItem";
+import { DropDownSelect } from "../../DropDownSelect/DropDownSelect";
 import { CollapsableSection } from "../CollapsableSection";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -24,6 +29,7 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
   const instanceConstructorParams =
     objectList[instanceName] && objectList[instanceName].constructorParams;
 
+  // values we guess the instance is having by checking the name in constructor and the instance
   const inferredValues = useMemo(() => {
     if (!instanceConstructorParams) return;
 
@@ -32,13 +38,14 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
       const inferredValue = value[name];
       return {
         key: name,
-        value: inferredValue,
-        type: instanceConstructorParams[name],
+        value: inferredValue || instanceConstructorParams[name].value,
+        type: instanceConstructorParams[name].editor,
       };
     });
   }, [name, value, instanceConstructorParams]);
 
-  const inferredConfig = useMemo(() => {
+  // current config before being edited
+  const beforeEditedConfig = useMemo(() => {
     if (!inferredValues) return;
 
     let inferredConfig = {};
@@ -49,24 +56,37 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
     return inferredConfig;
   }, [inferredValues]);
 
-  const [instanceConfig, setInstanceConfig] = useState(inferredConfig);
+  const [afterEditConfig, setAfterEditConfig] = useState(beforeEditedConfig);
 
+  // change the configured instance value to the new one when inspecting different instance
   useEffect(() => {
-    setInstanceConfig({});
+    setAfterEditConfig({});
   }, [name]);
 
+  const getNewInstance = (instanceName: string, params: any[]) => {
+    // get the instance constructor
+    const instanceClass = getInstantiableObjects()[instanceName];
+
+    // instantiate a new object to reflect the changes
+    //@ts-ignore
+    const newInst = new instanceClass.constructor(...params);
+
+    return newInst;
+  };
+
+  // send the update to the engine if there is change
   useEffect(() => {
-    if (!instanceConstructorParams || !instanceConfig) return;
+    if (!instanceConstructorParams || !afterEditConfig) return;
 
     // check if there are changes, if not then return
     const isNotSame = inferredValues.some(({ key, value }) => {
-      return instanceConfig[key] !== value;
+      return afterEditConfig[key] !== value;
     });
     //
     if (!isNotSame) return;
 
     // perform check to make sure the new value is valid
-    const configKeys = Object.keys(instanceConfig);
+    const configKeys = Object.keys(afterEditConfig);
 
     const valid = !configKeys.some((v: string, index) => {
       const isEmpty = v === null || v === undefined;
@@ -77,102 +97,103 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
     if (!valid) return;
 
     // create a config that combines the old one with the changes
-    const params = { ...inferredConfig, ...instanceConfig };
+    const params = { ...beforeEditedConfig, ...afterEditConfig };
 
-    // get the instance constructor
-    const instanceClass = getInstantiableObjects()[instanceName];
-
-    // instantiate a new object to reflect the changes
-    //@ts-ignore
-    const newInst = new instanceClass.constructor(...Object.values(params));
+    const newInst = getNewInstance(instanceName, Object.values(params));
 
     // update the change
     onChange && onChange(newInst);
-  }, [instanceConfig, inferredValues]);
+  }, [afterEditConfig, inferredValues]);
 
   useEffect(() => {
     const insts = getInstantiableObjects();
     setObjectList(insts);
   }, []);
 
+  const [selectedInstanceType, setselectedInstanceType] = useState(
+    instanceName
+  );
+  const fullList = Object.keys(objectList);
+  const [filteredList, setFilteredList] = useState(fullList);
+  const handleInstanceListFilter = (val: string) => {
+    if (val === "") {
+      setFilteredList(fullList);
+      return;
+    }
+    const filteredList = fullList.filter((name: string) => {
+      return name.includes(val);
+    });
+    setFilteredList(filteredList);
+  };
+  const handleInstanceSelect = (selectedInstanceName: string) => {
+    setselectedInstanceType(selectedInstanceName);
+  };
+
+  useEffect(() => {
+    if (!selectedInstanceType || selectedInstanceType === "") return;
+
+    const instanceParams = getObjectDefaultParams(selectedInstanceType);
+    const newInstance = getNewInstance(selectedInstanceType, instanceParams);
+
+    onChange && onChange(newInstance);
+  }, [selectedInstanceType]);
+
   return (
     <>
       <div className="value-editor">
         <div className="value-editor__label">{name}</div>
-        {/* <motion.button
-          style={{
-            width: "100%",
-            backgroundColor: "var(--clr-bg-lighter)",
-            borderRadius: "4px",
-            border: "1px solid rgba(255,255,255, .2)",
-            color: "var(--clr-text)",
-            padding: ".5rem",
-          }}
-          whileHover={{
-            border: "1px solid rgba(255,255,255, .5)",
-          }}
-          onClick={() => showModal()}
-        >
-          {instanceName}
-        </motion.button> */}
-        <CollapsableSection header={camelCaseToSentenceCase(instanceName)}>
-          {!instanceConstructorParams && (
-            <div>Editing {instanceName} is not currently supported.</div>
-          )}
-
-          {inferredValues && (
-            <div>
-              {inferredValues.map(({ key, value, type }, index) => {
-                // Attempt accesing the value by inferring the current constructor value name
-                // const inferredValue = value[name];
-                // console.log(inferredConfig);
-
-                return (
-                  <ValueEditor
-                    fieldName={key}
-                    fieldType={type}
-                    value={value}
-                    onChange={(val) =>
-                      setInstanceConfig({ ...inferredConfig, [key]: val })
-                    }
-                  />
-                );
-              })}
-            </div>
-          )}
-        </CollapsableSection>
-      </div>
-
-      {/* <Modal isVisible={isVisible} onHide={hideModal}>
-        <h2>Edit {instanceName}</h2>
-
         {!instanceConstructorParams && (
           <div>Editing {instanceName} is not currently supported.</div>
         )}
 
         {inferredValues && (
           <div>
-            {inferredValues.map(({ key, value, type }, index) => {
-              // Attempt accesing the value by inferring the current constructor value name
-              // const inferredValue = value[name];
-              // console.log(inferredConfig);
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                marginBottom: "var(--spacing-s)",
+              }}
+            >
+              <DropDownSelect
+                selectedValue={selectedInstanceType}
+                onFilter={handleInstanceListFilter}
+              >
+                {filteredList.map((key, index) => {
+                  return (
+                    <DropDownItem
+                      key={index}
+                      value={key}
+                      selected={key === selectedInstanceType}
+                      onSelect={handleInstanceSelect}
+                    >
+                      {key}
+                    </DropDownItem>
+                  );
+                })}
+              </DropDownSelect>
+            </div>
+            <div style={{ paddingLeft: "1rem" }}>
+              {inferredValues.map(({ key, value, type }, index) => {
+                // Attempt accesing the value by inferring the current constructor value name
+                // const inferredValue = value[name];
 
-              return (
-                <div className="field" key={index}>
+                return (
                   <ValueEditor
+                    key={index}
                     fieldName={key}
                     fieldType={type}
                     value={value}
                     onChange={(val) =>
-                      setInstanceConfig({ ...inferredConfig, [key]: val })
+                      setAfterEditConfig({ ...beforeEditedConfig, [key]: val })
                     }
                   />
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
-      </Modal> */}
+      </div>
     </>
   );
 };

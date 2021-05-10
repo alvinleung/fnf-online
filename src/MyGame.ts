@@ -5,10 +5,7 @@ import InputSystem, { KeyboardInput, MouseInput } from "./engine/input";
 import { RenderingSystem } from "./engine/graphics/RenderingSystem";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
-import {
-  SpriteSheetAnimator,
-  SpriteSheetRenderable,
-} from "./engine/graphics/SpriteSheet/SpriteSheetAnimation";
+import { SpriteSheetRenderable } from "./engine/graphics/SpriteSheet/SpriteSheetAnimation";
 import { TransformComponent } from "./engine/core/TransformComponent";
 import { SoundLoader } from "./engine/assets/SoundLoader";
 
@@ -31,6 +28,7 @@ import { EditorControlComponent } from "./engine/core/EditorControlComponent";
 import { GameStateParser } from "./engine/utils/GameStateParser";
 import { DebugSystem } from "./engine/core/DebugSystem";
 import EditorSystem from "./engine/core/EditorSystem";
+import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheetAnimator";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -56,7 +54,7 @@ class MyGame extends Game {
     squareEntity3.useComponent(TransformComponent);
     squareEntity3.useComponent(
       RenderableComponent
-    ).renderableObject = new Plane(image);
+    ).renderableObject = new Plane(this.assets.image.get("test2"));
     squareEntity3.id = "square-entity-3";
 
     const transform3 = squareEntity3.getComponent(TransformComponent);

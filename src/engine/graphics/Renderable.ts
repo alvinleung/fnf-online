@@ -20,7 +20,6 @@ export class RenderableComponent implements Component {
  *
  * If possible, try to decouple the object behaviour logic from this class.
  */
-@InstantiableObject(Editor.VECTOR, Editor.VECTOR, Editor.VECTOR, Editor.RGBA)
 export class RenderableObject {
   constructor(
     objectCoords: number[],

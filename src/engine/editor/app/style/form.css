@@ -18,6 +18,8 @@ input[type="password"] {
 
   border-radius: 4px;
 
+  width: 100%;
+
   color: var(--clr-text);
 }
 
@@ -114,4 +116,12 @@ button[type="submit"]:active,
 
 .btn-secondary:hover {
   background-color: var(--clr-accent-muted);
+}
+
+.btn-auxiliary {
+  padding: 2px;
+  color: var(--clr-text);
+  background-color: var(--clr-bg-lighter);
+  border: 1px solid var(--clr-bg-lighter);
+  border-radius: 4px;
 }

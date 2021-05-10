@@ -79,7 +79,7 @@ export const ComponentInspector = ({ selectedEntity, game }: Props) => {
                     fieldName={fieldName}
                     fieldType={fieldType}
                     value={currentComponentVal}
-                    key={index}
+                    key={`${index}-${selectedEntity.id}`}
                     onChange={handleEditorValueChange}
                   />
                 );

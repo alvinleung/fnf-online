@@ -65,7 +65,10 @@ function EditableField(type: Editor) {
 interface InstantiableObjectMap {
   [className: string]: {
     constructorParams: {
-      [paramName: string]: Editor;
+      [paramName: string]: {
+        editor: Editor;
+        defaultValue: any;
+      };
     };
     constructor: Function;
     constructorValueNames: string[];
@@ -76,7 +79,14 @@ const instantiableObjects: InstantiableObjectMap = {};
 /**
  * Decorator for classes that are unrelated to an entity to be editable
  */
-function InstantiableObject(...constructorVaribleTypes: Editor[]) {
+function InstantiableObject(config: { type: Editor; defaultValue: any }[]) {
+  const constructorVaribleTypes: Editor[] = config.map((entry) => {
+    return entry.type;
+  });
+  const constructorDefaultValues: Editor[] = config.map((entry) => {
+    return entry.defaultValue;
+  });
+
   return function (constructor: Function) {
     const paramNames = getParamNames(constructor);
     const className = constructor.name;
@@ -87,8 +97,10 @@ function InstantiableObject(...constructorVaribleTypes: Editor[]) {
     };
 
     paramNames.forEach((paramName, index) => {
-      instantiableObjects[className].constructorParams[paramName] =
-        constructorVaribleTypes[index];
+      instantiableObjects[className].constructorParams[paramName] = {
+        editor: constructorVaribleTypes[index],
+        defaultValue: constructorDefaultValues[index],
+      };
     });
   };
 }
@@ -124,6 +136,14 @@ function ObjectField(type: Editor) {
 
 function getInstantiableObjects() {
   return Object.freeze(instantiableObjects);
+}
+
+function getObjectDefaultParams(className: string) {
+  return Object.values(instantiableObjects[className].constructorParams).map(
+    ({ defaultValue }) => {
+      return defaultValue;
+    }
+  );
 }
 
 //https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically
@@ -162,19 +182,19 @@ function getComponentClass(className: string) {
 }
 
 enum Editor {
-  VECTOR,
-  ROTATION,
-  STRING,
-  NUMBER,
-  INTEGER,
-  BOOLEAN,
-  RGBA,
-  CLASS,
-  ENTITY,
-  SOURCE_CODE,
-  INSTANCE,
-  RESOURCE_IMAGE,
-  FUNCTION,
+  VECTOR = "vector",
+  ROTATION = "rotation",
+  STRING = "string",
+  NUMBER = "number",
+  INTEGER = "int",
+  BOOLEAN = "boolean",
+  RGBA = "rgba",
+  CLASS = "class",
+  ENTITY = "entity",
+  SOURCE_CODE = "code",
+  INSTANCE = "instance",
+  RESOURCE_IMAGE = "image",
+  FUNCTION = "function",
 }
 
 export {
@@ -189,4 +209,5 @@ export {
   InstantiableObject,
   getInstantiableObjects,
   ObjectField,
+  getObjectDefaultParams,
 };

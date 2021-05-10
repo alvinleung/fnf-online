@@ -9,7 +9,7 @@ import { InstanceEditor } from "./InstanceEditor";
 import { ImageResourceEditor } from "./ImageResourceEditor";
 
 interface Props {
-  fieldType: number;
+  fieldType: string;
   fieldName: string;
   value: any;
   onChange: any;
@@ -22,6 +22,9 @@ export const ValueEditor = ({
   onChange,
 }: Props) => {
   const formattedName = camelCaseToSentenceCase(fieldName);
+  /**
+   * Stateless editor components
+   */
 
   if (fieldType === Editor.VECTOR)
     return (
@@ -52,6 +55,10 @@ export const ValueEditor = ({
         stepSize={1}
       />
     );
+
+  /**
+   * Stateful editor components (depends on different entity)
+   */
 
   if (fieldType === Editor.INSTANCE)
     return (

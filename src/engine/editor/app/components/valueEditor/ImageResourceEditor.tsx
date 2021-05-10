@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import { Image as GameImage } from "../../../../graphics/Image/Image";
+import { Image as GameImage, Image } from "../../../../graphics/Image/Image";
 import useClickOutside from "../../hooks/useClickOutside";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -11,7 +11,7 @@ import "./ImageResourceEditor.css";
 
 interface Props {
   name: string;
-  value: any;
+  value: Image;
   onChange: (val: any) => void;
 }
 
@@ -21,20 +21,20 @@ const assetList = require("../../../../../MyGameAssets").default;
 export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
   const containerRef = useRef();
 
-  const [selected, setSelected] = useState(value.name);
+  const [selected, setSelected] = useState(value ? value.name : "");
   const [focused, setFocused] = useState(false);
 
   const images = assetList.images;
   const [filteredImageList, setFilteredImageList] = useState(images);
 
   useEffect(() => {
-    if (!selected) return;
+    if (!selected || selected === "") return;
 
     const imgRes = assetList.images.find(
       (element) => element.name === selected
     );
 
-    const htmlImage = new Image();
+    const htmlImage = document.createElement("img");
     htmlImage.src = imgRes.path;
     htmlImage.onload = () => {
       // create a new image base on the selected
