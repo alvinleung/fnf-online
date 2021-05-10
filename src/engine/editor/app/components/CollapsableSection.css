@@ -2,7 +2,7 @@
   /* reset the padding */
   padding-left: 0rem;
   width: 100%;
-  border: 1px solid var(--clr-bg-lighter);
+  /* border: 1px solid var(--clr-bg-lighter); */
 }
 
 .collapsable-section__toggle {
