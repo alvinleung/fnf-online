@@ -16,13 +16,11 @@ import { PanelGroup } from "./components/PanelGroup";
 import { Modal } from "./components/Modal";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { ComponentRegistry } from "../EditorDecorators";
+import { EditorContextWrapper } from "./EditorContextWrapper";
 
 interface Props {
   game: Game;
 }
-
-const GameContext = React.createContext<Game>(null);
-export const useGameContext = () => React.useContext(GameContext);
 
 const App = ({ game }: Props): JSX.Element => {
   const [entities, setEntities] = useState<Entity[]>([]);
@@ -91,7 +89,7 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedComponent(component);
   };
   const handleComponentAdd = () => {
-    setSelectedComponent("new-component");
+    setSelectedComponent("New Component");
   };
   const handleComponentRemove = useCallback(() => {
     const componentClass = ComponentRegistry.getComponentClass(
@@ -102,7 +100,12 @@ const App = ({ game }: Props): JSX.Element => {
   }, [selectedEntity, selectedComponent]);
 
   return (
-    <GameContext.Provider value={game}>
+    <EditorContextWrapper
+      game={game}
+      selectedEntity={selectedEntity}
+      selectedComponent={selectedComponent}
+      setSelectedComponent={setSelectedComponent}
+    >
       <PanelGroup>
         <Panel
           dockingSide="left"
@@ -214,7 +217,7 @@ const App = ({ game }: Props): JSX.Element => {
           </ContextMenuTrigger>
         </Panel>
       </PanelGroup>
-    </GameContext.Provider>
+    </EditorContextWrapper>
   );
 };
 

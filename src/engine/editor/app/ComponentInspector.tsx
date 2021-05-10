@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Component, ComponentClass, Entity } from "../../ecs";
 import { Game } from "../../Game";
 import { CollapsableSection } from "./components/CollapsableSection";
@@ -6,6 +6,13 @@ import { ValueEditor } from "./components/valueEditor/ValueEditor";
 import { ComponentRegistry } from "../EditorDecorators";
 import { camelCaseToSentenceCase } from "../../utils/StringUtils";
 import useClickOutside from "./hooks/useClickOutside";
+import {
+  useComponentContext,
+  useEntityContext,
+  useGameContext,
+} from "./EditorContextWrapper";
+import { DropDownSelect } from "./components/DropDownSelect/DropDownSelect";
+import { DropDownItem } from "./components/DropDownSelect/DropDownItem";
 
 interface Props {
   selectedEntity?: Entity;
@@ -57,6 +64,32 @@ export const ComponentInspector = ({
     true
   );
 
+  /**
+   * For creating new component
+   */
+  const componentContext = useComponentContext();
+  const entityContext = useEntityContext();
+  const [isCreatingComponent, setIsCreatingComponent] = useState(false);
+  useEffect(() => {
+    if (componentContext.selectedComponent === "New Component")
+      setIsCreatingComponent(true);
+  }, [componentContext, isCreatingComponent]);
+
+  const handleComponentCreation = (componentName: string) => {
+    // create component and select the component
+    const componentClass = ComponentRegistry.getComponentClass(componentName);
+    entityContext.selectedEntity.useComponent(componentClass);
+
+    // select the newly created entity
+    componentContext.setSelectedComponent(componentName);
+    setIsCreatingComponent(false);
+  };
+  const handleDismissComponentCreation = () => {
+    // handle dismiss component creation
+    componentContext.setSelectedComponent("");
+    setIsCreatingComponent(false);
+  };
+
   return (
     <div ref={inspectorContainerRef}>
       {getEntityComponent() &&
@@ -76,11 +109,11 @@ export const ComponentInspector = ({
 
           return (
             <div
+              key={index}
               onContextMenu={handleUseInteractWithComponent}
               onMouseDown={handleUseInteractWithComponent}
             >
               <CollapsableSection
-                key={index}
                 header={camelCaseToSentenceCase(componentName)}
               >
                 {fieldNames.map((fieldName, index) => {
@@ -99,7 +132,6 @@ export const ComponentInspector = ({
                       val
                     );
                   };
-
                   return (
                     <ValueEditor
                       fieldName={fieldName}
@@ -114,6 +146,24 @@ export const ComponentInspector = ({
             </div>
           );
         })}
+      {isCreatingComponent && (
+        <DropDownSelect
+          selected={""}
+          onSelect={(val) => handleComponentCreation(val)}
+          focus={true}
+          onBlur={handleDismissComponentCreation}
+        >
+          {Object.keys(ComponentRegistry.getEditableComponentMap()).map(
+            (componentName) => {
+              return (
+                <DropDownItem value={componentName}>
+                  {componentName}
+                </DropDownItem>
+              );
+            }
+          )}
+        </DropDownSelect>
+      )}
     </div>
   );
 };

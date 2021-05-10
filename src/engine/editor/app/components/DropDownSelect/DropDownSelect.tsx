@@ -22,11 +22,19 @@ export const useDropDownContext = () => {
 
 interface Props {
   children: React.ReactNode[];
-  selected: string;
+  selected?: string;
   onSelect?: (val: string) => void;
+  focus?: boolean;
+  onBlur?: () => void;
 }
 
-export const DropDownSelect = ({ selected, children, onSelect }: Props) => {
+export const DropDownSelect = ({
+  selected,
+  children,
+  onSelect,
+  focus = false,
+  onBlur,
+}: Props) => {
   const [expanded, setExpanded] = useState(false);
   const [currentItem, setCurrentItem] = useState(selected);
 
@@ -35,8 +43,12 @@ export const DropDownSelect = ({ selected, children, onSelect }: Props) => {
 
   const dropDownContainerRef = useRef();
   useClickOutside(dropDownContainerRef, () => {
-    setExpanded(false);
+    hideMenu();
   });
+
+  useEffect(() => {
+    focus && setExpanded(true);
+  }, [focus]);
 
   useEffect(() => {
     if (expanded) {
@@ -47,6 +59,7 @@ export const DropDownSelect = ({ selected, children, onSelect }: Props) => {
 
   const hideMenu = () => {
     setExpanded(false);
+    onBlur && onBlur();
   };
 
   useHotkeys(
