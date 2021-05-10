@@ -1,6 +1,6 @@
 import { Image } from "../Image/Image";
 import { Texture } from "../Texture";
-import { SpriteSheetAnimationSequence } from "./SpriteSheetAnimation";
+import { SpriteSheetAnimationSequence } from "./SpriteSheetAnimator";
 
 export class SpriteSheet {
   public readonly frameRate: number;

@@ -65,7 +65,6 @@
 }
 
 .collapsable-section__group-container {
-  overflow: hidden;
   box-sizing: border-box;
   width: 100%;
 }

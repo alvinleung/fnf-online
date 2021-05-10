@@ -160,12 +160,17 @@ const App = ({ game }: Props): JSX.Element => {
           </form>
         </Modal>
       </Panel>
-
       <Panel dockingSide="right" initialState="expanded" minSize={250}>
-        <EntityInspectorHead
-          selectedEntity={selectedEntity && (selectedEntity.id as string)}
-        />
-        <ComponentInspector game={game} selectedEntity={selectedEntity} />
+        <ContextMenuTrigger id="entity-component-inspector">
+          <EntityInspectorHead
+            selectedEntity={selectedEntity && (selectedEntity.id as string)}
+          />
+          <ComponentInspector game={game} selectedEntity={selectedEntity} />
+        </ContextMenuTrigger>
+        <ContextMenu id="entity-component-inspector">
+          <MenuItem>Add Component</MenuItem>
+          <MenuItem>Remove Component</MenuItem>
+        </ContextMenu>
       </Panel>
     </PanelGroup>
   );

@@ -9,6 +9,7 @@ const HotkeyConfig = {
   HIDE_UI: useBinding("cmd+\\", "ctrl+\\"),
   ESCAPE: useBinding("esc", "esc"),
   DELETE: useBinding("backspace", "del"),
+  SUBMIT: useBinding("enter", "enter"),
 };
 
 export { HotkeyConfig };

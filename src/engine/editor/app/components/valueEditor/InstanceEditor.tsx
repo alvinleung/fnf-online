@@ -1,31 +1,23 @@
-import { motion } from "framer-motion";
-import { element } from "prop-types";
 import React, { useEffect, useMemo, useState } from "react";
-import { camelCaseToSentenceCase } from "../../../../utils/StringUtils";
 import {
   getInstantiableObjects,
   getObjectDefaultParams,
   isInstantiableObject,
 } from "../../../EditorDecorators";
-import { DropDownItem } from "../../DropDownSelect/DropDownItem";
-import { DropDownSelect } from "../../DropDownSelect/DropDownSelect";
-import { CollapsableSection } from "../CollapsableSection";
-import { List } from "../List";
-import { ListItem } from "../ListItem";
-import { Modal } from "../Modal";
-import useModal from "../Modal/useModal";
+import { DropDownItem } from "../DropDownSelect/DropDownItem";
+import { DropDownSelect } from "../DropDownSelect/DropDownSelect";
 import { ValueEditor } from "./ValueEditor";
 
 interface Props {
-  name: string;
-  value: any;
-  onChange: (val) => void;
+  name: string; // the name of the field
+  value: any; // current instance we are editing
+  onChange: (val: any) => void; // call back when there is change
 }
 
 export const InstanceEditor = ({ name, value, onChange }: Props) => {
   // check if instance in the record of instantiable object
 
-  const [objectList, setObjectList] = useState({});
+  const objectList = getInstantiableObjects();
   const instanceName = value && value.constructor && value.constructor.name;
   const instanceConstructorParams =
     objectList[instanceName] && objectList[instanceName].constructorParams;
@@ -36,10 +28,11 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
 
     return Object.keys(instanceConstructorParams).map((name, index) => {
       // Attempt accesing the value by inferring the current constructor value name
-      const inferredValue = value[name];
+      const inferredValue = value[name]; //
+
       return {
         key: name,
-        value: inferredValue || instanceConstructorParams[name].value,
+        value: inferredValue || instanceConstructorParams[name].defaultValue,
         type: instanceConstructorParams[name].editor,
       };
     });
@@ -49,7 +42,7 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
   const beforeEditedConfig = useMemo(() => {
     if (!inferredValues) return;
 
-    let inferredConfig = {};
+    const inferredConfig = {};
     inferredValues.forEach(({ key, value }) => {
       inferredConfig[key] = value;
     });
@@ -58,22 +51,6 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
   }, [inferredValues]);
 
   const [afterEditConfig, setAfterEditConfig] = useState(beforeEditedConfig);
-
-  // change the configured instance value to the new one when inspecting different instance
-  useEffect(() => {
-    setAfterEditConfig({});
-  }, [name]);
-
-  const getNewInstance = (instanceName: string, params: any[]) => {
-    // get the instance constructor
-    const instanceClass = getInstantiableObjects()[instanceName];
-
-    // instantiate a new object to reflect the changes
-    //@ts-ignore
-    const newInst = new instanceClass.constructor(...params);
-
-    return newInst;
-  };
 
   // send the update to the engine if there is change
   useEffect(() => {
@@ -111,32 +88,12 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
     onChange && onChange(newInst);
   }, [afterEditConfig, inferredValues]);
 
-  useEffect(() => {
-    const insts = getInstantiableObjects();
-    setObjectList(insts);
-  }, []);
-
   /**
    * For the user selecting a new type in the library
    */
   const [selectedInstanceType, setSelectedInstanceType] = useState(
     instanceName
   );
-  const fullList = Object.keys(objectList);
-  const [filteredList, setFilteredList] = useState(fullList);
-  const handleInstanceListFilter = (val: string) => {
-    if (val === "") {
-      setFilteredList(fullList);
-      return;
-    }
-    const filteredList = fullList.filter((name: string) => {
-      return name.includes(val);
-    });
-    setFilteredList(filteredList);
-  };
-  const handleInstanceSelect = (selectedInstanceName: string) => {
-    setSelectedInstanceType(selectedInstanceName);
-  };
 
   /**
    * When the user selected a new type
@@ -177,17 +134,12 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
               }}
             >
               <DropDownSelect
-                selectedValue={selectedInstanceType}
-                onFilter={handleInstanceListFilter}
+                selected={selectedInstanceType}
+                onSelect={(val) => setSelectedInstanceType(val)}
               >
-                {filteredList.map((key, index) => {
+                {Object.keys(objectList).map((key, index) => {
                   return (
-                    <DropDownItem
-                      key={index}
-                      value={key}
-                      selected={key === selectedInstanceType}
-                      onSelect={handleInstanceSelect}
-                    >
+                    <DropDownItem key={index} value={key}>
                       {key}
                     </DropDownItem>
                   );
@@ -217,4 +169,21 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
       </div>
     </>
   );
+};
+
+/**
+ * Create an instance base on the constructor stored in the registry
+ * @param instanceName
+ * @param params
+ * @returns
+ */
+const getNewInstance = (instanceName: string, params: any[]) => {
+  // get the instance constructor
+  const instanceClass = getInstantiableObjects()[instanceName];
+
+  // instantiate a new object to reflect the changes
+  //@ts-ignore
+  const newInst = new instanceClass.constructor(...params);
+
+  return newInst;
 };
