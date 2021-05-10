@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import "./CollapsableSection.css";
 import { config } from "../AnimationConfig";
 
@@ -21,8 +21,8 @@ export const CollapsableSection = ({ header, children }: Props) => {
   return (
     <div className="collapsable-section">
       <motion.button
-        className="collapsable-section__toggle header-label"
-        whileHover={{ backgroundColor: "#555" }}
+        className="collapsable-section__toggle"
+        whileHover={{ borderTopColor: "#555" }}
         onClick={toggleCollapseState}
         transition={config.DEFAULT_TRANSITION}
       >
@@ -35,21 +35,34 @@ export const CollapsableSection = ({ header, children }: Props) => {
         />
         {header}
       </motion.button>
-      <motion.div
-        className="collapsable-section__group-container"
-        animate={{
-          height: collapsed ? "0rem" : "auto",
-        }}
-        transition={config.DEFAULT_TRANSITION}
-      >
-        {childrenArr.map((children, index) => {
-          return (
-            <div className="collapsable-section__group" key={index}>
-              {children}
-            </div>
-          );
-        })}
-      </motion.div>
+      <AnimatePresence>
+        {!collapsed && (
+          <motion.div
+            className="collapsable-section__group-container"
+            initial={{
+              height: 0,
+              overflowY: "hidden",
+            }}
+            animate={{
+              height: "auto",
+              overflowY: "visible",
+            }}
+            exit={{
+              height: 0,
+              overflowY: "hidden",
+            }}
+            transition={config.DEFAULT_TRANSITION}
+          >
+            {childrenArr.map((children, index) => {
+              return (
+                <div className="collapsable-section__group" key={index}>
+                  {children}
+                </div>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -17,7 +17,6 @@ export const EntityInspectorHead = ({ selectedEntity }: Props) => {
           <div className="panel-hor-spacing entity-inspector-head__entity-name">
             {selectedEntity}
           </div>
-          {/* <div className="entity-inspector-head__entity-name panel-hor-spacing"></div> */}
         </div>
       )}
 

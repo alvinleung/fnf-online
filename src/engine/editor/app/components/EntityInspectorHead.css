@@ -1,7 +1,7 @@
 .entity-inspector-head {
-  background-color: var(--clr-bg);
+  background-color: var(--clr-accent);
 
-  border-top: 4px solid var(--clr-accent);
+  /* border-top: 4px solid var(--clr-accent); */
   padding-top: var(--spacing-m);
   padding-bottom: var(--spacing-m);
 

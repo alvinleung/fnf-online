@@ -21,35 +21,17 @@
   text-align: left;
 
   color: var(--clr-text);
-  background-color: var(--clr-bg-lighter);
-
+  background-color: var(--clr-bg);
   border: none;
+  border-top: 1px solid var(--clr-bg-lighter);
 
   z-index: 1;
-}
-
-.panel__button {
-  --offset: var(--spacing-m);
-  position: fixed;
-  z-index: 10000;
-  padding: 0rem;
-}
-.panel__button > img {
-  width: 1rem;
-}
-
-.panel__button--left {
-  top: var(--offset);
-  left: 0rem;
-}
-.panel__button--right {
-  top: var(--offset);
-  right: 0rem;
 }
 
 /* the toggle icon */
 .collapsable-section__toggle > img {
   margin-right: var(--spacing-s);
+  opacity: 0.2;
 }
 
 .collapsable-section__group {
@@ -60,8 +42,11 @@
   padding-right: var(--spacing-m);
   width: 100%;
 }
+.collapsable-section__group:first-child {
+  padding-top: var(--spacing-s);
+}
 .collapsable-section__group:last-child {
-  padding-bottom: var(--spacing-s);
+  padding-bottom: var(--spacing-m);
 }
 
 .collapsable-section__group-container {

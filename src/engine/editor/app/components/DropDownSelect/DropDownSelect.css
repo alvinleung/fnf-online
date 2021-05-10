@@ -33,7 +33,6 @@
   width: 100%;
 
   background-color: var(--clr-bg-lighter);
-  /* padding: var(--spacing-s); */
 
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
 
@@ -46,7 +45,7 @@
   padding-bottom: var(--spacing-xs);
   padding-left: var(--spacing-s);
   padding-right: var(--spacing-s);
-  opacity: 0.5;
+  opacity: 0.75;
   font-size: 12px;
 }
 
@@ -71,5 +70,5 @@ input.drop-down-select__filter-input:focus {
 .drop-down-select__selection-hint {
   position: absolute;
   top: 0;
-  opacity: 0.2;
+  opacity: 0.4;
 }
