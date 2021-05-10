@@ -78,27 +78,32 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
   }, [isVisible]);
 
   return (
-    <div className="value-editor" ref={containerRef}>
-      <div className="value-editor__group-name">{name}</div>
-      <motion.button
-        style={{
-          width: "100%",
-          backgroundColor: "var(--clr-bg-lighter)",
-          borderRadius: "4px",
-          border: "1px solid rgba(255,255,255, .2)",
-          color: "var(--clr-text)",
-          padding: "var(--spacing-xs)",
-          marginTop: "var(--spacing-xs)",
-        }}
-        whileHover={{
-          border: "1px solid rgba(255,255,255, .5)",
-        }}
-        onClick={() => {
-          openResourceBrowser();
-        }}
-      >
-        {selected}
-      </motion.button>
+    <>
+      <div className="value-editor" ref={containerRef}>
+        <div className="value-editor__group-container">
+          <label className="value-editor__field">
+            <div className="value-editor__group-name">{name}</div>
+            <motion.button
+              style={{
+                width: "100%",
+                backgroundColor: "var(--clr-bg-lighter)",
+                borderRadius: "4px",
+                border: "1px solid rgba(255,255,255, .2)",
+                color: "var(--clr-text)",
+                padding: "var(--spacing-xs)",
+              }}
+              whileHover={{
+                border: "1px solid rgba(255,255,255, .5)",
+              }}
+              onClick={() => {
+                openResourceBrowser();
+              }}
+            >
+              {selected}
+            </motion.button>
+          </label>
+        </div>
+      </div>
       <Modal
         isVisible={isVisible}
         onHide={hideModal}
@@ -150,6 +155,6 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
           ))}
         </div>
       </Modal>
-    </div>
+    </>
   );
 };

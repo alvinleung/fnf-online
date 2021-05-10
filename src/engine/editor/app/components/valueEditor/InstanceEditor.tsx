@@ -95,8 +95,6 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
     setObjectList(insts);
   }, []);
 
-  const [isVisible, showModal, hideModal] = useModal();
-
   return (
     <>
       <div className="value-editor">
