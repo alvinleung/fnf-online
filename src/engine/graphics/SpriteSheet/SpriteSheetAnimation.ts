@@ -4,14 +4,17 @@ import { FrameBuffer } from "../FrameBuffer";
 import { Texture } from "../Texture";
 import { SpriteSheet } from "./SpriteSheet";
 import { RenderableObject } from "../Renderable";
+import { Editor, InstantiableObject, ObjectField } from "../../editor";
 
 /**
  * Renderable object for the SpriteSheetRenderPass
  */
+@InstantiableObject(Editor.INSTANCE)
 export class SpriteSheetRenderable extends RenderableObject {
   private _frameBuffer: FrameBuffer;
   private _spriteSheetTexture: Texture;
 
+  @ObjectField(Editor.INSTANCE)
   public readonly animator: SpriteSheetAnimator;
 
   constructor(animator: SpriteSheetAnimator) {
@@ -70,6 +73,12 @@ export class SpriteSheetRenderable extends RenderableObject {
 /**
  * This is a state machine for controlling spritesheet animation
  */
+@InstantiableObject(
+  Editor.RESOURCE_IMAGE,
+  Editor.INTEGER,
+  Editor.INTEGER,
+  Editor.INTEGER
+)
 export class SpriteSheetAnimator {
   public readonly spriteSheet: SpriteSheet;
   private currentAnimation: SpriteSheetAnimationSequence;
@@ -96,6 +105,24 @@ export class SpriteSheetAnimator {
       frameWidth,
       frameHeight
     );
+  }
+
+  @ObjectField(Editor.INTEGER)
+  public get frameRate() {
+    return this.spriteSheet.frameRate;
+  }
+  @ObjectField(Editor.INTEGER)
+  public get frameWidth() {
+    return this.spriteSheet.frameWidth;
+  }
+
+  @ObjectField(Editor.INTEGER)
+  public get frameHeight() {
+    return this.spriteSheet.frameHeight;
+  }
+  @ObjectField(Editor.RESOURCE_IMAGE)
+  public get image() {
+    return this.spriteSheet.image;
   }
 
   /**

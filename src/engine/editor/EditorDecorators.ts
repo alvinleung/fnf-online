@@ -68,6 +68,7 @@ interface InstantiableObjectMap {
       [paramName: string]: Editor;
     };
     constructor: Function;
+    constructorValueNames: string[];
   };
 }
 
@@ -80,6 +81,7 @@ function InstantiableObject(...constructorVaribleTypes: Editor[]) {
     const paramNames = getParamNames(constructor);
     const className = constructor.name;
     instantiableObjects[className] = {
+      ...instantiableObjects[className],
       constructorParams: {},
       constructor: constructor,
     };
@@ -88,6 +90,35 @@ function InstantiableObject(...constructorVaribleTypes: Editor[]) {
       instantiableObjects[className].constructorParams[paramName] =
         constructorVaribleTypes[index];
     });
+  };
+}
+function ObjectField(type: Editor) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor?: PropertyDescriptor
+  ) {
+    return;
+    // extrect the editor information
+    const className = target.constructor.name;
+    const fieldName = propertyKey;
+
+    // use the Editable data
+    if (
+      !instantiableObjects[className] &&
+      !instantiableObjects[className].constructorValueNames
+    ) {
+      //@ts-ignore
+      instantiableObjects[className] = {
+        ...instantiableObjects[className],
+        constructorValueNames: [],
+      };
+    }
+
+    // put the entr
+    instantiableObjects[className].constructorValueNames.push(fieldName);
+
+    console.log(instantiableObjects);
   };
 }
 
@@ -135,6 +166,7 @@ enum Editor {
   ROTATION,
   STRING,
   NUMBER,
+  INTEGER,
   BOOLEAN,
   RGBA,
   CLASS,
@@ -156,4 +188,5 @@ export {
   getComponentFieldEditor,
   InstantiableObject,
   getInstantiableObjects,
+  ObjectField,
 };

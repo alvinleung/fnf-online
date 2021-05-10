@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { element } from "prop-types";
+import React, { useEffect, useMemo, useState } from "react";
 import { getInstantiableObjects } from "../../../EditorDecorators";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -17,32 +18,80 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
   // check if instance in the record of instantiable object
 
   const [objectList, setObjectList] = useState({});
-  const instanceName = value.constructor.name;
+  const instanceName = value && value.constructor && value.constructor.name;
   const instanceConstructorParams =
     objectList[instanceName] && objectList[instanceName].constructorParams;
 
-  const [instanceConfig, setInstanceConfig] = useState({});
+  const inferredValues = useMemo(() => {
+    if (!instanceConstructorParams) return;
+
+    return Object.keys(instanceConstructorParams).map((name, index) => {
+      // Attempt accesing the value by inferring the current constructor value name
+      const inferredValue = value[name];
+      return {
+        key: name,
+        value: inferredValue,
+        type: instanceConstructorParams[name],
+      };
+    });
+  }, [name, value, instanceConstructorParams]);
+
+  const inferredConfig = useMemo(() => {
+    if (!inferredValues) return;
+
+    let inferredConfig = {};
+    inferredValues.forEach(({ key, value }) => {
+      inferredConfig[key] = value;
+    });
+
+    return inferredConfig;
+  }, [inferredValues]);
+
+  const [instanceConfig, setInstanceConfig] = useState(inferredConfig);
 
   useEffect(() => {
-    // check instnace config item are valid
-    const valid = !Object.values(instanceConfig).some((v) => v === null);
+    setInstanceConfig({});
+  }, [name]);
+
+  useEffect(() => {
+    if (!instanceConstructorParams || !instanceConfig) return;
+
+    // check if there are changes, if not then return
+    const isNotSame = inferredValues.some(({ key, value }) => {
+      return instanceConfig[key] !== value;
+    });
+    //
+    if (!isNotSame) return;
+
+    // perform check to make sure the new value is valid
+    const configKeys = Object.keys(instanceConfig);
+
+    const valid = !configKeys.some((v: string, index) => {
+      const isEmpty = v === null || v === undefined;
+      const isDifferentKey = v !== inferredValues[index].key;
+
+      return isEmpty || isDifferentKey;
+    });
     if (!valid) return;
 
-    // create instsance
-    const insts = getInstantiableObjects();
+    // create a config that combines the old one with the changes
+    const params = { ...inferredConfig, ...instanceConfig };
+
+    // get the instance constructor
+    const instanceClass = getInstantiableObjects()[instanceName];
+
+    // instantiate a new object to reflect the changes
     //@ts-ignore
-    const newInst = new insts[instanceName].constructor(
-      ...Object.values(instanceConfig)
-    );
+    const newInst = new instanceClass.constructor(...Object.values(params));
 
     // update the change
     onChange && onChange(newInst);
-  }, [instanceConfig]);
+  }, [instanceConfig, inferredValues]);
 
   useEffect(() => {
     const insts = getInstantiableObjects();
     setObjectList(insts);
-  }, [value]);
+  }, []);
 
   const [isVisible, showModal, hideModal] = useModal();
 
@@ -68,40 +117,44 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
         </motion.button>
       </div>
 
-      {instanceConstructorParams && (
-        <Modal isVisible={isVisible} onHide={hideModal}>
-          <h2>Edit {instanceName}</h2>
+      <Modal isVisible={isVisible} onHide={hideModal}>
+        <h2>Edit {instanceName}</h2>
 
-          {!instanceConstructorParams && (
-            <div>Editing {instanceName} is not currently supported.</div>
-          )}
+        {!instanceConstructorParams && (
+          <div>Editing {instanceName} is not currently supported.</div>
+        )}
 
-          {instanceConstructorParams &&
-            Object.keys(instanceConstructorParams).map((name, index) => {
+        {inferredValues && (
+          <div>
+            {inferredValues.map(({ key, value, type }, index) => {
+              // Attempt accesing the value by inferring the current constructor value name
+              // const inferredValue = value[name];
+              // console.log(inferredConfig);
+
               return (
                 <div className="field" key={index}>
                   <ValueEditor
-                    fieldName={name}
-                    fieldType={instanceConstructorParams[name]}
-                    value={null}
+                    fieldName={key}
+                    fieldType={type}
+                    value={value}
                     onChange={(val) =>
-                      setInstanceConfig({ ...instanceConfig, [name]: val })
+                      setInstanceConfig({ ...inferredConfig, [key]: val })
                     }
                   />
                 </div>
               );
             })}
-
-          <div className="field field--no-stretch">
-            <button className="btn-primary" onClick={hideModal}>
-              Save
-            </button>
-            <button className="btn-secondary" onClick={hideModal}>
-              Cancel
-            </button>
+            <div className="field field--no-stretch">
+              <button className="btn-primary" onClick={hideModal}>
+                Save
+              </button>
+              <button className="btn-secondary" onClick={hideModal}>
+                Cancel
+              </button>
+            </div>
           </div>
-        </Modal>
-      )}
+        )}
+      </Modal>
     </>
   );
 };

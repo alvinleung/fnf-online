@@ -18,7 +18,7 @@ const assetList = require("../../../../../MyGameAssets").default;
 export const ResourceEditor = ({ name, value, onChange }: Props) => {
   const containerRef = useRef();
 
-  const [selected, setSelected] = useState();
+  const [selected, setSelected] = useState(value.name);
   const [focused, setFocused] = useState(false);
 
   const images = assetList.images;
