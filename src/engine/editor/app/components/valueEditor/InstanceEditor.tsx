@@ -116,7 +116,10 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
     setObjectList(insts);
   }, []);
 
-  const [selectedInstanceType, setselectedInstanceType] = useState(
+  /**
+   * For the user selecting a new type in the library
+   */
+  const [selectedInstanceType, setSelectedInstanceType] = useState(
     instanceName
   );
   const fullList = Object.keys(objectList);
@@ -132,10 +135,17 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
     setFilteredList(filteredList);
   };
   const handleInstanceSelect = (selectedInstanceName: string) => {
-    setselectedInstanceType(selectedInstanceName);
+    setSelectedInstanceType(selectedInstanceName);
   };
 
+  /**
+   * When the user selected a new type
+   */
   useEffect(() => {
+    // only instantiate a new type there is actual change in instance type
+    if (selectedInstanceType === instanceName) return;
+
+    // make sure the selected type is valid
     if (
       !selectedInstanceType ||
       selectedInstanceType === "" ||
