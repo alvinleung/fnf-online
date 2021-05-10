@@ -14,7 +14,7 @@ export class MetricsRenderPass extends RenderPass {
   private verticeSize: number;
 
   private GRID_SIZE = 100;
-  private GRID_COLOR = [1.0, 1.0, 1.0, 1.0];
+  private GRID_COLOR = [0.65, 0.65, 0.65, 0.5];
   private GRID_AXIS_COLOR = {
     x: [1.0, 0.0, 0.0, 1.0],
     y: [0.0, 1.0, 0.0, 1.0],
