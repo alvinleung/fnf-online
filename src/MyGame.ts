@@ -183,7 +183,7 @@ class MyGame extends Game {
 
   protected setupSystems() {
     // setup game logic
-    //this.addSystem(new PlayerControlSystem());
+    this.addSystem(new PlayerControlSystem());
     this.addSystem(new EditorSystem());
     this.addSystem(new EditorControlSystem());
     this.addSystem(new DebugSystem());

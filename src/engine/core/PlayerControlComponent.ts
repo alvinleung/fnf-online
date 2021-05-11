@@ -1,6 +1,5 @@
 import { Component } from "../ecs";
+import { EditableComponent } from "../editor";
 
-export class PlayerControlComponent implements Component {
-  x: number;
-  y: number;
-}
+@EditableComponent
+export class PlayerControlComponent implements Component {}
