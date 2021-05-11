@@ -28,7 +28,7 @@ export const Y_AXIS = [0, 1, 0];
 export const X_AXIS = [1, 0, 0];
 export const Z_AXIS = [0, 0, 1];
 
-export function fromAxisAndAngle(axis: v3.Vec3, phi: number): Quat {
+export function fromAxisAngle(axis: v3.Vec3, phi: number): Quat {
   var cos = Math.cos(phi / 2);
   var sin = Math.sin(phi / 2);
   var normal = v3.normalize(axis);
@@ -58,6 +58,25 @@ export function fromEulerAngles(
     c1 * s2 * c3 + s1 * c2 * s3,
     c1 * c2 * s3 - s1 * s2 * c3,
   ];
+}
+
+// https://stackoverflow.com/questions/12435671/quaternion-lookat-function
+export function lookAt(sourcePoint: v3.Vec3, destPoint: v3.Vec3): Quat {
+  const forwardVector = v3.normalize(v3.subtract(destPoint, sourcePoint));
+  const dot = v3.dot([0, 0, -1], forwardVector);
+
+  if (Math.abs(dot - -1) < 0.000001) {
+    return [0, 1, 0, Math.PI];
+  }
+
+  if (Math.abs(dot - -1) < 0.000001) {
+    return [1, 0, 0, 0];
+  }
+
+  const rotAngle = Math.acos(dot);
+  let rotAxis = v3.cross([0, 0, -1], forwardVector);
+  rotAxis = v3.normalize(rotAxis);
+  return fromAxisAngle(rotAxis, rotAngle);
 }
 
 export function quatToMat4(q: Quat): m4.Mat4 {
@@ -258,32 +277,32 @@ export function mat4ToQuatv2(m: m4.Mat4): Quat {
   let qy = 0;
   let qz = 0;
 
-  if (tr > 0) { 
-    let S = Math.sqrt(tr+1.0) * 2; // S=4*qw 
+  if (tr > 0) {
+    let S = Math.sqrt(tr + 1.0) * 2; // S=4*qw
     qw = 0.25 * S;
     qx = (m21 - m12) / S;
-    qy = (m02 - m20) / S; 
-    qz = (m10 - m01) / S; 
-  } else if ((m00 > m11)&&(m00 > m22)) { 
-    let S = Math.sqrt(1.0 + m00 - m11 - m22) * 2; // S=4*qx 
+    qy = (m02 - m20) / S;
+    qz = (m10 - m01) / S;
+  } else if (m00 > m11 && m00 > m22) {
+    let S = Math.sqrt(1.0 + m00 - m11 - m22) * 2; // S=4*qx
     qw = (m21 - m12) / S;
     qx = 0.25 * S;
-    qy = (m01 + m10) / S; 
-    qz = (m02 + m20) / S; 
-  } else if (m11 > m22) { 
+    qy = (m01 + m10) / S;
+    qz = (m02 + m20) / S;
+  } else if (m11 > m22) {
     let S = Math.sqrt(1.0 + m11 - m00 - m22) * 2; // S=4*qy
     qw = (m02 - m20) / S;
-    qx = (m01 + m10) / S; 
+    qx = (m01 + m10) / S;
     qy = 0.25 * S;
-    qz = (m12 + m21) / S; 
-  } else { 
+    qz = (m12 + m21) / S;
+  } else {
     let S = Math.sqrt(1.0 + m22 - m00 - m11) * 2; // S=4*qz
     qw = (m10 - m01) / S;
     qx = (m02 + m20) / S;
     qy = (m12 + m21) / S;
     qz = 0.25 * S;
   }
-  const q = [qw,qx,qy,qz];
+  const q = [qw, qx, qy, qz];
   return qw < 0 ? negate(q) : q;
 }
 
