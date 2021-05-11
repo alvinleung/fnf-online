@@ -109,6 +109,8 @@ export function generateColoredCube(){
   vertices.push(...rectangleFace(cubeVertices,2,1,5,6));
   colors.push(Array(6).fill(COLORS_VEC4.Pantone_Orange));
 
+  //colors.push(Array(6 * 6).fill(COLORS_VEC4.Pantone_Orange));
+
   return {
     verticeArray: spreadArrayRecusively(vertices),
     colorArray: spreadArrayRecusively(colors)

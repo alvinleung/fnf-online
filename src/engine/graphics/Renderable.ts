@@ -3,6 +3,7 @@ import { Component } from "../ecs";
 import { EditableField, Editor, InstantiableObject } from "../editor";
 import { spreadArrayRecusively } from "../utils/ArrayUtils";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
+import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderer";
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Image } from "./Image/Image";
 import { Texture } from "./Texture";
@@ -12,6 +13,27 @@ const VERBOSE = false;
 export class RenderableComponent implements Component {
   @EditableField(Editor.INSTANCE)
   renderableObject: RenderableObject;
+}
+
+export class MaterialProperties {
+}
+export class RenderableMaterials {
+  private properties = {};
+
+  public getProperty<T extends MaterialProperties>(name: string): T{
+    return this.properties[name]; 
+  }
+
+  public addProperty<T extends MaterialProperties>(name:string, val: T){
+    if(!this.properties[name]){
+      this.properties[name] = val;
+    }
+    return this;
+  }
+  public editProperty<T extends MaterialProperties>(name:string, val: T){
+    this.properties[name] = val;
+    return this;
+  }
 }
 
 /**
@@ -30,6 +52,11 @@ export class RenderableObject {
     this.objectCoords = objectCoords;
     this.textureCoords = textureCoords;
     this.textureImage = textureImage;
+    
+    this._material = new RenderableMaterials()
+    .addProperty("Phong", new PhongMaterialProperties())
+    .addProperty("Normals", new Normals(objectCoords));
+
     if (objectColors) {
       this.objectColors = objectColors;
     } else {
@@ -53,6 +80,7 @@ export class RenderableObject {
   private _texCoordsBuffer: AttribDataBuffer;
   private _colorBuffer: AttribDataBuffer;
   private _texture: Texture;
+  private _material: RenderableMaterials;
 
   public loadIntoGPU(gl: WebGLRenderingContext) {
     this.createBufferObjectsInGPU(gl);
@@ -148,5 +176,9 @@ export class RenderableObject {
 
   public getObjectVerticeSize() {
     return this.objectCoords.length / 3;
+  }
+
+  public getMaterials(): RenderableMaterials{
+    return this._material;
   }
 }

@@ -29,6 +29,8 @@ import { GameStateParser } from "./engine/utils/GameStateParser";
 import { DebugSystem } from "./engine/core/DebugSystem";
 import EditorSystem from "./engine/core/EditorSystem";
 import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheetAnimator";
+import { PhongRenderer } from "./engine/graphics/3dRender/PhongRenderer";
+import { LightComponent } from "./engine/graphics/light/Light";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -123,6 +125,16 @@ class MyGame extends Game {
 
     // this.removeEntity(squareEntity2);
     // this.addEntity(entities[1]);
+
+
+    const light = new Entity();
+    light.id = "light";
+    let lightProperties = light.useComponent(LightComponent);
+    lightProperties.color = [1,1,1];
+    lightProperties.intensity = 1;
+    lightProperties.isDirectional = true;
+    light.useComponent(TransformComponent).position = [3,3,3];
+    this.addEntity(light)
   }
 
   // @override
@@ -195,7 +207,7 @@ class MyGame extends Game {
       // new ImageRendererSetup(),
       // new SpriteSheetRendererSetup(),
       new SpriteSheetRenderPass(),
-      new Renderer3D(),
+      new PhongRenderer(),
       new MetricsRenderPass(),
     ];
     const renderingSystem = new RenderingSystem(renderers);

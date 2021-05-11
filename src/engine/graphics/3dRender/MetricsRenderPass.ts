@@ -5,14 +5,15 @@ import { RenderingSystem } from "../RenderingSystem";
 import { RenderPass } from "../RenderPass";
 import { ShaderProgram } from "../ShaderProgram";
 
-//let gridVertices = require("./objects/Primitives").plane;
-//let gridColors = require("./objects/Primitives").plane_colors;
+const RENDER3D_SHADER_VERT = require("./shaders/3DShader.vert");
+const RENDER3D_SHADER_FRAG = require("./shaders/3DShader.frag");
 
 export class MetricsRenderPass extends RenderPass {
   private positionBuffer: AttribDataBuffer;
   private colorBuffer: AttribDataBuffer;
   private verticeSize: number;
 
+  protected SHADER_PROGRAM_NAME = "renderer3DShader";
   private GRID_SIZE = 100;
   private GRID_COLOR = [0.65, 0.65, 0.65, 0.5];
   private GRID_AXIS_COLOR = {
@@ -22,7 +23,15 @@ export class MetricsRenderPass extends RenderPass {
   };
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
-    // this part run once per entity
+
+    if(!system.getShaderProgram(this.SHADER_PROGRAM_NAME)){
+      const renderer3DShader = new ShaderProgram(
+        gl,
+        RENDER3D_SHADER_VERT,
+        RENDER3D_SHADER_FRAG
+      );
+      system.useShaderProgram(this.SHADER_PROGRAM_NAME, renderer3DShader);
+    }
 
     let Size = this.GRID_SIZE;
 
@@ -89,7 +98,7 @@ export class MetricsRenderPass extends RenderPass {
     gl: WebGLRenderingContext,
     system: RenderingSystem,
   ) {
-    const renderer3DShader = system.getShaderProgram("renderer3DShader");
+    const renderer3DShader = system.getShaderProgram(this.SHADER_PROGRAM_NAME);
     if (!renderer3DShader) return;
     renderer3DShader.useProgram();
     const cameraMatrix = system.getCameraMatrix();

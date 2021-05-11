@@ -68,9 +68,7 @@ export class Renderer3D extends RenderPass {
       // SUB-PASS 1 - render object with texture
       this.setupObjectTrasnform(renderer3DShader, renderableObject);
       this.setupObjectTexture(gl,renderer3DShader, renderableObject);
-      
-      
-      this.beforeDraw(gl, system, renderer3DShader, renderableObject);
+      if(!this.beforeDraw(gl, system, renderer3DShader, renderableObject)) return;
       this.callDraw(gl, gl.TRIANGLES, renderableObject.getObjectVerticeSize());
     });
 
@@ -85,7 +83,7 @@ export class Renderer3D extends RenderPass {
       this.setupObjectTrasnform(renderer3DShader, renderableObject);
       // render a place-holder colour when there is no texture
       this.setupObjectColor(renderer3DShader, renderableObject);
-      this.beforeDraw(gl, system, renderer3DShader, renderableObject);
+      if(!this.beforeDraw(gl, system, renderer3DShader, renderableObject)) return;
       this.callDraw(gl, gl.TRIANGLES, renderableObject.getObjectVerticeSize());
     })
 
@@ -136,7 +134,8 @@ export class Renderer3D extends RenderPass {
     renderer3DShader.writeUniformBoolean("useTexture",true);
   }
   // virtual/ abstract method called before gl.draw
-  protected beforeDraw(gl: WebGLRenderingContext, system: RenderingSystem, renderer3DShader:ShaderProgram, renderableObject: RenderableObject){}
+  // returns true if continues with the draw
+  protected beforeDraw(gl: WebGLRenderingContext, system: RenderingSystem, renderer3DShader:ShaderProgram, renderableObject: RenderableObject):boolean{return true}
 
   protected beforeDraws(gl: WebGLRenderingContext, system: RenderingSystem, renderer3DShader:ShaderProgram, renderableObjects: RenderableObject[]){}
 
