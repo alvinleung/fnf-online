@@ -162,17 +162,24 @@ export class RenderingSystem extends System {
     );
 
     // setup the renederableObject inside for rendering
-    const renderablObjects = this._renderList.entities.map((e) => {
-      const renderableObject = e.getComponent(RenderableComponent)
-        .renderableObject;
+    const renderablObjects = this._renderList.entities.reduce(
+      (filteredEntityList, entity) => {
+        const renderableObject = entity.getComponent(RenderableComponent)
+          .renderableObject;
 
-      // set the transform base on the entity's transform component
-      renderableObject.transform = e
-        .getComponent(TransformComponent)
-        .getMatrix();
+        // only configure valid renderable object, don't render unset objects
+        if (renderableObject) {
+          // set the transform base on the entity's transform component
+          renderableObject.transform = entity
+            .getComponent(TransformComponent)
+            .getMatrix();
 
-      return renderableObject;
-    });
+          filteredEntityList.push(renderableObject);
+        }
+        return filteredEntityList;
+      },
+      []
+    );
 
     // for each render pass
     this._renderPasses.forEach((renderPass) => {

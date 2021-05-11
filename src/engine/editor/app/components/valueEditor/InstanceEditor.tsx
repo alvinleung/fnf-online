@@ -116,14 +116,35 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
     onChange && onChange(newInstance);
   }, [selectedInstanceType]);
 
+  const alternativeInstancePicker = () => (
+    <DropDownSelect
+      selected={selectedInstanceType}
+      onSelect={(val) => setSelectedInstanceType(val)}
+    >
+      {Object.keys(objectList).map((key, index) => {
+        return (
+          <DropDownItem key={index} value={key}>
+            {key}
+          </DropDownItem>
+        );
+      })}
+    </DropDownSelect>
+  );
+
   return (
     <>
       <div className="value-editor">
         <div className="value-editor__label">{name}</div>
-        {!instanceConstructorParams && (
+
+        {/* for unsupported component */}
+        {value !== undefined && !instanceConstructorParams && (
           <div>Editing {instanceName} is not currently supported.</div>
         )}
 
+        {/* for newly created renderable component */}
+        {value === undefined && alternativeInstancePicker()}
+
+        {/* for editing component */}
         {inferredValues && (
           <div>
             <div
@@ -133,18 +154,7 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
                 marginBottom: "var(--spacing-s)",
               }}
             >
-              <DropDownSelect
-                selected={selectedInstanceType}
-                onSelect={(val) => setSelectedInstanceType(val)}
-              >
-                {Object.keys(objectList).map((key, index) => {
-                  return (
-                    <DropDownItem key={index} value={key}>
-                      {key}
-                    </DropDownItem>
-                  );
-                })}
-              </DropDownSelect>
+              {alternativeInstancePicker()}
             </div>
             <div style={{ paddingLeft: "1rem" }}>
               {inferredValues.map(({ key, value, type }, index) => {
