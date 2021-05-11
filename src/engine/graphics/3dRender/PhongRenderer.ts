@@ -66,6 +66,7 @@ export class PhongMaterialProperties implements MaterialProperties {
   }
 
 }
+
 export class Normals implements MaterialProperties {
   private normals: number[];
   private _normalBuffer: AttribDataBuffer;
@@ -80,8 +81,8 @@ export class Normals implements MaterialProperties {
       const normal = v3.cross(v3.subtract(vert0,vert1), v3.subtract(vert2,vert1))// as number[]; 
       objectNormals.push(...normal,...normal,...normal);
     }
-
     this.normals = spreadArrayRecusively(objectNormals);
+    //this.normals = smoothNormals(this.normals,vertices);
     this._isLoadedIntoGPUMemory = false;
   }
 
@@ -173,4 +174,50 @@ export class PhongRenderer extends Renderer3D {
     
     return true;
   }
+}
+
+
+//TODO: temporary function NOT KEEPING
+var smoothNormals = function(normalsArray:number[],verticesArray:number[]){
+
+  let vertices = [];
+  let normals = [];
+  for(var i = 0; i < verticesArray.length;i+=3){
+    vertices.push([verticesArray[i],verticesArray[i + 1], verticesArray[i + 2]]);
+    normals.push([normalsArray[i],normalsArray[i + 1], normalsArray[i + 2]]);
+  }
+  var angleThreashold = 50;
+  var percisionInDecimalPoints = 10;
+
+  var vertexMapping = {}
+  var vertexCumulativeNormal = [];
+
+  for(var i = 0; i < vertices.length; i++){
+
+      var vertString = vertices[i].toString();
+      var vectexCumulativeIndex = 0;
+      if(!vertexMapping[vertString]){
+          vectexCumulativeIndex = vertexCumulativeNormal.length;
+          vertexMapping[vertString] = vectexCumulativeIndex;
+          vertexCumulativeNormal[vectexCumulativeIndex] = normals[i];
+      } else{
+          vectexCumulativeIndex = vertexMapping[vertString];
+      }
+
+      vertexCumulativeNormal[vectexCumulativeIndex] = v3.add(vertexCumulativeNormal[vectexCumulativeIndex], normals[i]);
+  }
+
+  // normalize normals
+  for(var i = 0; i < vertexCumulativeNormal.length; i++){
+      vertexCumulativeNormal[i] = v3.normalize(vertexCumulativeNormal[i]);
+  }
+
+  var smoothedNormals = [];
+  for(var i = 0; i < vertices.length; i++){
+      var vertString = vertices[i].toString();
+      var vectexCumulativeIndex = vertexMapping[vertString];
+      smoothedNormals.push(...vertexCumulativeNormal[vectexCumulativeIndex]);
+  }
+  console.log(smoothedNormals)
+  return smoothedNormals;
 }
