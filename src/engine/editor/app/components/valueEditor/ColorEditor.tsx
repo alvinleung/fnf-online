@@ -2,19 +2,20 @@ import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { RgbaColorPicker } from "react-colorful";
 import { useHotkeys } from "react-hotkeys-hook";
+import { v3 } from "twgl.js";
 import useClickOutside from "../../hooks/useClickOutside";
 import { HotkeyConfig } from "../../Hotkeys";
 
 interface Props {
   name: string;
-  value?: { r: number; g: number; b: number; a: number };
-  onChange?: ({ r, g, b, a }) => void;
+  value?: v3.Vec3;
+  onChange?: (val: v3.Vec3) => void;
 }
 
 export const ColorEditor = ({ name, onChange, value }: Props) => {
   const colorPickerRef = useRef();
   const [internalColor, setInternalColor] = useState(
-    value || { r: 200, g: 150, b: 35, a: 0.5 }
+    value || [200, 150, 35, 0.5]
   );
 
   const [openingMousePos, setOpeningMousePos] = useState({ x: 0, y: 0 });
@@ -22,8 +23,9 @@ export const ColorEditor = ({ name, onChange, value }: Props) => {
   const [isShowingPicker, setIsShowingPicker] = useState(false);
 
   const setColor = (val) => {
-    onChange(val);
-    setInternalColor(val);
+    const clrArray = [val.r, val.g, val.b, val.a];
+    onChange(clrArray);
+    setInternalColor(clrArray);
   };
   value = value === null ? value : internalColor;
 
@@ -83,12 +85,15 @@ export const ColorEditor = ({ name, onChange, value }: Props) => {
             zIndex: 1000000,
           }}
         >
-          <RgbaColorPicker color={value} onChange={setColor} />
+          <RgbaColorPicker
+            color={{ r: value[0], g: value[1], b: value[2], a: value[3] }}
+            onChange={setColor}
+          />
         </motion.div>
         <div
           style={{
             cursor: "pointer",
-            backgroundColor: `rgba(${value.r}, ${value.g}, ${value.b}, ${value.a})`,
+            backgroundColor: `rgba(${value[0]}, ${value[1]}, ${value[2]}, ${value[3]})`,
           }}
           onClick={handleColorSwatchClick}
         ></div>

@@ -7,6 +7,7 @@ import { camelCaseToSentenceCase } from "../../../../utils/StringUtils";
 import { NumberEditor } from "./NumberEditor";
 import { InstanceEditor } from "./InstanceEditor";
 import { ImageResourceEditor } from "./ImageResourceEditor";
+import { ColorEditor } from "./ColorEditor";
 
 interface Props {
   fieldType: string;
@@ -63,6 +64,10 @@ export const ValueEditor = ({
   if (fieldType === Editor.INSTANCE)
     return (
       <InstanceEditor name={formattedName} value={value} onChange={onChange} />
+    );
+  if (fieldType === Editor.RGBA)
+    return (
+      <ColorEditor name={formattedName} value={value} onChange={onChange} />
     );
   if (fieldType === Editor.RESOURCE_IMAGE)
     return (

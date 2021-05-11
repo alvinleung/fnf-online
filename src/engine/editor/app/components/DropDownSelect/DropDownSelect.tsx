@@ -126,15 +126,19 @@ export const DropDownSelect = ({
             <motion.div
               className="drop-down-select__sheet"
               initial={{
-                y: -20,
+                transformOrigin: "top center",
+                // y: -20,
+                scale: 0.9,
                 opacity: 0,
               }}
               animate={{
-                y: 0,
+                // y: 0,
+                scale: 1,
                 opacity: 1,
               }}
               exit={{
-                y: -20,
+                // y: -20,
+                scale: 0.9,
                 opacity: 0,
               }}
               transition={config.DEFAULT_TRANSITION}

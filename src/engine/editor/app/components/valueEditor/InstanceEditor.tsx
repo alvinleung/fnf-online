@@ -147,7 +147,7 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
               style={{
                 fontSize: "12px",
                 marginTop: "var(--spacing-s)",
-                opacity: 0.3,
+                opacity: 0.4,
               }}
             >
               Editing "{instanceName}" is not currently supported.
