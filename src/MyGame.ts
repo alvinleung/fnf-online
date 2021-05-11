@@ -54,9 +54,8 @@ class MyGame extends Game {
      */
     const squareEntity3 = new Entity();
     squareEntity3.useComponent(TransformComponent);
-    squareEntity3.useComponent(
-      RenderableComponent
-    ).renderableObject = new Plane(this.assets.image.get("test2"));
+    squareEntity3.useComponent(RenderableComponent).renderableObject =
+      new Plane(this.assets.image.get("test2"));
     squareEntity3.id = "square-entity-3";
 
     const transform3 = squareEntity3.getComponent(TransformComponent);
@@ -79,9 +78,8 @@ class MyGame extends Game {
     transform2.position = [0, -1, -1];
     transform2.initialRotation = [0, 1, 1];
 
-    squareEntity2.useComponent(
-      RenderableComponent
-    ).renderableObject = new SpriteSheetRenderable(spriteSheetAnimation);
+    squareEntity2.useComponent(RenderableComponent).renderableObject =
+      new SpriteSheetRenderable(spriteSheetAnimation);
 
     /**
      * Entity 3 - Camera Controller
