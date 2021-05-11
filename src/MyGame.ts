@@ -204,7 +204,7 @@ class MyGame extends Game {
       // new ImageRendererSetup(),
       // new SpriteSheetRendererSetup(),
       new SpriteSheetRenderPass(),
-      new PhongRenderer(),
+      new Renderer3D(),
       new MetricsRenderPass(),
     ];
     const renderingSystem = new RenderingSystem(renderers);
