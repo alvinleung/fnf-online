@@ -175,7 +175,7 @@ export const DropDownSelect = ({
           className="drop-down-select__toggle"
           onClick={() => setExpanded(!expanded)}
         >
-          {selected}
+          {selected ? selected : "\u00A0"}
           <motion.img
             src={ARROW_DOWN}
             animate={{

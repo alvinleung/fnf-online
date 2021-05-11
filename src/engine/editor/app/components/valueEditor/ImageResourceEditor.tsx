@@ -99,7 +99,7 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
                 openResourceBrowser();
               }}
             >
-              {selected}
+              {selected || "\u00A0"}
             </motion.button>
           </label>
         </div>
