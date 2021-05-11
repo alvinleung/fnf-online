@@ -88,13 +88,12 @@ export class MetricsRenderPass extends RenderPass {
   public render(
     gl: WebGLRenderingContext,
     system: RenderingSystem,
-    cameraMatrix: m4.Mat4,
-    projectionMatrix: m4.Mat4,
-    renderableObjects: RenderableObject[]
   ) {
     const renderer3DShader = system.getShaderProgram("renderer3DShader");
     if (!renderer3DShader) return;
     renderer3DShader.useProgram();
+    const cameraMatrix = system.getCameraMatrix();
+    const projectionMatrix = system.getProjectionMatrix();
 
     // make sure this pass, it render to canvas
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);

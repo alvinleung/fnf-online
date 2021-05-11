@@ -170,6 +170,9 @@ export class ShaderProgram {
   public writeUniformBoolean(uniformName: string, value) {
     this.gl.uniform1i(this.getUniformLocation(uniformName), value);
   }
+  public writeUniformFloat(uniformName: string, value) {
+    this.gl.uniform1f(this.getUniformLocation(uniformName), value);
+  }
 
   private compileShaderProgram(
     gl: WebGLRenderingContext,

@@ -9,8 +9,5 @@ export abstract class RenderPass {
   public abstract render(
     gl: WebGLRenderingContext,
     system: RenderingSystem,
-    cameraMatrix: m4.Mat4,
-    projectionMatrix: m4.Mat4,
-    renderableObject: RenderableObject[]
   );
 }

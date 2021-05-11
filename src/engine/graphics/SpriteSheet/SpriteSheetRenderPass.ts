@@ -10,7 +10,8 @@ const SPRITE_SHEET_SHADER_VERT = require("./ShaderSpriteSheet.vert");
 const SPRITE_SHEET_SHADER_FRAG = require("./ShaderSpriteSheet.frag");
 
 export class SpriteSheetRenderPass extends RenderPass {
-  private _program: ShaderProgram;
+
+  protected SHADER_PROGRAM_NAME = "ShaderSpriteSheet";
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
     // init shader progam
@@ -19,18 +20,17 @@ export class SpriteSheetRenderPass extends RenderPass {
       SPRITE_SHEET_SHADER_VERT,
       SPRITE_SHEET_SHADER_FRAG
     );
-    this._program = program;
+    system.useShaderProgram(this.SHADER_PROGRAM_NAME, program);
   }
 
   public render(
     gl: WebGLRenderingContext,
     system: RenderingSystem,
-    cameraMatrix: m4.Mat4,
-    projectionMatrix: m4.Mat4,
-    renderableObjects: RenderableObject[]
   ) {
-    this._program.useProgram();
-
+    const program = system.getShaderProgram(this.SHADER_PROGRAM_NAME);
+    program.useProgram();
+    const renderableObjects = system.getRenderables();
+    
     renderableObjects.forEach((renderableObject) => {
       if (!(renderableObject instanceof SpriteSheetRenderable)) return;
       const animation: SpriteSheetRenderable = renderableObject as SpriteSheetRenderable;
@@ -42,7 +42,7 @@ export class SpriteSheetRenderPass extends RenderPass {
       if (!animation.hasSpriteSheetTexture()) return;
 
       // draw the animation out
-      this.renderSpriteSheetAnimation(gl, this._program, animation);
+      this.renderSpriteSheetAnimation(gl, program, animation);
     });
   }
 

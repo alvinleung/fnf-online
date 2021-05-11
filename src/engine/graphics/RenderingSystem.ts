@@ -5,11 +5,12 @@ import { ShaderProgram } from "./ShaderProgram";
 import { TransformComponent } from "../core/TransformComponent";
 import { m4 } from "twgl.js";
 import CameraComponent from "../camera/CameraComponent";
-import { RenderableComponent } from "./Renderable";
+import { RenderableComponent, RenderableObject } from "./Renderable";
 import { Texture } from "./Texture";
 import { RenderPass } from "./RenderPass";
 import { FrameBuffer } from "./FrameBuffer";
 import { cameraMatrixFromTransform } from "../utils/MatrixUtils";
+import { LightComponent } from "./light/Light";
 
 /**
  * RENDERING CONFIG
@@ -38,6 +39,12 @@ export class RenderingSystem extends System {
 
   private _renderList: Family;
   private _cameras: Family;
+  private _lights: Family;
+
+  // Matrices
+  private projectionMatrix: m4.Mat4;
+  private cameraMatrix: m4.Mat4;
+  private renderableObjects: RenderableObject[];
 
   constructor(renderPasses: RenderPass[]) {
     super();
@@ -77,6 +84,10 @@ export class RenderingSystem extends System {
 
     this._cameras = new FamilyBuilder(game)
       .include(TransformComponent, CameraComponent)
+      .build();
+
+    this._lights = new FamilyBuilder(game)
+      .include(TransformComponent, LightComponent)
       .build();
   }
 
@@ -147,14 +158,14 @@ export class RenderingSystem extends System {
     }
 
     // camera matrix
-    const cameraMatrix = cameraMatrixFromTransform(
+    this.cameraMatrix = cameraMatrixFromTransform(
       mainCamera.getComponent(TransformComponent)
     );
     const cameraSetting = mainCamera.getComponent(CameraComponent);
 
     // perspective matrix
     const aspectRatio = game.getCanvas().width / game.getCanvas().height;
-    const perspectiveMatrix = m4.perspective(
+    this.projectionMatrix = m4.perspective(
       (cameraSetting.fov * Math.PI) / 180, // field of view
       aspectRatio, // aspect ratio
       cameraSetting.clipNear, // nearZ: clip space properties
@@ -162,7 +173,7 @@ export class RenderingSystem extends System {
     );
 
     // setup the renederableObject inside for rendering
-    const renderablObjects = this._renderList.entities.reduce(
+    this.renderableObjects = this._renderList.entities.reduce(
       (filteredEntityList, entity) => {
         const renderableObject = entity.getComponent(RenderableComponent)
           .renderableObject;
@@ -187,14 +198,11 @@ export class RenderingSystem extends System {
       renderPass.render(
         gl,
         this,
-        cameraMatrix,
-        perspectiveMatrix,
-        renderablObjects
       );
     });
   }
 
-  private getMainCamera() {
+  public getMainCamera() {
     if (
       this._cameras.entities.length === 1 &&
       this._cameras.entities[0].getComponent(CameraComponent).isActive
@@ -209,5 +217,20 @@ export class RenderingSystem extends System {
       )
         return;
     });
+  }
+
+  public getLights(){
+    return this._lights.entities;
+  }
+
+  public getRenderables(): RenderableObject[]{
+    return this.renderableObjects;
+  }
+
+  public getProjectionMatrix(): m4.Mat4{
+    return this.projectionMatrix;
+  }
+  public getCameraMatrix(): m4.Mat4{
+    return this.cameraMatrix;
   }
 }
