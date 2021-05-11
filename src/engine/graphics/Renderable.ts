@@ -17,7 +17,7 @@ import { Texture } from "./Texture";
 const VERBOSE = false;
 
 export class RenderableComponent implements Component {
-  @EditableField(Editor.CLASS)
+  @EditableField(Editor.CLASS, { category: "RenderableObject" })
   renderableObject: RenderableObject;
 }
 
@@ -25,7 +25,7 @@ export class MaterialProperties {}
 
 @InstantiableClass()
 export class Materials {
-  @Field(Editor.OBJECT, {})
+  @Field(Editor.OBJECT)
   private properties = {};
 
   public getProperty<T extends MaterialProperties>(name: string): T {
@@ -52,6 +52,7 @@ export class Geomatry {}
  *
  * If possible, try to decouple the object behaviour logic from this class.
  */
+@InstantiableClass("RenderableObject")
 export class RenderableObject {
   constructor(
     objectCoords: number[] = [],
@@ -83,7 +84,7 @@ export class RenderableObject {
   private _textureCoords: number[];
   private _objectColors: number[];
 
-  @Field(Editor.ARRAY_NUMBER, [])
+  @Field(Editor.ARRAY_NUMBER, { defaultValue: [] })
   public set objectCoords(val) {
     this._isLoadedIntoGPUMemory = false;
     this._objectCoords = val;
@@ -92,7 +93,7 @@ export class RenderableObject {
     return this._objectCoords;
   }
 
-  @Field(Editor.RESOURCE_IMAGE, Image.createEmpty())
+  @Field(Editor.RESOURCE_IMAGE)
   public set textureImage(val) {
     this._isLoadedIntoGPUMemory = false;
     this._textureImage = val;
@@ -101,7 +102,7 @@ export class RenderableObject {
     return this._textureImage;
   }
 
-  @Field(Editor.ARRAY_NUMBER, [])
+  @Field(Editor.ARRAY_NUMBER)
   public set textureCoords(val) {
     this._isLoadedIntoGPUMemory = false;
     this._textureCoords = val;
@@ -110,7 +111,7 @@ export class RenderableObject {
     return this._textureCoords;
   }
 
-  @Field(Editor.ARRAY_NUMBER, [])
+  @Field(Editor.ARRAY_NUMBER)
   public set objectColors(val) {
     this._isLoadedIntoGPUMemory = false;
     this._objectColors = val;

@@ -7,7 +7,7 @@ import { InstantiableClass } from "../../../editor";
 import { RenderableObject } from "../../Renderable";
 import { generateColoredCube } from "./Primitives";
 
-@InstantiableClass()
+@InstantiableClass("RenderableObject")
 export class Cube extends RenderableObject {
   constructor() {
     let cube = generateColoredCube();

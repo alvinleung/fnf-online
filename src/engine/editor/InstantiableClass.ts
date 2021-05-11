@@ -3,7 +3,7 @@ import { Editor } from "./EditorDecorators";
 
 type ClassEntry = {
   name: string;
-  catagory: string;
+  category: string;
   classConstructor: Function;
   fields: {
     [fieldName: string]: FieldEntry;
@@ -14,6 +14,7 @@ type FieldEntry = {
   name: string;
   type: Editor;
   defaultValue: any;
+  category: Object;
 };
 
 type ClassRegistry = {
@@ -23,13 +24,13 @@ type ClassRegistry = {
 /**
  * Decorator function to declare an Instantiable Class
  */
-export function InstantiableClass(classCatagory?: string) {
-  // catagory of class
+export function InstantiableClass(classCategory?: string) {
+  // category of class
   return function (target: Function) {
     InstantiableClassRegistry.addClassIfEmpty(
       target.name,
       target,
-      classCatagory
+      classCategory
     );
   };
 }
@@ -37,7 +38,10 @@ export function InstantiableClass(classCatagory?: string) {
 /**
  * Decorator function declaring a field
  */
-export function Field<T>(type: Editor, defaultValue?: T) {
+export function Field<T>(
+  type: Editor,
+  options?: { defaultValue?: T; category?: any }
+) {
   return function (
     target: any,
     propertyKey: string,
@@ -51,7 +55,8 @@ export function Field<T>(type: Editor, defaultValue?: T) {
     const fieldEntry: FieldEntry = {
       name: fieldName,
       type: type,
-      defaultValue: defaultValue,
+      defaultValue: options && options.defaultValue,
+      category: options && options.category,
     };
 
     InstantiableClassRegistry.addClassIfEmpty(ownerClassName, ownerConstructor);
@@ -86,9 +91,9 @@ export module InstantiableClassRegistry {
     return Object.values(registry[className].fields);
   }
 
-  export function getClassesByCatagory(catagory: string): ClassEntry[] {
+  export function getClassesByCategory(category: string): ClassEntry[] {
     return Object.values(registry).filter(
-      (classEntry) => classEntry.catagory === catagory
+      (classEntry) => classEntry.category === category
     );
   }
   export function getAllClasses(): ClassEntry[] {
@@ -117,22 +122,22 @@ export module InstantiableClassRegistry {
   export function addClassIfEmpty(
     className: string,
     classConstructor: Function,
-    classCatagory?: string
+    classCategory?: string
   ) {
     if (!registry[className]) {
       const newEntry = {
         name: className,
         classConstructor: classConstructor,
-        catagory: classCatagory,
+        category: classCategory,
         fields: {},
       };
       registry[className] = newEntry;
       return;
     }
 
-    // only update the catagory if the class already exist
-    // when the user declare a class catagory in the class
-    registry[className].catagory = classCatagory;
+    // only update the category if the class already exist
+    // when the user declare a class category in the class
+    registry[className].category = classCategory;
   }
 
   export function addFieldToClass(className: string, field: FieldEntry) {

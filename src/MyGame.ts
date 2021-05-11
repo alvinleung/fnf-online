@@ -5,7 +5,7 @@ import InputSystem, { KeyboardInput, MouseInput } from "./engine/input";
 import { RenderingSystem } from "./engine/graphics/RenderingSystem";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
-import { SpriteSheetRenderable } from "./engine/graphics/SpriteSheet/SpriteSheetAnimation";
+import { SpriteSheetRenderable } from "./engine/graphics/SpriteSheet/SpriteSheetRenderable";
 import { TransformComponent } from "./engine/core/TransformComponent";
 import { SoundLoader } from "./engine/assets/SoundLoader";
 

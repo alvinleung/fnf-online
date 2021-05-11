@@ -15,6 +15,7 @@ interface Props {
   fieldName: string;
   value: any;
   onChange: any;
+  config?: Object;
 }
 
 export const ValueEditor = ({
@@ -22,6 +23,7 @@ export const ValueEditor = ({
   fieldType,
   value,
   onChange,
+  config,
 }: Props) => {
   const formattedName = camelCaseToSentenceCase(fieldName);
   /**
@@ -73,6 +75,7 @@ export const ValueEditor = ({
         name={formattedName}
         value={value}
         onChange={onChange}
+        config={config}
       />
     );
 

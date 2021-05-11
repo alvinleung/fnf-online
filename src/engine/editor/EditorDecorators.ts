@@ -12,7 +12,10 @@ import { Component, ComponentClass } from "../ecs";
  * }
  */
 interface ComponentField {
-  [propsName: string]: Editor;
+  [propsName: string]: {
+    editor: Editor;
+    config: Object;
+  };
 }
 interface EditableComponentMap {
   [componentName: string]: ComponentField;
@@ -37,7 +40,7 @@ function EditableComponent(constructor: Function) {
  * @param type
  * @returns
  */
-function EditableField(type: Editor) {
+function EditableField(type: Editor, config?: Object) {
   return function (
     target: any,
     propertyKey: string,
@@ -55,8 +58,11 @@ function EditableField(type: Editor) {
       editableMap[componentName] = {};
     }
 
-    // put the entr
-    editableMap[componentName][propName] = type;
+    // put the entry
+    editableMap[componentName][propName] = {
+      editor: type,
+      config: config,
+    };
     editableComponentClassRefs[componentName] = target.constructor;
   };
 }

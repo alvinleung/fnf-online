@@ -50,8 +50,7 @@ export class SpriteSheetAnimator {
     );
   }
 
-  // @ObjectField(Editor.INTEGER)
-  @Field(Editor.INTEGER, 12)
+  @Field(Editor.INTEGER, { defaultValue: 12 })
   public get frameRate() {
     return this.spriteSheet.frameRate;
   }
@@ -60,8 +59,7 @@ export class SpriteSheetAnimator {
     this.spriteSheet.frameRate = val;
   }
 
-  // @ObjectField(Editor.INTEGER)
-  @Field(Editor.INTEGER, 32)
+  @Field(Editor.INTEGER, { defaultValue: 32 })
   public get frameWidth() {
     return this.spriteSheet.frameWidth;
   }
@@ -70,8 +68,7 @@ export class SpriteSheetAnimator {
     this.spriteSheet.frameWidth = val;
   }
 
-  // @ObjectField(Editor.INTEGER)
-  @Field(Editor.INTEGER, 32)
+  @Field(Editor.INTEGER, { defaultValue: 32 })
   public get frameHeight() {
     return this.spriteSheet.frameHeight;
   }
@@ -80,8 +77,7 @@ export class SpriteSheetAnimator {
     this.spriteSheet.frameHeight = val;
   }
 
-  // @ObjectField(Editor.RESOURCE_IMAGE)
-  @Field(Editor.RESOURCE_IMAGE, Image.createEmpty())
+  @Field(Editor.RESOURCE_IMAGE, { defaultValue: Image.createEmpty() })
   public get image() {
     return this.spriteSheet.image;
   }

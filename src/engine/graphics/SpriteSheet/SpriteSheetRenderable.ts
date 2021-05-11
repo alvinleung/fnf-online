@@ -28,8 +28,10 @@ export class SpriteSheetRenderable extends RenderableObject {
   private _frameBuffer: FrameBuffer;
   private _spriteSheetTexture: Texture;
 
-  // @ObjectField(Editor.INSTANCE)
-  @Field(Editor.CLASS, new SpriteSheetAnimator(Image.createEmpty(), 12, 16, 16))
+  @Field(Editor.CLASS, {
+    defaultValue: new SpriteSheetAnimator(Image.createEmpty(), 12, 16, 16),
+    category: "SpriteSheetAnimator",
+  })
   public readonly animator: SpriteSheetAnimator;
 
   constructor(

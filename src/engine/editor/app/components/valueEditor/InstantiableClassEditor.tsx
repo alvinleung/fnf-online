@@ -16,10 +16,18 @@ interface Props {
   name: string; // the name of the field
   value: any; // current instance we are editing
   onChange: (val: any) => void; // call back when there is change
+  config: any;
 }
 
-export const InstantiableClassEditor = ({ name, value, onChange }: Props) => {
+export const InstantiableClassEditor = ({
+  name,
+  value,
+  onChange,
+  config,
+}: Props) => {
   const currentInstance = value;
+
+  const hasSpecifiedCategory = config && config.category;
 
   // check if instance in the record of instantiable object
   const instantiableClasses = useMemo(
@@ -82,20 +90,33 @@ export const InstantiableClassEditor = ({ name, value, onChange }: Props) => {
       selected={selectedClassName}
       onSelect={(val) => setSelectedClassName(val)}
     >
-      {instantiableClasses.map((classEntry, index) => {
-        return (
-          <DropDownItem key={index} value={classEntry.name}>
-            {classEntry.name}
-          </DropDownItem>
-        );
-      })}
+      {instantiableClasses.reduce((dropDownItems, classEntry, index) => {
+        if (
+          !hasSpecifiedCategory || // add all items if no category specified
+          (hasSpecifiedCategory && classEntry.category === config.category) // filter out category if category is specified
+        ) {
+          dropDownItems.push(
+            <DropDownItem key={index} value={classEntry.name}>
+              {classEntry.name}
+            </DropDownItem>
+          );
+        }
+        return dropDownItems;
+      }, [])}
     </DropDownSelect>
   );
 
   return (
     <>
       <div className="value-editor">
-        <div className="value-editor__label">{name}</div>
+        <div className="value-editor__label">
+          {name}{" "}
+          {hasSpecifiedCategory && (
+            <span className="value-editor__description">
+              Value: {config.category}
+            </span>
+          )}
+        </div>
         <div>
           <div
             style={{
@@ -134,6 +155,7 @@ export const InstantiableClassEditor = ({ name, value, onChange }: Props) => {
                     key={index}
                     fieldName={field.name}
                     fieldType={field.type}
+                    config={{ category: field.category }}
                     value={fieldCurrentValue || field.defaultValue}
                     onChange={(val: any) => handleFieldChange(field.name, val)}
                   />

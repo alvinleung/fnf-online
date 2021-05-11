@@ -1,3 +1,3 @@
 export * from "./SpriteSheet";
-export * from "./SpriteSheetAnimation";
+export * from "./SpriteSheetRenderable";
 export * from "./SpriteSheetRenderPass";

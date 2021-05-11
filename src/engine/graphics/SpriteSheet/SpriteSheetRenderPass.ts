@@ -4,13 +4,12 @@ import { RenderableObject } from "../Renderable";
 import { RenderingSystem } from "../RenderingSystem";
 import { RenderPass } from "../RenderPass";
 import { ShaderProgram } from "../ShaderProgram";
-import { SpriteSheetRenderable } from "./SpriteSheetAnimation";
+import { SpriteSheetRenderable } from "./SpriteSheetRenderable";
 
 const SPRITE_SHEET_SHADER_VERT = require("./ShaderSpriteSheet.vert");
 const SPRITE_SHEET_SHADER_FRAG = require("./ShaderSpriteSheet.frag");
 
 export class SpriteSheetRenderPass extends RenderPass {
-
   protected SHADER_PROGRAM_NAME = "ShaderSpriteSheet";
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
@@ -23,17 +22,15 @@ export class SpriteSheetRenderPass extends RenderPass {
     system.useShaderProgram(this.SHADER_PROGRAM_NAME, program);
   }
 
-  public render(
-    gl: WebGLRenderingContext,
-    system: RenderingSystem,
-  ) {
+  public render(gl: WebGLRenderingContext, system: RenderingSystem) {
     const program = system.getShaderProgram(this.SHADER_PROGRAM_NAME);
     program.useProgram();
     const renderableObjects = system.getRenderables();
-    
+
     renderableObjects.forEach((renderableObject) => {
       if (!(renderableObject instanceof SpriteSheetRenderable)) return;
-      const animation: SpriteSheetRenderable = renderableObject as SpriteSheetRenderable;
+      const animation: SpriteSheetRenderable =
+        renderableObject as SpriteSheetRenderable;
 
       if (!renderableObject.isLoadedIntoGPUMemory()) {
         renderableObject.loadIntoGPU(gl);

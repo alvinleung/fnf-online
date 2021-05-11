@@ -116,7 +116,7 @@ export const ComponentInspector = ({
                 header={camelCaseToSentenceCase(componentName)}
               >
                 {fieldNames.map((fieldName, index) => {
-                  const fieldType = ComponentRegistry.getComponentFieldEditor(
+                  const field = ComponentRegistry.getComponentFieldEditor(
                     componentInstance,
                     fieldName
                   );
@@ -134,10 +134,11 @@ export const ComponentInspector = ({
                   return (
                     <ValueEditor
                       fieldName={fieldName}
-                      fieldType={fieldType}
+                      fieldType={field.editor}
                       value={currentComponentVal}
                       key={`${index}-${selectedEntity.id}`}
                       onChange={handleEditorValueChange}
+                      config={field.config}
                     />
                   );
                 })}

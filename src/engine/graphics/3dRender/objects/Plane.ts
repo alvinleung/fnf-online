@@ -17,7 +17,7 @@ import { RenderableObject } from "../../Renderable";
 //     defaultValue: null,
 //   },
 // ])
-@InstantiableClass()
+@InstantiableClass("RenderableObject")
 export class Plane extends RenderableObject {
   constructor(textureImage?: Image) {
     super(
