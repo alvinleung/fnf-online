@@ -136,13 +136,24 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
       <div className="value-editor">
         <div className="value-editor__label">{name}</div>
 
-        {/* for unsupported component */}
-        {value !== undefined && !instanceConstructorParams && (
-          <div>Editing {instanceName} is not currently supported.</div>
-        )}
-
         {/* for newly created renderable component */}
         {value === undefined && alternativeInstancePicker()}
+
+        {/* for unsupported component */}
+        {!instanceConstructorParams && (
+          <>
+            {alternativeInstancePicker()}
+            <div
+              style={{
+                fontSize: "12px",
+                marginTop: "var(--spacing-s)",
+                opacity: 0.3,
+              }}
+            >
+              Editing "{instanceName}" is not currently supported.
+            </div>
+          </>
+        )}
 
         {/* for editing component */}
         {inferredValues && (
