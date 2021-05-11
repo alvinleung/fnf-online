@@ -92,9 +92,8 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedComponent("New Component");
   };
   const handleComponentRemove = useCallback(() => {
-    const componentClass = ComponentRegistry.getComponentClass(
-      selectedComponent
-    );
+    const componentClass =
+      ComponentRegistry.getComponentClass(selectedComponent);
     // remove the current component in the
     selectedEntity.removeComponent(componentClass);
   }, [selectedEntity, selectedComponent]);
@@ -139,12 +138,20 @@ const App = ({ game }: Props): JSX.Element => {
             </MenuItem>
             <MenuItem divider={true} />
             <MenuItem
+              data={{ action: "add-entity" }}
+              onClick={() => {
+                setIsCreatingEntity(true);
+              }}
+            >
+              Duplicate "{selectedEntity && selectedEntity.id}"
+            </MenuItem>
+            <MenuItem
               data={{ action: "remove-entity" }}
               onClick={() => {
                 handleItemRemove(selectedEntity.id as string);
               }}
             >
-              Remove Entity
+              Remove "{selectedEntity && selectedEntity.id}"
             </MenuItem>
           </ContextMenu>
 

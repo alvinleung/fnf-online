@@ -67,12 +67,20 @@ export module InstantiableClassRegistry {
   const registry: ClassRegistry = {};
 
   export function getClassConstructor(className: string): any {
+    if (!registry[className]) {
+      console.warn(
+        `Unable to get constructor: class "${className}" does not exists on the registry.`
+      );
+      return;
+    }
     return registry[className].classConstructor;
   }
 
   export function getFields(className: string): FieldEntry[] {
     if (!registry[className]) {
-      console.error(`Class "${className}" does not exists on the registry.`);
+      console.warn(
+        `Unable to get field: class "${className}" does not exists on the registry.`
+      );
       return;
     }
     return Object.values(registry[className].fields);

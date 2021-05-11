@@ -8,7 +8,7 @@ import { NumberEditor } from "./NumberEditor";
 import { InstanceEditor } from "./InstanceEditor";
 import { ImageResourceEditor } from "./ImageResourceEditor";
 import { ColorEditor } from "./ColorEditor";
-import { InstanceClassEditor } from "./InstanceClassEditor";
+import { InstantiableClassEditor } from "./InstantiableClassEditor";
 
 interface Props {
   fieldType: string;
@@ -69,7 +69,7 @@ export const ValueEditor = ({
 
   if (fieldType === Editor.CLASS)
     return (
-      <InstanceClassEditor
+      <InstantiableClassEditor
         name={formattedName}
         value={value}
         onChange={onChange}

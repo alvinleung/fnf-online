@@ -97,9 +97,8 @@ export const ComponentInspector = ({
           if (!componentInstance)
             return <div>No editable fields in this component</div>;
 
-          const fields = ComponentRegistry.getComponentEditableFields(
-            componentInstance
-          );
+          const fields =
+            ComponentRegistry.getComponentEditableFields(componentInstance);
           const componentName = componentInstance.constructor.name;
           const fieldNames = Object.keys(fields);
 
@@ -154,9 +153,9 @@ export const ComponentInspector = ({
           onBlur={handleDismissComponentCreation}
         >
           {Object.keys(ComponentRegistry.getEditableComponentMap()).map(
-            (componentName) => {
+            (componentName, index) => {
               return (
-                <DropDownItem value={componentName}>
+                <DropDownItem value={componentName} key={index}>
                   {componentName}
                 </DropDownItem>
               );

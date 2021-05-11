@@ -18,7 +18,7 @@ interface Props {
   onChange: (val: any) => void; // call back when there is change
 }
 
-export const InstanceClassEditor = ({ name, value, onChange }: Props) => {
+export const InstantiableClassEditor = ({ name, value, onChange }: Props) => {
   const currentInstance = value;
 
   // check if instance in the record of instantiable object
@@ -34,25 +34,36 @@ export const InstanceClassEditor = ({ name, value, onChange }: Props) => {
   );
 
   const currentInstanceFields = useMemo(
-    () => InstantiableClassRegistry.getFields(currentInstanceClassName),
-    [value]
+    () =>
+      selectedClassName &&
+      InstantiableClassRegistry.getFields(currentInstanceClassName),
+    [selectedClassName, value]
   );
 
   const handleFieldChange = (fieldName: string, val: any) => {
     // handle the changes on the instance
     currentInstance[fieldName] = val;
 
-    console.log(currentInstance);
-
     onChange && onChange(currentInstance);
   };
 
   useEffect(() => {
-    if (selectedClassName === currentInstance.constructor.name) return;
+    if (!selectedClassName) return;
+
+    // only create new instance when the user pick new object
+    // or the system is instantiating a new object itself
+    if (
+      currentInstance &&
+      selectedClassName === currentInstance.constructor.name
+    )
+      return;
 
     // if instance is changed, then create a new instance
     const classConstructor =
       InstantiableClassRegistry.getClassConstructor(selectedClassName);
+
+    // abort if constructor not found
+    if (!classConstructor) return;
 
     // create a new instance of the class
     const newInstance = new classConstructor();
@@ -106,7 +117,8 @@ export const InstanceClassEditor = ({ name, value, onChange }: Props) => {
                   opacity: 0.4,
                 }}
               >
-                Editing "{currentInstanceClassName}" is not currently supported.
+                {currentInstanceClassName &&
+                  `Editing class instance "${currentInstanceClassName}" is not currently supported.`}
               </div>
             </>
           )}
@@ -123,7 +135,7 @@ export const InstanceClassEditor = ({ name, value, onChange }: Props) => {
                     fieldName={field.name}
                     fieldType={field.type}
                     value={fieldCurrentValue || field.defaultValue}
-                    onChange={(val) => handleFieldChange(field.name, val)}
+                    onChange={(val: any) => handleFieldChange(field.name, val)}
                   />
                 );
               })}
@@ -132,21 +144,4 @@ export const InstanceClassEditor = ({ name, value, onChange }: Props) => {
       </div>
     </>
   );
-};
-
-/**
- * Create an instance base on the constructor stored in the registry
- * @param instanceName
- * @param params
- * @returns
- */
-const getNewInstance = (instanceName: string, params: any[]) => {
-  // get the instance constructor
-  const instanceClass = getInstantiableObjects()[instanceName];
-
-  // instantiate a new object to reflect the changes
-  //@ts-ignore
-  const newInst = new instanceClass.constructor(...params);
-
-  return newInst;
 };

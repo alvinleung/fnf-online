@@ -23,8 +23,7 @@ export class MetricsRenderPass extends RenderPass {
   };
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
-
-    if(!system.getShaderProgram(this.SHADER_PROGRAM_NAME)){
+    if (!system.getShaderProgram(this.SHADER_PROGRAM_NAME)) {
       const renderer3DShader = new ShaderProgram(
         gl,
         RENDER3D_SHADER_VERT,
@@ -94,10 +93,7 @@ export class MetricsRenderPass extends RenderPass {
   }
 
   // this will be called per frame
-  public render(
-    gl: WebGLRenderingContext,
-    system: RenderingSystem,
-  ) {
+  public render(gl: WebGLRenderingContext, system: RenderingSystem) {
     const renderer3DShader = system.getShaderProgram(this.SHADER_PROGRAM_NAME);
     if (!renderer3DShader) return;
     renderer3DShader.useProgram();
