@@ -91,9 +91,8 @@ export const InstanceEditor = ({ name, value, onChange }: Props) => {
   /**
    * For the user selecting a new type in the library
    */
-  const [selectedInstanceType, setSelectedInstanceType] = useState(
-    instanceName
-  );
+  const [selectedInstanceType, setSelectedInstanceType] =
+    useState(instanceName);
 
   /**
    * When the user selected a new type

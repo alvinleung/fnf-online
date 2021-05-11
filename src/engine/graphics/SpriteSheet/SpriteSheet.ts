@@ -11,10 +11,10 @@ export class SpriteSheet {
   public readonly image: Image;
 
   constructor(
-    image: Image,
-    frameRate: number,
-    frameWidth: number,
-    frameHeight: number
+    image: Image = Image.createEmpty(),
+    frameRate: number = 12,
+    frameWidth: number = 32,
+    frameHeight: number = 32
   ) {
     this.image = image;
     this.frameRate = frameRate;

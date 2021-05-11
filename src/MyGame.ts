@@ -124,15 +124,14 @@ class MyGame extends Game {
     // this.removeEntity(squareEntity2);
     // this.addEntity(entities[1]);
 
-
     const light = new Entity();
     light.id = "light";
     let lightProperties = light.useComponent(LightComponent);
-    lightProperties.color = [1,1,1];
+    lightProperties.color = [1, 1, 1];
     lightProperties.intensity = 1;
     lightProperties.isDirectional = true;
-    light.useComponent(TransformComponent).position = [3,3,3];
-    this.addEntity(light)
+    light.useComponent(TransformComponent).position = [3, 3, 3];
+    this.addEntity(light);
   }
 
   // @override

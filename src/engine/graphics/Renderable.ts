@@ -1,6 +1,12 @@
 import { m4, v3 } from "twgl.js";
 import { Component } from "../ecs";
-import { EditableField, Editor, InstantiableObject } from "../editor";
+import {
+  EditableField,
+  Editor,
+  Field,
+  InstantiableClass,
+  InstantiableObject,
+} from "../editor";
 import { spreadArrayRecusively } from "../utils/ArrayUtils";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderer";
@@ -11,30 +17,34 @@ import { Texture } from "./Texture";
 const VERBOSE = false;
 
 export class RenderableComponent implements Component {
-  @EditableField(Editor.INSTANCE)
+  @EditableField(Editor.CLASS)
   renderableObject: RenderableObject;
 }
 
-export class MaterialProperties {
-}
-export class RenderableMaterials {
+export class MaterialProperties {}
+
+@InstantiableClass()
+export class Materials {
+  @Field(Editor.OBJECT, {})
   private properties = {};
 
-  public getProperty<T extends MaterialProperties>(name: string): T{
-    return this.properties[name]; 
+  public getProperty<T extends MaterialProperties>(name: string): T {
+    return this.properties[name];
   }
 
-  public addProperty<T extends MaterialProperties>(name:string, val: T){
-    if(!this.properties[name]){
+  public addProperty<T extends MaterialProperties>(name: string, val: T) {
+    if (!this.properties[name]) {
       this.properties[name] = val;
     }
     return this;
   }
-  public editProperty<T extends MaterialProperties>(name:string, val: T){
+  public editProperty<T extends MaterialProperties>(name: string, val: T) {
     this.properties[name] = val;
     return this;
   }
 }
+
+export class Geomatry {}
 
 /**
  * Rendeable Objects types, this is designed to hold information
@@ -44,18 +54,18 @@ export class RenderableMaterials {
  */
 export class RenderableObject {
   constructor(
-    objectCoords: number[],
-    textureCoords: number[],
+    objectCoords: number[] = [],
+    textureCoords: number[] = [],
     textureImage?: Image, // texture name
     objectColors?: number[]
   ) {
     this.objectCoords = objectCoords;
     this.textureCoords = textureCoords;
     this.textureImage = textureImage;
-    
-    this._material = new RenderableMaterials()
-    .addProperty("Phong", new PhongMaterialProperties())
-    .addProperty("Normals", new Normals(objectCoords));
+
+    this._material = new Materials()
+      .addProperty("Phong", new PhongMaterialProperties())
+      .addProperty("Normals", new Normals(objectCoords));
 
     if (objectColors) {
       this.objectColors = objectColors;
@@ -64,11 +74,51 @@ export class RenderableObject {
         Array(objectCoords.length / 3).fill(COLORS_VEC4.grayFromPercent(0.5))
       );
     }
+
+    return this;
   }
-  public readonly objectCoords: number[];
-  public readonly textureImage: Image;
-  public readonly textureCoords: number[];
-  public readonly objectColors: number[];
+
+  private _objectCoords: number[];
+  private _textureImage: Image;
+  private _textureCoords: number[];
+  private _objectColors: number[];
+
+  @Field(Editor.ARRAY_NUMBER, [])
+  public set objectCoords(val) {
+    this._isLoadedIntoGPUMemory = false;
+    this._objectCoords = val;
+  }
+  public get objectCoords() {
+    return this._objectCoords;
+  }
+
+  @Field(Editor.RESOURCE_IMAGE, Image.createEmpty())
+  public set textureImage(val) {
+    this._isLoadedIntoGPUMemory = false;
+    this._textureImage = val;
+  }
+  public get textureImage() {
+    return this._textureImage;
+  }
+
+  @Field(Editor.ARRAY_NUMBER, [])
+  public set textureCoords(val) {
+    this._isLoadedIntoGPUMemory = false;
+    this._textureCoords = val;
+  }
+  public get textureCoords() {
+    return this._textureCoords;
+  }
+
+  @Field(Editor.ARRAY_NUMBER, [])
+  public set objectColors(val) {
+    this._isLoadedIntoGPUMemory = false;
+    this._objectColors = val;
+  }
+  public get objectColors() {
+    return this._objectColors;
+  }
+
   public transform: m4.Mat4 = m4.translation(v3.create(0, 0, 0));
 
   /**
@@ -80,7 +130,7 @@ export class RenderableObject {
   private _texCoordsBuffer: AttribDataBuffer;
   private _colorBuffer: AttribDataBuffer;
   private _texture: Texture;
-  private _material: RenderableMaterials;
+  private _material: Materials;
 
   public loadIntoGPU(gl: WebGLRenderingContext) {
     this.createBufferObjectsInGPU(gl);
@@ -178,7 +228,7 @@ export class RenderableObject {
     return this.objectCoords.length / 3;
   }
 
-  public getMaterials(): RenderableMaterials{
+  public getMaterials(): Materials {
     return this._material;
   }
 }

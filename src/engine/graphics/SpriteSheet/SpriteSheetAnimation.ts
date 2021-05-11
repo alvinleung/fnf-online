@@ -4,26 +4,42 @@ import { FrameBuffer } from "../FrameBuffer";
 import { Texture } from "../Texture";
 import { SpriteSheet } from "./SpriteSheet";
 import { RenderableObject } from "../Renderable";
-import { Editor, InstantiableObject, ObjectField } from "../../editor";
+import {
+  Editor,
+  Field,
+  InstantiableClass,
+  InstantiableObject,
+  ObjectField,
+} from "../../editor";
 import { SpriteSheetAnimator } from "./SpriteSheetAnimator";
 
 /**
  * Renderable object for the SpriteSheetRenderPass
  */
-@InstantiableObject([
-  {
-    type: Editor.INSTANCE,
-    defaultValue: new SpriteSheetAnimator(Image.createEmpty(), 12, 16, 16),
-  },
-])
+// @InstantiableObject([
+//   {
+//     type: Editor.INSTANCE,
+//     defaultValue: new SpriteSheetAnimator(Image.createEmpty(), 12, 16, 16),
+//   },
+// ])
+
+@InstantiableClass("RenderableObject")
 export class SpriteSheetRenderable extends RenderableObject {
   private _frameBuffer: FrameBuffer;
   private _spriteSheetTexture: Texture;
 
-  @ObjectField(Editor.INSTANCE)
+  // @ObjectField(Editor.INSTANCE)
+  @Field(Editor.CLASS, new SpriteSheetAnimator(Image.createEmpty(), 12, 16, 16))
   public readonly animator: SpriteSheetAnimator;
 
-  constructor(animator: SpriteSheetAnimator) {
+  constructor(
+    animator: SpriteSheetAnimator = new SpriteSheetAnimator(
+      Image.createEmpty(),
+      12,
+      32,
+      32
+    )
+  ) {
     super(
       require("../3dRender/objects/Primitives").plane,
       require("../3dRender/objects/Primitives").quad_2d,

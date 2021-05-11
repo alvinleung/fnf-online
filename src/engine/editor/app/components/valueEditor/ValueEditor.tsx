@@ -8,6 +8,7 @@ import { NumberEditor } from "./NumberEditor";
 import { InstanceEditor } from "./InstanceEditor";
 import { ImageResourceEditor } from "./ImageResourceEditor";
 import { ColorEditor } from "./ColorEditor";
+import { InstanceClassEditor } from "./InstanceClassEditor";
 
 interface Props {
   fieldType: string;
@@ -65,6 +66,16 @@ export const ValueEditor = ({
     return (
       <InstanceEditor name={formattedName} value={value} onChange={onChange} />
     );
+
+  if (fieldType === Editor.CLASS)
+    return (
+      <InstanceClassEditor
+        name={formattedName}
+        value={value}
+        onChange={onChange}
+      />
+    );
+
   if (fieldType === Editor.RGBA)
     return (
       <ColorEditor name={formattedName} value={value} onChange={onChange} />
@@ -78,5 +89,7 @@ export const ValueEditor = ({
       />
     );
 
-  return <div>"{formattedName}" not supported yet</div>;
+  return (
+    <div className="inspector-text">"{formattedName}" not supported yet</div>
+  );
 };

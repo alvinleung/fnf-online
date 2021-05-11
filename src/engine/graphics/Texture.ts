@@ -141,7 +141,7 @@ export class DepthTexture implements ITexture {
     // check if deph texture supported in webgl
     const ext = gl.getExtension("WEBGL_depth_texture");
     if (!ext) {
-      new Error("need WEBGL_depth_texture");
+      throw new Error("need WEBGL_depth_texture");
     }
 
     const texture = gl.createTexture();

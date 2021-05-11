@@ -1,19 +1,27 @@
 import { SpriteSheet } from ".";
-import { Editor, InstantiableObject, ObjectField } from "../../editor";
+import {
+  Editor,
+  Field,
+  InstantiableClass,
+  InstantiableObject,
+  ObjectField,
+} from "../../editor";
 import { Image } from "../Image/Image";
 
 /**
  * This is a state machine for controlling spritesheet animation
  */
-@InstantiableObject([
-  {
-    type: Editor.RESOURCE_IMAGE,
-    defaultValue: Image.createEmpty(),
-  },
-  { type: Editor.INTEGER, defaultValue: 12 },
-  { type: Editor.INTEGER, defaultValue: 16 },
-  { type: Editor.INTEGER, defaultValue: 16 },
-])
+// @InstantiableObject([
+//   {
+//     type: Editor.RESOURCE_IMAGE,
+//     defaultValue: Image.createEmpty(),
+//   },
+//   { type: Editor.INTEGER, defaultValue: 12 },
+//   { type: Editor.INTEGER, defaultValue: 16 },
+//   { type: Editor.INTEGER, defaultValue: 16 },
+// ])
+
+@InstantiableClass("SpriteSheetAnimator")
 export class SpriteSheetAnimator {
   public readonly spriteSheet: SpriteSheet;
   private currentAnimation: SpriteSheetAnimationSequence;
@@ -42,22 +50,45 @@ export class SpriteSheetAnimator {
     );
   }
 
-  @ObjectField(Editor.INTEGER)
+  // @ObjectField(Editor.INTEGER)
+  @Field(Editor.INTEGER, 12)
   public get frameRate() {
     return this.spriteSheet.frameRate;
   }
-  @ObjectField(Editor.INTEGER)
+  public set frameRate(val) {
+    //@ts-ignore
+    this.spriteSheet.frameRate = val;
+  }
+
+  // @ObjectField(Editor.INTEGER)
+  @Field(Editor.INTEGER, 32)
   public get frameWidth() {
     return this.spriteSheet.frameWidth;
   }
+  public set frameWidth(val) {
+    //@ts-ignore
+    this.spriteSheet.frameWidth = val;
+  }
 
-  @ObjectField(Editor.INTEGER)
+  // @ObjectField(Editor.INTEGER)
+  @Field(Editor.INTEGER, 32)
   public get frameHeight() {
     return this.spriteSheet.frameHeight;
   }
-  @ObjectField(Editor.RESOURCE_IMAGE)
+  public set frameHeight(val) {
+    //@ts-ignore
+    this.spriteSheet.frameHeight = val;
+  }
+
+  // @ObjectField(Editor.RESOURCE_IMAGE)
+  @Field(Editor.RESOURCE_IMAGE, Image.createEmpty())
   public get image() {
     return this.spriteSheet.image;
+  }
+
+  public set image(val) {
+    //@ts-ignore
+    this.spriteSheet.image = val;
   }
 
   /**
@@ -71,9 +102,8 @@ export class SpriteSheetAnimator {
     frameRate?: number
   ) {
     // define aniamtion here
-    this.animationLookupTable[
-      animationLabel
-    ] = this.spriteSheet.getAnimationSequence(beginFrame, endFrame, frameRate);
+    this.animationLookupTable[animationLabel] =
+      this.spriteSheet.getAnimationSequence(beginFrame, endFrame, frameRate);
   }
   /**
    * Begin playing the animation

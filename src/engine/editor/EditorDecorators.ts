@@ -213,6 +213,9 @@ enum Editor {
   INSTANCE = "instance",
   RESOURCE_IMAGE = "image",
   FUNCTION = "function",
+  ARRAY = "array",
+  ARRAY_NUMBER = "array-number",
+  OBJECT = "object",
 }
 
 export {
