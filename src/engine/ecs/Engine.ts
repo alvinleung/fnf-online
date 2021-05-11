@@ -168,7 +168,12 @@ class Engine {
       this._systems.sort((a, b) => a.priority - b.priority);
     }
     for (let system of this._systems) {
-      system.update(this, delta);
+      // isolate the error system, prevent crashing of the whole system
+      try {
+        system.update(this, delta);
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 }

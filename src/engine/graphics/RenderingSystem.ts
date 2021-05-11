@@ -175,8 +175,8 @@ export class RenderingSystem extends System {
     // setup the renederableObject inside for rendering
     this.renderableObjects = this._renderList.entities.reduce(
       (filteredEntityList, entity) => {
-        const renderableObject = entity.getComponent(RenderableComponent)
-          .renderableObject;
+        const renderableObject =
+          entity.getComponent(RenderableComponent).renderableObject;
 
         // only configure valid renderable object, don't render unset objects
         if (renderableObject) {
@@ -195,10 +195,12 @@ export class RenderingSystem extends System {
     // for each render pass
     this._renderPasses.forEach((renderPass) => {
       // render the scene
-      renderPass.render(
-        gl,
-        this,
-      );
+      try {
+        renderPass.render(gl, this);
+      } catch (e) {
+        // prevent error killing the whole program
+        console.error("Error from Rendering System - " + e);
+      }
     });
   }
 
@@ -219,18 +221,18 @@ export class RenderingSystem extends System {
     });
   }
 
-  public getLights(){
+  public getLights() {
     return this._lights.entities;
   }
 
-  public getRenderables(): RenderableObject[]{
+  public getRenderables(): RenderableObject[] {
     return this.renderableObjects;
   }
 
-  public getProjectionMatrix(): m4.Mat4{
+  public getProjectionMatrix(): m4.Mat4 {
     return this.projectionMatrix;
   }
-  public getCameraMatrix(): m4.Mat4{
+  public getCameraMatrix(): m4.Mat4 {
     return this.cameraMatrix;
   }
 }
