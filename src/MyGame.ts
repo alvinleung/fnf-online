@@ -139,7 +139,7 @@ class MyGame extends Game {
     const input = new InputSystem();
 
     // bind input
-    const keyboard = new KeyboardInput();
+    const keyboard = new KeyboardInput(this);
     const mouse = new MouseInput(this);
     mouse.enablePointerLockSetting();
 

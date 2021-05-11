@@ -1,3 +1,4 @@
+import { Game } from "../Game";
 import { AxisBinding, InputSourceFactory, KeyBinding } from "./InputSystem";
 
 interface KeyboardAxisBinding extends AxisBinding {
@@ -9,12 +10,15 @@ class KeyboardInput extends InputSourceFactory {
   private asciiActiveKeys = {};
   private axisBindings: { [axis: string]: KeyboardAxisBinding } = {};
 
-  constructor() {
+  private isFocused = false;
+
+  constructor(game: Game) {
     super();
-    this.addEventListeners();
+    this.addEventListeners(game);
   }
 
   protected getAxisChange(axis: string): number {
+    if (!this.isFocused) return 0;
     if (!this.axisBindings[axis]) return 0;
 
     const positiveKey = this.axisBindings[axis].positiveKey;
@@ -27,9 +31,11 @@ class KeyboardInput extends InputSourceFactory {
   }
 
   protected isActive(key: string): boolean {
+    if (!this.isFocused) return false;
     return this.asciiActiveKeys[key];
   }
-  protected wasClicked(key: string): boolean{
+  protected wasClicked(key: string): boolean {
+    if (!this.isFocused) return false;
     //TODO: not implemented yet
     return this.asciiActiveKeys[key];
   }
@@ -54,9 +60,17 @@ class KeyboardInput extends InputSourceFactory {
     return axisBinding;
   }
 
-  private addEventListeners() {
+  private addEventListeners(game: Game) {
     window.addEventListener("keydown", this.handleKeyDown.bind(this));
     window.addEventListener("keyup", this.handleKeyUp.bind(this));
+
+    // toggle focus state when click
+    game
+      .getCanvas()
+      .addEventListener("mousedown", () => (this.isFocused = true));
+    game
+      .getCanvas()
+      .addEventListener("mouseout", () => (this.isFocused = false));
   }
 
   private handleKeyDown(e: KeyboardEvent) {
