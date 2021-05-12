@@ -31,6 +31,7 @@ import EditorSystem from "./engine/core/EditorSystem";
 import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheetAnimator";
 import { PhongRenderer } from "./engine/graphics/3dRender/PhongRenderer";
 import { LightComponent } from "./engine/graphics/light/Light";
+import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -99,8 +100,8 @@ class MyGame extends Game {
       TransformComponent,
       DebugComponent,
     ]);
-    debugEntity.useComponent(RenderableComponent).renderableObject = new Cube();
-    debugEntity.getComponent(TransformComponent).position = [-2, 0, 0];
+    debugEntity.useComponent(RenderableComponent).renderableObject = new Sphere();//new Cube();
+    debugEntity.getComponent(TransformComponent).position = [1, 1, 1];
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
     cameraEntity.useComponent(EditorControlComponent);
 
@@ -205,7 +206,7 @@ class MyGame extends Game {
       // new ImageRendererSetup(),
       // new SpriteSheetRendererSetup(),
       new SpriteSheetRenderPass(),
-      new Renderer3D(),
+      new PhongRenderer(),
       new MetricsRenderPass(),
     ];
     const renderingSystem = new RenderingSystem(renderers);

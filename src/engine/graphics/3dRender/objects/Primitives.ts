@@ -52,7 +52,29 @@ export const COLORS_VEC4 = {
     const color = Math.min(Math.max(percentage,0.0),1.0);
     return [color,color,color, 1.0];
   },
+  randomColor: function(size: number, faceVertexCount:number , randomOrder = false): number[]{
+    const colors = [this.red,this.green,this.blue,this.white,this.Pigment_Green,this.UE_Red,this.Cobalt_Blue,this.Pantone_Orange]//,this.Cyber_Yellow]
+    const avalibleColorNum = colors.length;
+    
+    let colorArray :number[] = [];
+    for(let i = 0; i < size / faceVertexCount; i++){
+      for(let j = 0; j < faceVertexCount; j++){
+        colorArray.push(...colors[i % avalibleColorNum]);
+      }
+    }
 
+    return colorArray;
+  },
+  grayColor: function(size: number, percentage:number): number[]{
+    let grayColor = this.grayFromPercent(percentage);
+
+    let colorArray :number[] = [];
+    for(let i = 0; i < size ; i++){
+      colorArray.push(...grayColor);
+    }
+
+    return colorArray;
+  }
 }
 
 const cubeVertices = [
@@ -116,3 +138,11 @@ export function generateColoredCube(){
     colorArray: spreadArrayRecusively(colors)
   }
 }
+
+export function trianglesToWireFrame( vertices:number[] ){
+
+}
+
+
+
+
