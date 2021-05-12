@@ -17,7 +17,7 @@ export class Sphere extends RenderableObject {
     const sphereVerticesIndexed = primitives.createSphereVertices(radius, subDAxis, subDHeight);
 
     const sphereVertices = primitives.deindexVertices(sphereVerticesIndexed);
-    console.log(sphereVertices);
+    //console.log(sphereVertices);
 
     // TypedArray includes data of position, indices, normals, texcoords
     super([...sphereVertices.position], null, null);

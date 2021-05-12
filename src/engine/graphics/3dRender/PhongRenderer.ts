@@ -216,6 +216,5 @@ var smoothNormals = function (normalsArray: number[], verticesArray: number[]) {
     var vectexCumulativeIndex = vertexMapping[vertString];
     smoothedNormals.push(...vertexCumulativeNormal[vectexCumulativeIndex]);
   }
-  console.log(smoothedNormals);
   return smoothedNormals;
 };
