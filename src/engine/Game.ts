@@ -16,7 +16,8 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   private _rendering: RenderingSystem;
   private canvasElement: HTMLCanvasElement;
 
-  private _eventEmitter: EventEmitter<GameEvent>;
+  private _eventEmitter: EventEmitter<GameEvent> =
+    new EventEmitter<GameEvent>();
 
   private _entitiesRefMap: { [name: string]: Entity } = {};
 

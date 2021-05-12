@@ -10,7 +10,7 @@ export interface IEventEmitter<T extends string> {
 export class EventEmitter<T extends string> implements IEventEmitter<T> {
   private _eventCallbackRegistry: {
     [EventType: string]: Function[];
-  };
+  } = {};
 
   addEventListener(eventType: T, callback: Function): void {
     if (!this._eventCallbackRegistry[eventType])
@@ -35,6 +35,8 @@ export class EventEmitter<T extends string> implements IEventEmitter<T> {
   }
 
   fireEvent(eventType: T): void {
+    if (!this._eventCallbackRegistry[eventType]) return;
+
     this._eventCallbackRegistry[eventType].forEach((callback) =>
       callback(this)
     );
