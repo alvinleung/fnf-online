@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { ListItem } from "./ListItem";
 
 import "./List.css";
@@ -14,14 +14,10 @@ interface Props {
   children?: React.ReactElement[] | React.ReactElement;
   onItemRemove?: (itemValue: string) => void;
   removable?: boolean;
+  value: string;
 }
 
-export const List = ({
-  children,
-  onSelect,
-  removable = true,
-  onItemRemove,
-}: Props) => {
+export const List = ({ children, onSelect, removable = true, onItemRemove, value }: Props) => {
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   const [selectedItemValue, setSelectedItemValue] = useState("");
   const listItems = children instanceof Array ? children : [children];
@@ -61,7 +57,16 @@ export const List = ({
     [selectedItemValue]
   );
 
-  const handleContextMenuClick = (data) => {};
+  useEffect(() => {
+    // get the selected item index
+    const index = listItems.findIndex((item) => {
+      return item.props.value === value;
+    });
+
+    // change value
+    setSelectedItemIndex(index);
+    setSelectedItemValue(value);
+  }, [value]);
 
   return (
     <>

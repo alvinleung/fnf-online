@@ -7,7 +7,8 @@ import { RenderingSystem } from "./graphics/RenderingSystem";
 import { EventEmitter, IEventEmitter } from "./events/EventEmitter";
 
 export enum GameEvent {
-  UPDATE = "test",
+  UPDATE = "update",
+  SELECT_ENTITY = "select-entity",
 }
 
 export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
@@ -16,8 +17,7 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   private _rendering: RenderingSystem;
   private canvasElement: HTMLCanvasElement;
 
-  private _eventEmitter: EventEmitter<GameEvent> =
-    new EventEmitter<GameEvent>();
+  private _eventEmitter: EventEmitter<GameEvent> = new EventEmitter<GameEvent>();
 
   private _entitiesRefMap: { [name: string]: Entity } = {};
 
@@ -70,8 +70,8 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   hasEventListener(eventType: GameEvent, callback: Function): boolean {
     return this._eventEmitter.hasEventListener(eventType, callback);
   }
-  fireEvent(eventType: GameEvent): void {
-    return this._eventEmitter.fireEvent(eventType);
+  fireEvent(eventType: GameEvent, payload?: any): void {
+    return this._eventEmitter.fireEvent(eventType, payload);
   }
 
   // getter for rendering system
@@ -80,17 +80,15 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   }
 
   private isAllAssetAloaded() {
-    const isUnfinish = Object.values(this.assets).some(
-      (assetLoader: AssetLoader<any>) => assetLoader.isLoaded() === false
-    );
+    const isUnfinish = Object.values(this.assets).some((assetLoader: AssetLoader<any>) => {
+      return assetLoader.isLoaded() === false;
+    });
     return !isUnfinish;
   }
 
   private setupCanvas(): HTMLCanvasElement {
     const canvasElement = document.createElement("canvas");
-    const scaleFactor = this.SCALE_FOR_RETINA_DISPLAY
-      ? window.devicePixelRatio
-      : 1;
+    const scaleFactor = this.SCALE_FOR_RETINA_DISPLAY ? window.devicePixelRatio : 1;
 
     // set the size
     canvasElement.width = window.innerWidth * scaleFactor;

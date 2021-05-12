@@ -1,11 +1,5 @@
 import { SpriteSheet } from ".";
-import {
-  Editor,
-  Field,
-  Instantiable,
-  InstantiableObject,
-  ObjectField,
-} from "../../editor";
+import { Editor, Field, Instantiable, InstantiableObject, ObjectField } from "../../editor";
 import { AbstractObservable } from "../../events/Observable";
 import { Image } from "../Image/Image";
 
@@ -37,19 +31,9 @@ export class SpriteSheetAnimator extends AbstractObservable {
   // save the initial play time for animation in order to get current frame;
   private playBeginTime: number = Date.now();
 
-  constructor(
-    image: Image,
-    frameRate: number,
-    frameWidth: number,
-    frameHeight: number
-  ) {
+  constructor(image: Image, frameRate: number, frameWidth: number, frameHeight: number) {
     super();
-    this.spriteSheet = new SpriteSheet(
-      image,
-      frameRate,
-      frameWidth,
-      frameHeight
-    );
+    this.spriteSheet = new SpriteSheet(image, frameRate, frameWidth, frameHeight);
   }
 
   @Field(Editor.INTEGER, { defaultValue: 12 })
@@ -104,8 +88,11 @@ export class SpriteSheetAnimator extends AbstractObservable {
     frameRate?: number
   ) {
     // define aniamtion here
-    this.animationLookupTable[animationLabel] =
-      this.spriteSheet.getAnimationSequence(beginFrame, endFrame, frameRate);
+    this.animationLookupTable[animationLabel] = this.spriteSheet.getAnimationSequence(
+      beginFrame,
+      endFrame,
+      frameRate
+    );
   }
   /**
    * Begin playing the animation
@@ -117,9 +104,7 @@ export class SpriteSheetAnimator extends AbstractObservable {
 
     // play the animation label or an animation sequence
     this.currentAnimation =
-      typeof animation === "string"
-        ? this.animationLookupTable[animation]
-        : animation;
+      typeof animation === "string" ? this.animationLookupTable[animation] : animation;
   }
 
   /**
@@ -160,18 +145,14 @@ export class SpriteSheetAnimator extends AbstractObservable {
     const elapsedFrames = Math.round(frameRate * elapsedTimeInSeconds);
 
     // not looping and at the end of the naimation
-    if (
-      elapsedFrames >= this.currentAnimation.totalFrames &&
-      !this.loopAnimation
-    ) {
+    if (elapsedFrames >= this.currentAnimation.totalFrames && !this.loopAnimation) {
       this.stop();
       return this.currentAnimation.endFrame;
     }
 
     // return the playhead of the animation
     const currentFrame =
-      this.currentAnimation.beginFrame +
-      (elapsedFrames % this.currentAnimation.totalFrames);
+      this.currentAnimation.beginFrame + (elapsedFrames % this.currentAnimation.totalFrames);
     return currentFrame;
   }
 }

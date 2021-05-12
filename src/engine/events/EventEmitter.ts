@@ -4,7 +4,7 @@ export interface IEventEmitter<T extends string> {
   addEventListener(eventType: T, callback: Function): void;
   removeEventListener(eventType: T, callback: Function): void;
   hasEventListener(eventType: T, callback: Function): void;
-  fireEvent(eventType: T): void;
+  fireEvent(eventType: T, payload?: any): void;
 }
 
 export class EventEmitter<T extends string> implements IEventEmitter<T> {
@@ -13,8 +13,7 @@ export class EventEmitter<T extends string> implements IEventEmitter<T> {
   } = {};
 
   addEventListener(eventType: T, callback: Function): void {
-    if (!this._eventCallbackRegistry[eventType])
-      this._eventCallbackRegistry[eventType] = [];
+    if (!this._eventCallbackRegistry[eventType]) this._eventCallbackRegistry[eventType] = [];
 
     this._eventCallbackRegistry[eventType].push(callback);
   }
@@ -34,11 +33,9 @@ export class EventEmitter<T extends string> implements IEventEmitter<T> {
     return false;
   }
 
-  fireEvent(eventType: T): void {
+  fireEvent(eventType: T, payload?: any): void {
     if (!this._eventCallbackRegistry[eventType]) return;
 
-    this._eventCallbackRegistry[eventType].forEach((callback) =>
-      callback(this)
-    );
+    this._eventCallbackRegistry[eventType].forEach((callback) => callback(payload));
   }
 }

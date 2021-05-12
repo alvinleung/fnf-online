@@ -59,6 +59,13 @@ const App = ({ game }: Props): JSX.Element => {
       onEntityAdded: handleEntityAdded,
       onEntityRemoved: handleEntityRemoved,
     });
+    game.addEventListener(GameEvent.SELECT_ENTITY, (entity: Entity) => {
+      if (entity) {
+        setSelectedEntity(entity);
+        return;
+      }
+      setSelectedEntity(null);
+    });
   }, []);
 
   const handleItemRemove = (entityId: string) => {
@@ -80,8 +87,7 @@ const App = ({ game }: Props): JSX.Element => {
   };
   const entityNameInputRef = useRef<HTMLInputElement>();
   useEffect(() => {
-    if (isCreatingEntity && entityNameInputRef.current)
-      entityNameInputRef.current.focus();
+    if (isCreatingEntity && entityNameInputRef.current) entityNameInputRef.current.focus();
   }, [isCreatingEntity]);
 
   /**
@@ -95,8 +101,7 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedComponent("New Component");
   };
   const handleComponentRemove = useCallback(() => {
-    const componentClass =
-      ComponentRegistry.getComponentClass(selectedComponent);
+    const componentClass = ComponentRegistry.getComponentClass(selectedComponent);
     // remove the current component in the
     selectedEntity.removeComponent(componentClass);
   }, [selectedEntity, selectedComponent]);
@@ -109,16 +114,12 @@ const App = ({ game }: Props): JSX.Element => {
       setSelectedComponent={setSelectedComponent}
     >
       <PanelGroup>
-        <Panel
-          dockingSide="left"
-          minSize={150}
-          initialState="expanded"
-          header="Entity List"
-        >
+        <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
           <ContextMenuTrigger id="item-menu-trigger">
             <List
               onSelect={handleEntityListSelect}
               onItemRemove={handleItemRemove}
+              value={selectedEntity && (selectedEntity.id as string)}
             >
               {game.entities.map((entity, index) => {
                 return (
@@ -209,9 +210,7 @@ const App = ({ game }: Props): JSX.Element => {
               />
               {selectedEntity && (
                 <ContextMenu id="entity-component-inspector">
-                  <MenuItem onClick={handleComponentAdd}>
-                    Add Component
-                  </MenuItem>
+                  <MenuItem onClick={handleComponentAdd}>Add Component</MenuItem>
 
                   {selectedComponent !== "" && (
                     <>
