@@ -5,7 +5,7 @@
 import {
   InstantiableObject,
   Editor,
-  InstantiableClass,
+  Instantiable,
   Field,
 } from "../../../editor";
 import { Image } from "../../Image/Image";
@@ -17,7 +17,7 @@ import { RenderableObject } from "../../Renderable";
 //     defaultValue: null,
 //   },
 // ])
-@InstantiableClass("RenderableObject")
+@Instantiable("RenderableObject")
 export class Plane extends RenderableObject {
   constructor(textureImage?: Image) {
     super(

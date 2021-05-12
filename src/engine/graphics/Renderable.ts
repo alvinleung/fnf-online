@@ -4,7 +4,7 @@ import {
   EditableField,
   Editor,
   Field,
-  InstantiableClass,
+  Instantiable,
   InstantiableObject,
 } from "../editor";
 import { spreadArrayRecusively } from "../utils/ArrayUtils";
@@ -23,7 +23,7 @@ export class RenderableComponent implements Component {
 
 export class MaterialProperties {}
 
-@InstantiableClass()
+@Instantiable()
 export class Materials {
   @Field(Editor.OBJECT)
   private properties = {};
@@ -52,7 +52,7 @@ export class Geomatry {}
  *
  * If possible, try to decouple the object behaviour logic from this class.
  */
-@InstantiableClass("RenderableObject")
+@Instantiable("RenderableObject")
 export class RenderableObject {
   constructor(
     objectCoords: number[] = [],

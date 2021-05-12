@@ -24,7 +24,7 @@ type ClassRegistry = {
 /**
  * Decorator function to declare an Instantiable Class
  */
-export function InstantiableClass(classCategory?: string) {
+export function Instantiable(classCategory?: string) {
   // category of class
   return function (target: Function) {
     InstantiableClassRegistry.addClassIfEmpty(

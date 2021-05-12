@@ -7,7 +7,7 @@ import { RenderableObject } from "../Renderable";
 import {
   Editor,
   Field,
-  InstantiableClass,
+  Instantiable,
   InstantiableObject,
   ObjectField,
 } from "../../editor";
@@ -23,7 +23,7 @@ import { SpriteSheetAnimator } from "./SpriteSheetAnimator";
 //   },
 // ])
 
-@InstantiableClass("RenderableObject")
+@Instantiable("RenderableObject")
 export class SpriteSheetRenderable extends RenderableObject {
   private _frameBuffer: FrameBuffer;
   private _spriteSheetTexture: Texture;

@@ -2,7 +2,7 @@ import { SpriteSheet } from ".";
 import {
   Editor,
   Field,
-  InstantiableClass,
+  Instantiable,
   InstantiableObject,
   ObjectField,
 } from "../../editor";
@@ -21,7 +21,7 @@ import { Image } from "../Image/Image";
 //   { type: Editor.INTEGER, defaultValue: 16 },
 // ])
 
-@InstantiableClass("SpriteSheetAnimator")
+@Instantiable("SpriteSheetAnimator")
 export class SpriteSheetAnimator {
   public readonly spriteSheet: SpriteSheet;
   private currentAnimation: SpriteSheetAnimationSequence;

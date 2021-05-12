@@ -4,10 +4,7 @@ import {
   getObjectDefaultParams,
   isInstantiableObject,
 } from "../../../EditorDecorators";
-import {
-  InstantiableClass,
-  InstantiableClassRegistry,
-} from "../../../InstantiableClass";
+import { InstantiableClassRegistry } from "../../../InstantiableClass";
 import { DropDownItem } from "../DropDownSelect/DropDownItem";
 import { DropDownSelect } from "../DropDownSelect/DropDownSelect";
 import { ValueEditor } from "./ValueEditor";
