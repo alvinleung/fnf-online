@@ -2,18 +2,22 @@ import { Family, FamilyBuilder, System } from "../ecs";
 import { Game } from "../Game";
 import { TransformComponent } from "./TransformComponent";
 import * as q from "../utils/quaternion";
-import { v3 } from "twgl.js";
+import { m4, v3 } from "twgl.js";
 import { EditorControlComponent } from "./EditorControlComponent";
 
 const SPEED = 5;
 const SPEED_MODIFIER = 4;
 const ROT_SPEED = 2;
 
+const USE_ROTATE_AROUND_POINT = true;
+
 export default class EditorControlSystem extends System {
   private mainCameraEntity: Family;
 
   private rotXAmount = 0;
   private rotYAmount = 0;
+
+  private rotPivotPoint: v3.Vec3 = [0, 0, 0];
 
   onAttach(game: Game) {
     this.mainCameraEntity = new FamilyBuilder(game)
@@ -34,21 +38,50 @@ export default class EditorControlSystem extends System {
 
     const panMode = game.input.isActive("editor:pan");
 
+    const pointerX = game.input.getAxisChange("pointerX");
+    const pointerY = game.input.getAxisChange("pointerY");
+
     // Rotation
     this.rotXAmount = panMode
       ? this.rotXAmount
-      : this.rotXAmount + game.input.getAxisChange("pointerX") * ROT_SPEED * delta;
+      : this.rotXAmount + pointerX * ROT_SPEED * delta;
 
     this.rotYAmount = panMode
       ? this.rotYAmount
       : Math.max(
-          Math.min(
-            this.rotYAmount +
-              game.input.getAxisChange("pointerY") * ROT_SPEED * delta,
-            Math.PI / 2
-          ),
+          Math.min(this.rotYAmount + pointerY * ROT_SPEED * delta, Math.PI / 2),
           -Math.PI / 2
         );
+
+    if (USE_ROTATE_AROUND_POINT) {
+      // -----------------------------------------------------------------------
+      // STEP1 1a - Translate Camera around the sphere of the pivot point
+      const speedCoefficent = SPEED * delta * 1.5;
+
+      // Pane the camera base on the camera orientation
+      if (panMode) {
+        const directionVector = q.multVec3(
+          q.inverse(transform.rotation),
+          v3.create(-pointerX * speedCoefficent, pointerY * speedCoefficent, 0)
+        );
+        this.rotPivotPoint = v3.add(this.rotPivotPoint, directionVector);
+      }
+
+      // translate the camera about pivot point rotation by offset
+      let cameraDist = 10;
+      let rotSpeed = 1.5;
+
+      let rotMatrix = m4.rotationY(-this.rotXAmount * rotSpeed);
+      rotMatrix = m4.rotateX(rotMatrix, -this.rotYAmount * rotSpeed);
+
+      let translationMatrix = m4.translation(this.rotPivotPoint);
+      let rotatedPoint = m4.transformPoint(rotMatrix, [0, 0, cameraDist]);
+
+      transform.position = m4.transformPoint(translationMatrix, rotatedPoint);
+      transform.rotation = q.mat4ToQuat(rotMatrix);
+
+      return;
+    }
 
     transform.rotation = q.fromEulerAngles(0, this.rotXAmount, 0);
     transform.rotation = q.mult(
@@ -88,7 +121,7 @@ export default class EditorControlSystem extends System {
         q.inverse(transform.rotation),
         v3.create(
           -game.input.getAxisChange("pointerX") * speedCoefficent,
-          -game.input.getAxisChange("pointerY") * speedCoefficent,
+          game.input.getAxisChange("pointerY") * speedCoefficent,
           0
         )
       );

@@ -35,6 +35,12 @@ export function fromAxisAngle(axis: v3.Vec3, phi: number): Quat {
   return [cos, sin * normal[0], sin * normal[1], sin * normal[2]];
 }
 
+export function fromAxisAngleDiv2(axis: v3.Vec3, phi: number): Quat {
+  var cos = Math.cos(phi / 4);
+  var sin = Math.sin(phi / 4);
+  var normal = v3.normalize(axis);
+  return [cos, sin * normal[0], sin * normal[1], sin * normal[2]];
+}
 //https://stackoverflow.com/questions/50011864/changing-xyz-order-when-converting-euler-angles-to-quaternions
 export function fromEulerAngles(
   rotationX: number,
@@ -60,23 +66,83 @@ export function fromEulerAngles(
   ];
 }
 
+const VEC_FOWARD = [0, 0, -1];
+const VEC_UP = [0, 1, 0];
 // https://stackoverflow.com/questions/12435671/quaternion-lookat-function
-export function lookAt(sourcePoint: v3.Vec3, destPoint: v3.Vec3): Quat {
-  const forwardVector = v3.normalize(v3.subtract(destPoint, sourcePoint));
-  const dot = v3.dot([0, 0, -1], forwardVector);
+// export function lookAt(sourcePoint: v3.Vec3, destPoint: v3.Vec3): Quat {
+//   const forwardVector = v3.normalize(v3.subtract(destPoint, sourcePoint));
+//   const dot = v3.dot(VEC_FOWARD, forwardVector);
 
-  if (Math.abs(dot - -1) < 0.000001) {
-    return [0, 1, 0, Math.PI];
+//   if (Math.abs(dot + 1) < 0.000001) {
+//     return [0, 1, 0, Math.PI];
+//   }
+
+//   if (Math.abs(dot - 1) < 0.000001) {
+//     return [1, 0, 0, 0];
+//   }
+
+//   const rotAngle = Math.acos(dot);
+//   let rotAxis = v3.cross(VEC_FOWARD, forwardVector);
+//   rotAxis = v3.normalize(rotAxis);
+//   return fromAxisAngle(rotAxis, rotAngle);
+// }
+export function lookAt(
+  sourcePoint: v3.Vec3,
+  destPoint: v3.Vec3,
+  forward: v3.Vec3,
+  up: v3.Vec3
+): Quat {
+  const toVector = v3.normalize(v3.subtract(destPoint, sourcePoint));
+
+  // compute rotation axis
+  let rotAxis = v3.normalize(v3.cross(forward, toVector));
+
+  //TODO: not sure if this works
+  if (v3.lengthSq(rotAxis) === 0) {
+    rotAxis = up;
   }
 
-  if (Math.abs(dot - -1) < 0.000001) {
-    return [1, 0, 0, 0];
-  }
+  //find the angle around rotation axis
+  const dot = v3.dot(VEC_FOWARD, toVector);
+  const ang = Math.acos(dot);
 
-  const rotAngle = Math.acos(dot);
-  let rotAxis = v3.cross([0, 0, -1], forwardVector);
-  rotAxis = v3.normalize(rotAxis);
-  return fromAxisAngle(rotAxis, rotAngle);
+  //convert axis angle to quaternion
+  return fromAxisAngle(rotAxis, ang);
+}
+
+// Quaternion lookAt(const Vector3f& sourcePoint, const Vector3f& destPoint, const Vector3f& front, const Vector3f& up)
+// {
+//     Vector3f toVector = (destPoint - sourcePoint).normalized();
+
+//     //compute rotation axis
+//     Vector3f rotAxis = front.cross(toVector).normalized();
+//     if (rotAxis.squaredNorm() == 0)
+//         rotAxis = up;
+
+//     //find the angle around rotation axis
+//     float dot = VectorMath::front().dot(toVector);
+//     float ang = std::acosf(dot);
+
+//     //convert axis angle to quaternion
+//     return Eigen::AngleAxisf(rotAxis, ang);
+// }
+
+export function rotateAround(
+  objectPosition: v3.Vec3,
+  objectRotation: Quat,
+  pivotPointPosition: v3.Vec3,
+  rot: Quat
+): [newPosition: v3.Vec3, newRotations: v3.Vec3] {
+  return [
+    multVec3(
+      rot,
+      v3.add(
+        v3.subtract(objectPosition, pivotPointPosition),
+        pivotPointPosition
+      )
+    ),
+    mult(rot, objectRotation),
+  ];
 }
 
 export function quatToMat4(q: Quat): m4.Mat4 {

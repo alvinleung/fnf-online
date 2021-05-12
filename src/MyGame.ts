@@ -88,7 +88,6 @@ class MyGame extends Game {
     const cameraEntity = Entity.create("camera", [
       TransformComponent,
       CameraComponent,
-      EditorControlComponent,
     ]);
     const cameraTransform = cameraEntity.getComponent(TransformComponent);
     cameraTransform.position = [0, 1, 5];
@@ -103,6 +102,7 @@ class MyGame extends Game {
     debugEntity.useComponent(RenderableComponent).renderableObject = new Cube();
     debugEntity.getComponent(TransformComponent).position = [1, 0, 1];
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
+    cameraEntity.useComponent(EditorControlComponent);
 
     this.addEntity(cameraEntity);
     this.addEntity(squareEntity);

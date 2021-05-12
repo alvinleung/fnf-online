@@ -10,17 +10,17 @@ import { TransformComponent } from "./TransformComponent";
 export class DebugSystem extends System {
   private debugObjects: Family;
   private camera: Family;
-  private elapsed:number;
-  private renderCount:number;
-    
+  private elapsed: number;
+  private renderCount: number;
+
   onAttach(engine: Engine): void {
     this.debugObjects = new FamilyBuilder(engine)
-    .include(TransformComponent,DebugComponent)
-    .build();
-    
+      .include(TransformComponent, DebugComponent)
+      .build();
+
     this.camera = new FamilyBuilder(engine)
-    .include(TransformComponent,CameraComponent)
-    .build();
+      .include(TransformComponent, CameraComponent)
+      .build();
 
     this.elapsed = 0;
     this.renderCount = 0;
@@ -54,61 +54,64 @@ export class DebugSystem extends System {
 
     this.elapsed += delta;
 
-    /*
-    // a slerp application(spin object)
-    transform.rotation = q.slerp(
-      q.fromAxisAndAngle(q.X_AXIS,0),
-      q.fromAxisAndAngle(q.X_AXIS,Math.PI / 2),
-      this.elapsed * 1
-    );*/
-
     let absoulteX = (game.input.getAxis("pointerX") / clientwidth) * 2 - 1;
-    let absoulteY = - ((game.input.getAxis("pointerY") / clientHeight) * 2 - 1);
+    let absoulteY = -((game.input.getAxis("pointerY") / clientHeight) * 2 - 1);
 
     // Vector of the direction the camera is looking at
-    let cameraFrontVector = v3.negate( m4.multiply( q.quatToMat4(cameraTranform.rotation), [0,0,1,1]).slice(0,3) );
+    let cameraFrontVector = v3.negate(
+      m4
+        .multiply(q.quatToMat4(cameraTranform.rotation), [0, 0, 1, 1])
+        .slice(0, 3)
+    );
 
     //https://stackoverflow.com/questions/7692988/opengl-math-projecting-screen-space-to-world-space-coords
 
-    let screenToWorldMatrix = m4.inverse( m4.multiply(perspectiveMatrix,cameraMatrix) );
-    let pos000 = v4.create( absoulteX, absoulteY, 0.0, 1.0 );
-    let pos001 = v4.create( absoulteX, absoulteY, -0.5, 1.0 );
-    let point000 = v4.xyz( v4.multiplyVec4Mat4(pos000,screenToWorldMatrix) );
-    let point001 = v4.xyz( v4.multiplyVec4Mat4(pos001,screenToWorldMatrix) );
-    let direction = v3.normalize( v3.subtract(point000,point001) ); 
+    let screenToWorldMatrix = m4.inverse(
+      m4.multiply(perspectiveMatrix, cameraMatrix)
+    );
+    let pos000 = v4.create(absoulteX, absoulteY, 0.0, 1.0);
+    let pos001 = v4.create(absoulteX, absoulteY, -0.5, 1.0);
+    let point000 = v4.xyz(v4.multiplyVec4Mat4(pos000, screenToWorldMatrix));
+    let point001 = v4.xyz(v4.multiplyVec4Mat4(pos001, screenToWorldMatrix));
+    let direction = v3.normalize(v3.subtract(point000, point001));
 
     //let output = m4.multiply(transform.getMatrix(),pos);
-    if(this.renderCount % 30 == 0){
+    if (this.renderCount % 30 == 0) {
       //console.log(point);
       //console.log(absoulteX,absoulteY);
       //console.log("cameraFront:", roundVec3(cameraFrontVector,1),"\nscreenFront:\n",roundVec3(direction,1));
       return;
-      positionDirectionPlaneIntersect(
-        cameraTranform.position,
-        direction
-        );
+      positionDirectionPlaneIntersect(cameraTranform.position, direction);
     }
   }
-
 }
 
-function positionDirectionPlaneIntersect(position: v3.Vec3,direction: v3.Vec3){
-
-  if(direction[1] >= 0){
-    console.log("direction pointing at sky")
+function positionDirectionPlaneIntersect(
+  position: v3.Vec3,
+  direction: v3.Vec3
+) {
+  if (direction[1] >= 0) {
+    console.log("direction pointing at sky");
     return;
   }
   //const normalizedDirection = v3.normalize(direction);
   let multiplier = Math.abs(position[1] / direction[1]);
-  let destination = v3.add(v3.mulScalar(direction,multiplier), position);
-  let roundedDestination = roundVec3(destination,0);
-  console.log("x:" + roundedDestination[0] + ", y:" + roundedDestination[1] +", z:" + roundedDestination[2]);
+  let destination = v3.add(v3.mulScalar(direction, multiplier), position);
+  let roundedDestination = roundVec3(destination, 0);
+  console.log(
+    "x:" +
+      roundedDestination[0] +
+      ", y:" +
+      roundedDestination[1] +
+      ", z:" +
+      roundedDestination[2]
+  );
 }
 
-function roundVec3(vector:v3.Vec3 , decimalPlaces:number){
-  let factor = Math.pow(10,decimalPlaces);
-  let x = Math.round( vector[0] * factor ) / factor;
-  let y = Math.round( vector[1] * factor ) / factor;
-  let z = Math.round( vector[2] * factor ) / factor;
-  return v3.create(x,y,z);
+function roundVec3(vector: v3.Vec3, decimalPlaces: number) {
+  let factor = Math.pow(10, decimalPlaces);
+  let x = Math.round(vector[0] * factor) / factor;
+  let y = Math.round(vector[1] * factor) / factor;
+  let z = Math.round(vector[2] * factor) / factor;
+  return v3.create(x, y, z);
 }
