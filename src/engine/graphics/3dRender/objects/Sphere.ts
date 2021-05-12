@@ -5,30 +5,21 @@
  */
 import { RenderableObject } from "../../Renderable";
 import { primitives } from "twgl.js";
-import { InstantiableObject } from "../../../editor";
+import { Instantiable } from "../../../editor";
 
-@InstantiableObject([])
+@Instantiable("RenderableObject")
 export class Sphere extends RenderableObject {
   constructor() {
     const radius = 1;
     const subDAxis = 15;
     const subDHeight = 15;
 
-    const sphereVerticesIndexed = primitives.createSphereVertices(
-      radius,
-      subDAxis,
-      subDHeight
-    );
+    const sphereVerticesIndexed = primitives.createSphereVertices(radius, subDAxis, subDHeight);
 
     const sphereVertices = primitives.deindexVertices(sphereVerticesIndexed);
     console.log(sphereVertices);
 
     // TypedArray includes data of position, indices, normals, texcoords
-    super(
-      [...sphereVertices.position],
-      null,
-      null,
-      
-    );
+    super([...sphereVertices.position], null, null);
   }
 }
