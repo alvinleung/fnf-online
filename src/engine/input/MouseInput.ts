@@ -32,6 +32,10 @@ class MouseInput extends InputSourceFactory {
   private pointerLockingButtonHold: boolean;
   private ignoreNextMovement: boolean;
 
+  // scrolling
+  private scrollAmount: number = 0;
+  private scrollChange: number = 0;
+
   // constants
   private SENSITIVITY = 0.08;
   private MOUSE_BUTTON_NAME_MAP = {
@@ -63,6 +67,22 @@ class MouseInput extends InputSourceFactory {
   }
 
   protected getAxisChange(axis: string): number {
+    if (axis === "scroll") {
+      return this.getScrollChange();
+    }
+
+    if (axis === "x" || axis === "y") {
+      return this.getPositionChange(axis);
+    }
+
+    return 0;
+  }
+
+  private getScrollChange(): number {
+    return this.scrollChange;
+  }
+
+  private getPositionChange(axis: string): number {
     if (!this.axisBindings[axis] || !this.currentMouse) return 0;
 
     let velocity = 0;
@@ -76,20 +96,30 @@ class MouseInput extends InputSourceFactory {
     }
 
     velocity = this.currentMouse[axisBinding] - this.cacheMouse[axisBinding];
-    const val1 = this.currentMouse[axisBinding];
-    const val2 = this.cacheMouse[axisBinding];
     this.cacheMouse[axisBinding] = this.currentMouse[axisBinding];
-
-//    console.log(axisBinding + ":" + velocity)
-//    console.log("current: " + val1 + ", cache: " + val2);
 
     velocity = velocity * this.SENSITIVITY * 0.5;
     return velocity;
   }
+
   protected getAxis(axis: string): number {
+    if (axis === "scroll") {
+      return this.getScrollAxis();
+    }
+    if (axis === "x" || axis === "y") {
+      return this.getMousePosition(axis);
+    }
+  }
+
+  private getScrollAxis(): number {
+    return this.scrollAmount;
+  }
+
+  private getMousePosition(axis: string) {
     if (!this.axisBindings[axis] || !this.currentMouse) return 0;
     const axisBinding = this.axisBindings[axis].axis;
-    if (this.pointerLocked){
+
+    if (this.pointerLocked) {
       return this.getAbsoluteCenter(axisBinding);
     }
     return this.currentMouse[axisBinding];
@@ -102,6 +132,7 @@ class MouseInput extends InputSourceFactory {
       "mousedown",
       this.handleMouseDownInCanvas.bind(this)
     );
+    canvas.addEventListener("wheel", this.handleMouseScrollInCanvas.bind(this));
     window.addEventListener("mouseup", this.handleMouseUp.bind(this));
     window.addEventListener("mousemove", this.handleMouseMove.bind(this));
 
@@ -118,7 +149,7 @@ class MouseInput extends InputSourceFactory {
       false
     );
   }
-  private lockChangeAlert(event:MouseEvent) {
+  private lockChangeAlert(event: MouseEvent) {
     const canvas = this.game.getCanvas();
     if (
       document.pointerLockElement === canvas ||
@@ -127,7 +158,7 @@ class MouseInput extends InputSourceFactory {
     ) {
       VERBOSE && console.log("The pointer lock status is now locked");
       // Do something useful in response
-      
+
       this.ignoreNextMovement = true;
       this.pointerLocked = true;
     } else {
@@ -161,7 +192,6 @@ class MouseInput extends InputSourceFactory {
     }
     this.mouseDown.x = this.currentMouse.x;
     this.mouseDown.y = this.currentMouse.y;
-
   }
   private handleMouseDownInCanvas(e: MouseEvent) {
     this.mouseActivePartsInCanvas.buttons[e.button] = true;
@@ -187,6 +217,14 @@ class MouseInput extends InputSourceFactory {
         this.mouseClickRegister.buttons[e.button] + 1;
     }
   }
+
+  private handleMouseScrollInCanvas(e: WheelEvent) {
+    e.preventDefault();
+    // update system amount
+    this.scrollAmount += e.deltaY;
+    this.scrollChange = e.deltaY;
+  }
+
   private handleMouseUp(e: MouseEvent) {
     this.mouseActiveParts.buttons[e.button] = false;
     this.mouseActivePartsInCanvas.buttons[e.button] = false;
@@ -208,7 +246,7 @@ class MouseInput extends InputSourceFactory {
       };
     }
 
-    if(this.ignoreNextMovement){
+    if (this.ignoreNextMovement) {
       // a possible bug with HTML5 movement
       // will inconsistently have movement values that jumps the current x y to center
       this.ignoreNextMovement = false;
@@ -222,7 +260,7 @@ class MouseInput extends InputSourceFactory {
     if (this.pointerLocked) {
       this.cacheMouse.x -= e.movementX;
       this.cacheMouse.y -= e.movementY;
-    } 
+    }
   }
 
   protected isActive(key: string): boolean {
@@ -239,10 +277,10 @@ class MouseInput extends InputSourceFactory {
     }
   }
 
-  private getAbsoluteCenter(axis:string): number{
+  private getAbsoluteCenter(axis: string): number {
     const canvas = this.game.getCanvas();
-    if(axis == "x") return canvas.width / 2;
-    if(axis == "y") return canvas.height / 2;
+    if (axis == "x") return canvas.width / 2;
+    if (axis == "y") return canvas.height / 2;
     return -1;
   }
 }
