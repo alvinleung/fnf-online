@@ -4,16 +4,21 @@ import { Engine, Entity } from "./ecs";
 import InputSystem from "./input";
 import { AssetLoader, AssetManager } from "./assets";
 import { RenderingSystem } from "./graphics/RenderingSystem";
+import { EventEmitter, IEventEmitter } from "./events/EventEmitter";
 
-export abstract class Game extends Engine {
+export enum GameEvent {
+  UPDATE = "test",
+}
+
+export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   public readonly assets: AssetManager;
   public readonly input: InputSystem;
   private _rendering: RenderingSystem;
   private canvasElement: HTMLCanvasElement;
 
-  private _entitiesRefMap: { [name: string]: Entity } = {};
+  private _eventEmitter: EventEmitter<GameEvent>;
 
-  private _onUpdateCallback = (game: Game, delta: number) => {};
+  private _entitiesRefMap: { [name: string]: Entity } = {};
 
   // when enabled, it will render more pixels to make things
   // look cleaner in retina display, but it will increase
@@ -53,6 +58,19 @@ export abstract class Game extends Engine {
       // init the game
       that.tick();
     }
+  }
+
+  addEventListener(eventType: GameEvent, callback: Function): void {
+    this._eventEmitter.addEventListener(eventType, callback);
+  }
+  removeEventListener(eventType: GameEvent, callback: Function): void {
+    this._eventEmitter.removeEventListener(eventType, callback);
+  }
+  hasEventListener(eventType: GameEvent, callback: Function): boolean {
+    return this._eventEmitter.hasEventListener(eventType, callback);
+  }
+  fireEvent(eventType: GameEvent): void {
+    return this._eventEmitter.fireEvent(eventType);
   }
 
   // getter for rendering system
@@ -97,10 +115,6 @@ export abstract class Game extends Engine {
   protected gameDidInit() {
     // finished initialisation
     // can probably do some
-  }
-
-  public onUpdate(callback: (game: Game, delta: number) => void) {
-    this._onUpdateCallback = callback;
   }
 
   public getCanvas(): HTMLCanvasElement {
@@ -151,7 +165,7 @@ export abstract class Game extends Engine {
 
     // update systems
     this.update(deltaTimeInSeconds);
-    this._onUpdateCallback(this, deltaTimeInSeconds);
+    this.fireEvent(GameEvent.UPDATE);
 
     this.previousTick = currentTick;
 

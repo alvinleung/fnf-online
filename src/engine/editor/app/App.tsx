@@ -8,7 +8,7 @@ import { Panel } from "./components/Panel";
 import { List } from "./components/List";
 import { ListItem } from "./components/ListItem";
 import { EntityInspectorHead } from "./components/EntityInspectorHead";
-import { Game } from "../../Game";
+import { Game, GameEvent } from "../../Game";
 import { Engine, Entity } from "../../ecs";
 import useForceUpdate from "./hooks/useForceUpdate";
 import { ComponentInspector } from "./ComponentInspector";
@@ -47,7 +47,10 @@ const App = ({ game }: Props): JSX.Element => {
     [selectedEntity]
   );
   useEffect(() => {
-    game.onUpdate(handleEngineUpdate);
+    game.addEventListener(GameEvent.UPDATE, handleEngineUpdate);
+    return () => {
+      game.removeEventListener(GameEvent.UPDATE, handleEngineUpdate);
+    };
   }, [selectedEntity]);
 
   // add and remove entity in the list when notified
