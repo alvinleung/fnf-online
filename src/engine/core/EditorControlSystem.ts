@@ -72,7 +72,10 @@ export default class EditorControlSystem extends System {
       }
 
       // translate the camera about pivot point rotation by offset
-      const cameraDist = INITIAL_ZOOM_LEVEL + scrollAmount * 0.025;
+      const cameraDist = Math.pow(
+        1 / 2,
+        -(INITIAL_ZOOM_LEVEL + scrollAmount * 0.0025)
+      );
 
       // rotate the scene about origin
       let rotMatrix = m4.rotationY(
