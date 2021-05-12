@@ -25,14 +25,19 @@
   "dependencies": {
     "classnames": "^2.3.1",
     "framer-motion": "^4.1.11",
+    "jest": "^26.6.3",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-colorful": "^5.1.4",
     "react-dom": "^17.0.2",
     "react-hotkeys-hook": "^3.3.1",
+    "ts-jest": "^26.5.6",
     "twgl.js": "^4.19.1"
   },
   "alias": {
     "react-contextmenu": "./src/engine/editor/app/components/react-contextmenu"
+  },
+  "prettier": {
+    "printWidth": 100
   }
 }
