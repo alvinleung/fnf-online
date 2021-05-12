@@ -11,7 +11,7 @@ const SPEED_MODIFIER = 4;
 const USE_BLENDER_CONTROL_SCHEME = true;
 const ROTATION_SPEED = 2.5;
 const PAN_SPEED = 2.5;
-const INITIAL_ZOOM_LEVEL = 6;
+const INITIAL_ZOOM_LEVEL = 3.5;
 const INITIAL_CAMERA_ANGLE = [0, Math.PI / 6, -Math.PI / 8]; // euler angles
 
 export default class EditorControlSystem extends System {
