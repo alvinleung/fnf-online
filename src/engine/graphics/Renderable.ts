@@ -66,14 +66,13 @@ export class RenderableObject {
 
     this._material = new Materials()
       .addProperty("Phong", new PhongMaterialProperties())
-      .addProperty("Normals", new Normals(objectCoords));
+      .addProperty("Normals", new Normals(objectCoords,false));
 
     if (objectColors) {
       this.objectColors = objectColors;
     } else {
-      this.objectColors = spreadArrayRecusively(
-        Array(objectCoords.length / 3).fill(COLORS_VEC4.grayFromPercent(0.5))
-      );
+      //this.objectColors = COLORS_VEC4.randomColor(objectCoords.length / 3, 3);
+      this.objectColors = COLORS_VEC4.grayColor(objectCoords.length / 3, 0.75);
     }
 
     return this;
