@@ -41,11 +41,7 @@ function EditableComponent(constructor: Function) {
  * @returns
  */
 function EditableField(type: Editor, config?: Object) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor?: PropertyDescriptor
-  ) {
+  return function (target: any, propertyKey: string, descriptor?: PropertyDescriptor) {
     // extrect the editor information
     const componentName = target.constructor.name;
     const propName = propertyKey;
@@ -67,111 +63,13 @@ function EditableField(type: Editor, config?: Object) {
   };
 }
 
-/** fields of instantiableClass */
-interface InstantiableObjectMap {
-  [className: string]: {
-    constructorParams: {
-      [paramName: string]: {
-        editor: Editor;
-        defaultValue: any;
-      };
-    };
-    constructor: Function;
-    constructorValueNames: string[];
-  };
-}
-
-const instantiableObjects: InstantiableObjectMap = {};
-/**
- * Decorator for classes that are unrelated to an entity to be editable
- */
-function InstantiableObject(config: { type: Editor; defaultValue: any }[]) {
-  const constructorVaribleTypes: Editor[] = config.map((entry) => {
-    return entry.type;
-  });
-  const constructorDefaultValues: Editor[] = config.map((entry) => {
-    return entry.defaultValue;
-  });
-
-  return function (constructor: Function) {
-    const paramNames = getParamNames(constructor);
-    const className = constructor.name;
-    instantiableObjects[className] = {
-      ...instantiableObjects[className],
-      constructorParams: {},
-      constructor: constructor,
-    };
-
-    paramNames.forEach((paramName, index) => {
-      instantiableObjects[className].constructorParams[paramName] = {
-        editor: constructorVaribleTypes[index],
-        defaultValue: constructorDefaultValues[index],
-      };
-    });
-  };
-}
-function ObjectField(type: Editor) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor?: PropertyDescriptor
-  ) {
-    return;
-    // extrect the editor information
-    const className = target.constructor.name;
-    const fieldName = propertyKey;
-
-    // use the Editable data
-    if (
-      !instantiableObjects[className] &&
-      !instantiableObjects[className].constructorValueNames
-    ) {
-      //@ts-ignore
-      instantiableObjects[className] = {
-        ...instantiableObjects[className],
-        constructorValueNames: [],
-      };
-    }
-
-    // put the entr
-    instantiableObjects[className].constructorValueNames.push(fieldName);
-
-    console.log(instantiableObjects);
-  };
-}
-
-function getInstantiableObjects() {
-  return Object.freeze(instantiableObjects);
-}
-
-function isInstantiableObject(className: string) {
-  return instantiableObjects[className] ? true : false;
-}
-
-function getObjectDefaultParams(className: string) {
-  if (!instantiableObjects[className]) {
-    console.warn(
-      `${className} not found in instantiable object registry, abort returning default params`
-    );
-    return;
-  }
-
-  return Object.values(instantiableObjects[className].constructorParams).map(
-    ({ defaultValue }) => {
-      return defaultValue;
-    }
-  );
-}
-
 //https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically
 //The following function will return an array of the parameter names of any function passed in
 function getParamNames(func: Function) {
   var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
   var ARGUMENT_NAMES = /([^\s,]+)/g;
   var fnStr = func.toString().replace(STRIP_COMMENTS, "");
-  var result = fnStr
-    .slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")"))
-    .match(ARGUMENT_NAMES);
+  var result = fnStr.slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")")).match(ARGUMENT_NAMES);
   if (result === null) result = [];
   return result;
 }
@@ -184,19 +82,14 @@ export module ComponentRegistry {
   }
 
   export function isComponentEditable(componentClass): boolean {
-    return editableComponentClassRefs[componentClass.constructor.name]
-      ? true
-      : false;
+    return editableComponentClassRefs[componentClass.constructor.name] ? true : false;
   }
 
   export function getComponentEditableFields(componentClass: Component) {
     return editableMap[componentClass.constructor.name];
   }
 
-  export function getComponentFieldEditor(
-    componentClass: Component,
-    fieldName: string
-  ) {
+  export function getComponentFieldEditor(componentClass: Component, fieldName: string) {
     return editableMap[componentClass.constructor.name][fieldName];
   }
 
@@ -224,18 +117,4 @@ enum Editor {
   OBJECT = "object",
 }
 
-export {
-  EditableField,
-  EditableComponent,
-  Editor,
-  // getEditableComponentMap,
-  // getComponentClass,
-  // isComponentEditable,
-  // getComponentEditableFields,
-  // getComponentFieldEditor,
-  InstantiableObject,
-  getInstantiableObjects,
-  ObjectField,
-  getObjectDefaultParams,
-  isInstantiableObject,
-};
+export { EditableField, EditableComponent, Editor };

@@ -5,7 +5,6 @@ import { Editor } from "../../../EditorDecorators";
 import { BooleanEditor } from "./BooleanEditor";
 import { camelCaseToSentenceCase } from "../../../../utils/StringUtils";
 import { NumberEditor } from "./NumberEditor";
-import { InstanceEditor } from "./InstanceEditor";
 import { ImageResourceEditor } from "./ImageResourceEditor";
 import { ColorEditor } from "./ColorEditor";
 import { InstantiableClassEditor } from "./InstantiableClassEditor";
@@ -18,36 +17,23 @@ interface Props {
   config?: Object;
 }
 
-export const ValueEditor = ({
-  fieldName,
-  fieldType,
-  value,
-  onChange,
-  config,
-}: Props) => {
+export const ValueEditor = ({ fieldName, fieldType, value, onChange, config }: Props) => {
   const formattedName = camelCaseToSentenceCase(fieldName);
   /**
    * Stateless editor components
    */
 
   if (fieldType === Editor.VECTOR)
-    return (
-      <VectorEditor name={formattedName} value={value} onChange={onChange} />
-    );
+    return <VectorEditor name={formattedName} value={value} onChange={onChange} />;
 
   if (fieldType === Editor.ROTATION)
-    return (
-      <RotationEditor name={formattedName} value={value} onChange={onChange} />
-    );
+    return <RotationEditor name={formattedName} value={value} onChange={onChange} />;
+
   if (fieldType === Editor.BOOLEAN)
-    return (
-      <BooleanEditor name={formattedName} value={value} onChange={onChange} />
-    );
+    return <BooleanEditor name={formattedName} value={value} onChange={onChange} />;
 
   if (fieldType === Editor.NUMBER)
-    return (
-      <NumberEditor name={formattedName} value={value} onChange={onChange} />
-    );
+    return <NumberEditor name={formattedName} value={value} onChange={onChange} />;
 
   if (fieldType === Editor.INTEGER)
     return (
@@ -64,11 +50,6 @@ export const ValueEditor = ({
    * Stateful editor components (depends on different entity)
    */
 
-  if (fieldType === Editor.INSTANCE)
-    return (
-      <InstanceEditor name={formattedName} value={value} onChange={onChange} />
-    );
-
   if (fieldType === Editor.CLASS)
     return (
       <InstantiableClassEditor
@@ -80,19 +61,10 @@ export const ValueEditor = ({
     );
 
   if (fieldType === Editor.RGBA)
-    return (
-      <ColorEditor name={formattedName} value={value} onChange={onChange} />
-    );
-  if (fieldType === Editor.RESOURCE_IMAGE)
-    return (
-      <ImageResourceEditor
-        name={formattedName}
-        value={value}
-        onChange={onChange}
-      />
-    );
+    return <ColorEditor name={formattedName} value={value} onChange={onChange} />;
 
-  return (
-    <div className="inspector-text">"{formattedName}" not supported yet</div>
-  );
+  if (fieldType === Editor.RESOURCE_IMAGE)
+    return <ImageResourceEditor name={formattedName} value={value} onChange={onChange} />;
+
+  return <div className="inspector-text">"{formattedName}" not supported yet</div>;
 };
