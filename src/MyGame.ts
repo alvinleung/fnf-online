@@ -100,7 +100,7 @@ class MyGame extends Game {
       DebugComponent,
     ]);
     debugEntity.useComponent(RenderableComponent).renderableObject = new Cube();
-    debugEntity.getComponent(TransformComponent).position = [1, 0, 1];
+    debugEntity.getComponent(TransformComponent).position = [-2, 0, 0];
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
     cameraEntity.useComponent(EditorControlComponent);
 
@@ -156,6 +156,7 @@ class MyGame extends Game {
     input.bindAxis("vertical", keyboard.createAxisBinding("KeyC|Space"));
     input.bindAxis("pointerX", mouse.createAxisBinding("x"));
     input.bindAxis("pointerY", mouse.createAxisBinding("y"));
+    input.bindAxis("scroll", mouse.createAxisBinding("scroll"));
 
     input.bindAction("hoverMode", keyboard.createKeyBinding("ShiftLeft"));
     input.bindAction("speedMode", mouse.createKeyBinding("mouseright"));

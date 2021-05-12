@@ -7,9 +7,12 @@ import { EditorControlComponent } from "./EditorControlComponent";
 
 const SPEED = 5;
 const SPEED_MODIFIER = 4;
-const ROT_SPEED = 2;
 
-const USE_ROTATE_AROUND_POINT = true;
+const USE_BLENDER_CONTROL_SCHEME = true;
+const ROTATION_SPEED = 2;
+const PAN_SPEED = 1.5;
+const INITIAL_ZOOM_LEVEL = 6;
+const INITIAL_CAMERA_ANGLE = [0, Math.PI / 6, -Math.PI / 8]; // euler angles
 
 export default class EditorControlSystem extends System {
   private mainCameraEntity: Family;
@@ -37,26 +40,27 @@ export default class EditorControlSystem extends System {
     const transform = cameraEntity.getComponent(TransformComponent);
 
     const panMode = game.input.isActive("editor:pan");
-
+    const scrollAmount = game.input.getAxis("scroll");
     const pointerX = game.input.getAxisChange("pointerX");
     const pointerY = game.input.getAxisChange("pointerY");
 
     // Rotation
     this.rotXAmount = panMode
       ? this.rotXAmount
-      : this.rotXAmount + pointerX * ROT_SPEED * delta;
+      : this.rotXAmount + pointerX * ROTATION_SPEED * delta;
 
     this.rotYAmount = panMode
       ? this.rotYAmount
       : Math.max(
-          Math.min(this.rotYAmount + pointerY * ROT_SPEED * delta, Math.PI / 2),
+          Math.min(
+            this.rotYAmount + pointerY * ROTATION_SPEED * delta,
+            Math.PI / 2
+          ),
           -Math.PI / 2
         );
 
-    if (USE_ROTATE_AROUND_POINT) {
-      // -----------------------------------------------------------------------
-      // STEP1 1a - Translate Camera around the sphere of the pivot point
-      const speedCoefficent = SPEED * delta * 1.5;
+    if (USE_BLENDER_CONTROL_SCHEME) {
+      const speedCoefficent = SPEED * delta * PAN_SPEED;
 
       // Pane the camera base on the camera orientation
       if (panMode) {
@@ -68,14 +72,20 @@ export default class EditorControlSystem extends System {
       }
 
       // translate the camera about pivot point rotation by offset
-      let cameraDist = 10;
-      let rotSpeed = 1.5;
+      const cameraDist = INITIAL_ZOOM_LEVEL + scrollAmount * 0.025;
 
-      let rotMatrix = m4.rotationY(-this.rotXAmount * rotSpeed);
-      rotMatrix = m4.rotateX(rotMatrix, -this.rotYAmount * rotSpeed);
+      // rotate the scene about origin
+      let rotMatrix = m4.rotationY(
+        INITIAL_CAMERA_ANGLE[1] + -this.rotXAmount * ROTATION_SPEED
+      );
+      rotMatrix = m4.rotateX(
+        rotMatrix,
+        INITIAL_CAMERA_ANGLE[2] + -this.rotYAmount * ROTATION_SPEED
+      );
 
-      let translationMatrix = m4.translation(this.rotPivotPoint);
-      let rotatedPoint = m4.transformPoint(rotMatrix, [0, 0, cameraDist]);
+      // create a translation base on pivot point
+      const translationMatrix = m4.translation(this.rotPivotPoint);
+      const rotatedPoint = m4.transformPoint(rotMatrix, [0, 0, cameraDist]);
 
       transform.position = m4.transformPoint(translationMatrix, rotatedPoint);
       transform.rotation = q.mat4ToQuat(rotMatrix);
