@@ -29,10 +29,10 @@ export class SpriteSheetRenderable extends RenderableObject {
   private _spriteSheetTexture: Texture;
 
   @Field(Editor.CLASS, {
-    defaultValue: new SpriteSheetAnimator(Image.createEmpty(), 12, 16, 16),
+    // defaultValue: new SpriteSheetAnimator(Image.createEmpty(), 12, 16, 16),
     category: "SpriteSheetAnimator",
   })
-  public readonly animator: SpriteSheetAnimator;
+  private animator: SpriteSheetAnimator;
 
   constructor(
     animator: SpriteSheetAnimator = new SpriteSheetAnimator(
@@ -45,9 +45,14 @@ export class SpriteSheetRenderable extends RenderableObject {
     super(
       require("../3dRender/objects/Primitives").plane,
       require("../3dRender/objects/Primitives").quad_2d,
-      animator.spriteSheet.image
+      null
     );
+    animator.observe(this.textureNeedUpdate.bind(this));
     this.animator = animator;
+  }
+
+  private textureNeedUpdate() {
+    this.reload();
   }
 
   // override the initialisation of the buffer

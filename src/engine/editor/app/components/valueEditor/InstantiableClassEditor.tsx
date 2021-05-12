@@ -1,9 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  getInstantiableObjects,
-  getObjectDefaultParams,
-  isInstantiableObject,
-} from "../../../EditorDecorators";
 import { InstantiableClassRegistry } from "../../../InstantiableClass";
 import { DropDownItem } from "../DropDownSelect/DropDownItem";
 import { DropDownSelect } from "../DropDownSelect/DropDownSelect";
@@ -76,7 +71,8 @@ export const InstantiableClassEditor = ({
     // init the instance with some initial values
     const fields = InstantiableClassRegistry.getFields(selectedClassName);
     fields.forEach((fieldEntry) => {
-      newInstance[fieldEntry.name] = fieldEntry.defaultValue;
+      if (fieldEntry.defaultValue)
+        newInstance[fieldEntry.name] = fieldEntry.defaultValue;
     });
 
     onChange && onChange(newInstance);

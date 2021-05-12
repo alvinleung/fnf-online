@@ -6,6 +6,7 @@ import {
   InstantiableObject,
   ObjectField,
 } from "../../editor";
+import { AbstractObservable } from "../../events/Observable";
 import { Image } from "../Image/Image";
 
 /**
@@ -22,7 +23,7 @@ import { Image } from "../Image/Image";
 // ])
 
 @Instantiable("SpriteSheetAnimator")
-export class SpriteSheetAnimator {
+export class SpriteSheetAnimator extends AbstractObservable {
   public readonly spriteSheet: SpriteSheet;
   private currentAnimation: SpriteSheetAnimationSequence;
 
@@ -42,6 +43,7 @@ export class SpriteSheetAnimator {
     frameWidth: number,
     frameHeight: number
   ) {
+    super();
     this.spriteSheet = new SpriteSheet(
       image,
       frameRate,
@@ -66,6 +68,7 @@ export class SpriteSheetAnimator {
   public set frameWidth(val) {
     //@ts-ignore
     this.spriteSheet.frameWidth = val;
+    this.notifyUdpate(); // need to update frame buffer
   }
 
   @Field(Editor.INTEGER, { defaultValue: 32 })
@@ -75,9 +78,10 @@ export class SpriteSheetAnimator {
   public set frameHeight(val) {
     //@ts-ignore
     this.spriteSheet.frameHeight = val;
+    this.notifyUdpate(); // need to update frame buffer
   }
 
-  @Field(Editor.RESOURCE_IMAGE, { defaultValue: Image.createEmpty() })
+  @Field(Editor.RESOURCE_IMAGE)
   public get image() {
     return this.spriteSheet.image;
   }
@@ -85,6 +89,8 @@ export class SpriteSheetAnimator {
   public set image(val) {
     //@ts-ignore
     this.spriteSheet.image = val;
+    // notify update for rendering
+    this.notifyUdpate();
   }
 
   /**

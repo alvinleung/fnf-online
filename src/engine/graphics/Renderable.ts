@@ -126,6 +126,7 @@ export class RenderableObject {
    * references for texture rendering
    */
   private _isLoadedIntoGPUMemory: boolean = false;
+  private _needTextureReload: boolean = false;
 
   private _coordsBuffer: AttribDataBuffer;
   private _texCoordsBuffer: AttribDataBuffer;
@@ -136,6 +137,22 @@ export class RenderableObject {
   public loadIntoGPU(gl: WebGLRenderingContext) {
     this.createBufferObjectsInGPU(gl);
     this._isLoadedIntoGPUMemory = true;
+
+    if (this._needTextureReload) this.loadTextureIntoGPU(gl);
+  }
+
+  /**
+   * Reload texture onto gpu in the next rendering cycle
+   */
+  public reloadTexture() {
+    this._needTextureReload = true;
+  }
+
+  /**
+   * Reload all the data onto gpu in the next rendering cycle
+   */
+  public reload() {
+    this._isLoadedIntoGPUMemory = false;
   }
 
   protected createBufferObjectsInGPU(gl: WebGLRenderingContext) {
@@ -159,13 +176,18 @@ export class RenderableObject {
 
     // load image onto the gpu
     if (this.textureImage) {
-      this._texture = new Texture(gl, { image: this.textureImage });
+      this.loadTextureIntoGPU(gl);
     } else {
       VERBOSE &&
         console.log(
           "No texture image supplied, will not create texture for this renderable."
         );
     }
+  }
+
+  private loadTextureIntoGPU(gl: WebGLRenderingContext) {
+    this._texture = new Texture(gl, { image: this.textureImage });
+    this._needTextureReload = false;
   }
 
   public getCoordsBuffer() {

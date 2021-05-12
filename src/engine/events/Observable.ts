@@ -11,7 +11,7 @@ export interface IObserverable {
 type ObserverableCallback = (observable: IObserverable) => void;
 
 export abstract class AbstractObservable implements IObserverable {
-  private _observee: ObserverableCallback[];
+  private _observee: ObserverableCallback[] = [];
 
   notifyUdpate() {
     this._observee.forEach((callback) => callback(this));
