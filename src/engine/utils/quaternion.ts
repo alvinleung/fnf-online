@@ -35,12 +35,6 @@ export function fromAxisAngle(axis: v3.Vec3, phi: number): Quat {
   return [cos, sin * normal[0], sin * normal[1], sin * normal[2]];
 }
 
-export function fromAxisAngleDiv2(axis: v3.Vec3, phi: number): Quat {
-  var cos = Math.cos(phi / 4);
-  var sin = Math.sin(phi / 4);
-  var normal = v3.normalize(axis);
-  return [cos, sin * normal[0], sin * normal[1], sin * normal[2]];
-}
 //https://stackoverflow.com/questions/50011864/changing-xyz-order-when-converting-euler-angles-to-quaternions
 export function fromEulerAngles(
   rotationX: number,
