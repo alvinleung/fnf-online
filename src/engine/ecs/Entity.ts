@@ -3,6 +3,8 @@ import { ComponentClass, Component } from "./Component";
 
 type EntityChangeListener = (entity: Entity) => any;
 
+const CAN_MUTATE_ID = true;
+
 /**
  * An Entity is every object you may have on your system.
  * A character, a weapon, an skill, a map.
@@ -57,7 +59,7 @@ class Entity extends Clonable<Entity> {
     if (value === null || value === undefined) {
       throw new Error(`Must set a non null value when setting an entity id.`);
     }
-    if (this._id !== null) {
+    if (this._id !== null && !CAN_MUTATE_ID) {
       throw new Error(`Entity id is already set as "${this._id}".`);
     }
     this._id = value;

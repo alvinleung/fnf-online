@@ -9,13 +9,12 @@ import { SpriteSheetRenderable } from "./engine/graphics/SpriteSheet/SpriteSheet
 import { TransformComponent } from "./engine/core/TransformComponent";
 import { SoundLoader } from "./engine/assets/SoundLoader";
 
+import { Image } from "./engine/graphics/Image/Image";
+
 import ASSET_DECLARATION from "./MyGameAssets";
 import { Renderer3D } from "./engine/graphics/3dRender/Renderer3D";
 import CameraComponent from "./engine/camera/CameraComponent";
-import {
-  RenderableComponent,
-  RenderableObject,
-} from "./engine/graphics/Renderable";
+import { RenderableComponent, RenderableObject } from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
@@ -32,7 +31,10 @@ import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheetAn
 import { PhongRenderer } from "./engine/graphics/3dRender/PhongRenderer";
 import { LightComponent } from "./engine/graphics/light/Light";
 import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
-import { wireFrameMaterialProperties, WireFrameRenderer } from "./engine/graphics/3dRender/WireFrameRenderer";
+import {
+  wireFrameMaterialProperties,
+  WireFrameRenderer,
+} from "./engine/graphics/3dRender/WireFrameRenderer";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -43,9 +45,7 @@ class MyGame extends Game {
     squareEntity.id = "square-entity-1";
     const image = this.assets.image.get("test");
     squareEntity.useComponent(TransformComponent);
-    squareEntity.useComponent(RenderableComponent).renderableObject = new Plane(
-      image
-    );
+    squareEntity.useComponent(RenderableComponent).renderableObject = new Plane(image);
 
     const transform = squareEntity.getComponent(TransformComponent);
     transform.scale = [1, 1, 0];
@@ -58,8 +58,9 @@ class MyGame extends Game {
      */
     const squareEntity3 = new Entity();
     squareEntity3.useComponent(TransformComponent);
-    squareEntity3.useComponent(RenderableComponent).renderableObject =
-      new Plane(this.assets.image.get("test2"));
+    squareEntity3.useComponent(RenderableComponent).renderableObject = new Plane(
+      this.assets.image.get("test2")
+    );
     squareEntity3.id = "square-entity-3";
 
     const transform3 = squareEntity3.getComponent(TransformComponent);
@@ -82,32 +83,28 @@ class MyGame extends Game {
     transform2.position = [0, -1, -1];
     transform2.initialRotation = [0, 1, 1];
 
-    squareEntity2.useComponent(RenderableComponent).renderableObject =
-      new SpriteSheetRenderable(spriteSheetAnimation);
+    squareEntity2.useComponent(RenderableComponent).renderableObject = new SpriteSheetRenderable(
+      spriteSheetAnimation
+    );
 
     /**
      * Entity 3 - Camera Controller
      */
 
-    const cameraEntity = Entity.create("camera", [
-      TransformComponent,
-      CameraComponent,
-    ]);
+    const cameraEntity = Entity.create("camera", [TransformComponent, CameraComponent]);
     const cameraTransform = cameraEntity.getComponent(TransformComponent);
     cameraTransform.position = [0, 1, 5];
     cameraTransform.rotation = fromEulerAngles(0, 0, 0);
 
     //console.log(cameraEntity.listComponents());
 
-    const debugEntity = Entity.create("debug", [
-      TransformComponent,
-      DebugComponent,
-    ]);
-    debugEntity.useComponent(RenderableComponent).renderableObject = new Sphere();//;
+    const debugEntity = Entity.create("debug", [TransformComponent, DebugComponent]);
+    debugEntity.useComponent(RenderableComponent).renderableObject = new Sphere(); //;
     debugEntity.getComponent(TransformComponent).position = [1, 1, 1];
     let debugRenderable = debugEntity.getComponent(RenderableComponent).renderableObject;
-    debugRenderable.getMaterials()
-    .addProperty("WireFrame",new wireFrameMaterialProperties(debugRenderable.objectCoords))
+    debugRenderable
+      .getMaterials()
+      .addProperty("WireFrame", new wireFrameMaterialProperties(debugRenderable.objectCoords));
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
     cameraEntity.useComponent(EditorControlComponent);
 
@@ -122,9 +119,7 @@ class MyGame extends Game {
     // console.log(getPublicProperties(new TransformComponent));
 
     const parser = GameStateParser.fromGame(this);
-    const entities = GameStateParser.fromString(
-      parser.getString()
-    ).getEntities();
+    const entities = GameStateParser.fromString(parser.getString()).getEntities();
 
     // console.log(entities[1].getComponent(RenderableComponent));
 

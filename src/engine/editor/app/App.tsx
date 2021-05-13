@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import "./App.css";
 import "./style/typography.css";
 import "./style/layout.css";
@@ -17,10 +17,22 @@ import { Modal } from "./components/Modal";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { ComponentRegistry } from "../EditorDecorators";
 import { EditorContextWrapper } from "./EditorContextWrapper";
-
 interface Props {
   game: Game;
 }
+
+interface EditorStateChange {
+  type: "entityChange" | "componentChange";
+  field: string;
+  value: string;
+}
+interface EditorState {
+  changes: EditorStateChange[];
+}
+const initialEditorState: EditorState = { changes: [] };
+const editorStateReducer = (state, action: EditorStateChange) => {
+  return {};
+};
 
 const App = ({ game }: Props): JSX.Element => {
   const [entities, setEntities] = useState<Entity[]>([]);
@@ -106,6 +118,19 @@ const App = ({ game }: Props): JSX.Element => {
     selectedEntity.removeComponent(componentClass);
   }, [selectedEntity, selectedComponent]);
 
+  const handleEntityDuplicate = (entityId: string) => {
+    const newEntity = game.getEntityById(entityId).clone();
+
+    const trailingNumberRegex = /\d+$/;
+    const originalEntityId = newEntity.id as string;
+    // check how many entity in the scene
+    const entityCount = Number(originalEntityId.match(trailingNumberRegex)[0]);
+    const newEntityTrailingNumber = isNaN(entityCount) ? `1` : `${entityCount + 1}`;
+
+    newEntity.id = originalEntityId.replace(trailingNumberRegex, newEntityTrailingNumber);
+    game.addEntity(newEntity);
+  };
+
   return (
     <EditorContextWrapper
       game={game}
@@ -143,9 +168,7 @@ const App = ({ game }: Props): JSX.Element => {
             <MenuItem divider={true} />
             <MenuItem
               data={{ action: "add-entity" }}
-              onClick={() => {
-                setIsCreatingEntity(true);
-              }}
+              onClick={() => handleEntityDuplicate(selectedEntity && (selectedEntity.id as string))}
             >
               Duplicate "{selectedEntity && selectedEntity.id}"
             </MenuItem>
