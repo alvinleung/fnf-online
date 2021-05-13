@@ -5,11 +5,11 @@ import {
   Editor,
   Field,
   Instantiable,
-  InstantiableObject,
 } from "../editor";
 import { spreadArrayRecusively } from "../utils/ArrayUtils";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderer";
+import { wireFrameMaterialProperties } from "./3dRender/WireFrameRenderer";
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Image } from "./Image/Image";
 import { Texture } from "./Texture";
@@ -42,6 +42,13 @@ export class Materials {
     this.properties[name] = val;
     return this;
   }
+  public hasProperty(name: string):boolean{
+    if(this.properties[name]){
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 export class Geomatry {}
@@ -66,7 +73,8 @@ export class RenderableObject {
 
     this._material = new Materials()
       .addProperty("Phong", new PhongMaterialProperties())
-      .addProperty("Normals", new Normals(objectCoords,false));
+      .addProperty("Normals", new Normals(objectCoords,false))
+      //.addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
 
     if (objectColors) {
       this.objectColors = objectColors;

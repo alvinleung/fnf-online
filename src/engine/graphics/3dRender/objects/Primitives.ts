@@ -1,4 +1,6 @@
+import { v3 } from "twgl.js";
 import { spreadArrayRecusively } from "../../../utils/ArrayUtils";
+import { roundTo } from "../../../utils/MathUtils";
 
 export const plane = [
   // Front face
@@ -65,6 +67,12 @@ export const COLORS_VEC4 = {
 
     return colorArray;
   },
+  /**
+   * 
+   * @param size the number of faces/lines/triangles , NOT number of vertices
+   * @param percentage 
+   * @returns 
+   */
   grayColor: function(size: number, percentage:number): number[]{
     let grayColor = this.grayFromPercent(percentage);
 
@@ -139,10 +147,64 @@ export function generateColoredCube(){
   }
 }
 
-export function trianglesToWireFrame( vertices:number[] ){
+/**
+ * makeShift function for getting wireframe from triangles
+ * large room for optimization
+ * @param triangleVertices 
+ */
+export function wireFrameFromTriangles( triangleVertices:number[], trim = true ): number[]{
 
+  // how many decimal points to be treated as different a vertex
+  const percision = 5;
+  // Generate line vertices from triangles
+  let lineVertices:number[] = [];
+  for(let i = 0; i < triangleVertices.length; i+=9){
+    // a triangle
+    const vert0 = [ 
+      roundTo( triangleVertices[ i ], percision ),
+      roundTo( triangleVertices[i+1], percision ),
+      roundTo( triangleVertices[i+2], percision ) ];
+    const vert1 = [ 
+      roundTo( triangleVertices[i+3], percision ),
+      roundTo( triangleVertices[i+4], percision ),
+      roundTo( triangleVertices[i+5], percision ) ];
+    const vert2 = [ 
+      roundTo( triangleVertices[i+6], percision ),
+      roundTo( triangleVertices[i+7], percision ),
+      roundTo( triangleVertices[i+8], percision ) ];
+
+    lineVertices.push(...vert0,...vert1);
+    lineVertices.push(...vert0,...vert2);
+    lineVertices.push(...vert2,...vert1);
+  }
+
+  if(!trim){
+    return lineVertices;
+  }
+
+  // trim duplicate lines
+  let linesRegister = {};
+  let linestrimmed = [];
+  let elimitated = 0;
+  for(let i = 0; i < lineVertices.length; i+=6){
+    // a line
+    const vert0 = [ lineVertices[ i ],lineVertices[i+1],lineVertices[i+2] ];
+    const vert1 = [ lineVertices[i+3],lineVertices[i+4],lineVertices[i+5] ];
+
+    let lineString01 = vert0.toString().concat(vert1.toString());
+    let lineString10 = vert1.toString().concat(vert0.toString());
+
+    if(!linesRegister[lineString01] && !linesRegister[lineString10]){
+      linesRegister[lineString01] = true;
+      linestrimmed.push(...vert0,...vert1);
+    } else {
+      elimitated++;
+    }
+
+  }
+  console.log("trimmed:" + elimitated);
+  return linestrimmed;
 }
-
 
 
 

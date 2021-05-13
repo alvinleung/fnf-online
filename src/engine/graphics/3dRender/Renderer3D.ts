@@ -59,6 +59,11 @@ export class Renderer3D extends RenderPass {
         renderableObject.loadIntoGPU(gl);
       }
 
+      if(renderableObject.getMaterials() && renderableObject.getMaterials().hasProperty("WireFrame")){
+        return;
+      }
+
+
       // push colour only object to a posponed render batch
       if(!renderableObject.hasRenderingTexture()){
         deferredRenderingList.push(renderableObject);
