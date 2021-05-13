@@ -123,11 +123,27 @@ const App = ({ game }: Props): JSX.Element => {
 
     const trailingNumberRegex = /\d+$/;
     const originalEntityId = newEntity.id as string;
-    // check how many entity in the scene
-    const entityCount = Number(originalEntityId.match(trailingNumberRegex)[0]);
-    const newEntityTrailingNumber = isNaN(entityCount) ? `1` : `${entityCount + 1}`;
 
-    newEntity.id = originalEntityId.replace(trailingNumberRegex, newEntityTrailingNumber);
+    // check how many entity in the scene
+    let finalId = originalEntityId;
+    let loopCount = 1;
+
+    // try increment the entity id until no entity occupies that name
+    while (game.getEntityById(finalId)) {
+      const originalEntityCountArr = originalEntityId.match(trailingNumberRegex);
+      const entityCount = originalEntityCountArr && originalEntityCountArr[0];
+      // if entityCount is null means that the entity doesn not use a number
+      // incremental naming scheme, it is save to set nubmer 1
+      const newEntityTrailingNumber = !entityCount ? "1" : `${Number(entityCount) + loopCount}`;
+
+      finalId = !entityCount
+        ? originalEntityId + newEntityTrailingNumber
+        : originalEntityId.replace(trailingNumberRegex, newEntityTrailingNumber);
+
+      loopCount++;
+    }
+
+    newEntity.id = finalId;
     game.addEntity(newEntity);
   };
 
