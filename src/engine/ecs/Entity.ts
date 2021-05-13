@@ -1,3 +1,4 @@
+import { Clonable } from "../utils/Clonable";
 import { ComponentClass, Component } from "./Component";
 
 type EntityChangeListener = (entity: Entity) => any;
@@ -12,7 +13,7 @@ type EntityChangeListener = (entity: Entity) => any;
  * will throw when you try to get one when no id is set.
  * This set can be used to persist the entity on a database.
  */
-class Entity {
+class Entity extends Clonable<Entity> {
   private _id: string | number | null = null;
   private readonly _components: { [tag: string]: Component } = {};
   private readonly _listeners: EntityChangeListener[] = [];
