@@ -42,6 +42,13 @@ export class Materials {
     this.properties[name] = val;
     return this;
   }
+  public hasProperty(name: string):boolean{
+    if(this.properties[name]){
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 export class Geomatry {}
@@ -67,7 +74,7 @@ export class RenderableObject {
     this._material = new Materials()
       .addProperty("Phong", new PhongMaterialProperties())
       .addProperty("Normals", new Normals(objectCoords,false))
-      .addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
+      //.addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
 
     if (objectColors) {
       this.objectColors = objectColors;

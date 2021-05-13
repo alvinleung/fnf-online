@@ -32,7 +32,7 @@ import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheetAn
 import { PhongRenderer } from "./engine/graphics/3dRender/PhongRenderer";
 import { LightComponent } from "./engine/graphics/light/Light";
 import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
-import { WireFrameRenderer } from "./engine/graphics/3dRender/WireFrameRenderer";
+import { wireFrameMaterialProperties, WireFrameRenderer } from "./engine/graphics/3dRender/WireFrameRenderer";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -105,6 +105,9 @@ class MyGame extends Game {
     ]);
     debugEntity.useComponent(RenderableComponent).renderableObject = new Sphere();//;
     debugEntity.getComponent(TransformComponent).position = [1, 1, 1];
+    let debugRenderable = debugEntity.getComponent(RenderableComponent).renderableObject;
+    debugRenderable.getMaterials()
+    .addProperty("WireFrame",new wireFrameMaterialProperties(debugRenderable.objectCoords))
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
     cameraEntity.useComponent(EditorControlComponent);
 
@@ -209,7 +212,7 @@ class MyGame extends Game {
       // new ImageRendererSetup(),
       // new SpriteSheetRendererSetup(),
       new SpriteSheetRenderPass(),
-      //new PhongRenderer(),
+      new PhongRenderer(),
       new WireFrameRenderer(),
       new MetricsRenderPass(),
     ];
