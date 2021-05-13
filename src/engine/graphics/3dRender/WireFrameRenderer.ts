@@ -21,7 +21,7 @@ export class wireFrameMaterialProperties implements MaterialProperties {
   constructor(objectVertices: number[], color = COLORS_VEC4.black) {
     this._lineVertices = wireFrameFromTriangles(objectVertices);
     //this._lineColors = spreadArrayRecusively(Array(this._lineVertices.length / 3).fill(color));
-
+    this._lineColor = color;
   }
   public isLoadedIntoGPUMemory() {
     return this._isLoadedIntoGPUMemory;
@@ -74,7 +74,6 @@ export class WireFrameRenderer extends RenderPass {
       m4.getTranslation(m4.inverse(cameraMatrix))
     );
     
-
     // load attribs 
     renderableObjects.forEach((renderableObject) => {
       // check for and get wireframes from Matrials 
@@ -91,9 +90,10 @@ export class WireFrameRenderer extends RenderPass {
       this.callDraw(gl, wireframe.vertexCount());
     });
 
+    // disable all the used attributes
+    wireFrameShader.cleanUpAttribs();
+
   }
-
-
   protected setupObjectTrasnform(renderer3DShader:ShaderProgram, renderableObject: RenderableObject ) {
     // change the transformation base on the renderable object setting
     renderer3DShader.writeUniformMat4(
