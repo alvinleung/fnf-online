@@ -11,32 +11,21 @@ interface Props {
   config: any;
 }
 
-export const InstantiableClassEditor = ({
-  name,
-  value,
-  onChange,
-  config,
-}: Props) => {
+const SIMPLIFY_DROPDOWN_UI = false;
+
+export const InstantiableClassEditor = ({ name, value, onChange, config }: Props) => {
   const currentInstance = value;
 
   const hasSpecifiedCategory = config && config.category;
 
   // check if instance in the record of instantiable object
-  const instantiableClasses = useMemo(
-    () => InstantiableClassRegistry.getAllClasses(),
-    []
-  );
+  const instantiableClasses = useMemo(() => InstantiableClassRegistry.getAllClasses(), []);
 
-  const currentInstanceClassName =
-    value && value.constructor && value.constructor.name;
-  const [selectedClassName, setSelectedClassName] = useState(
-    currentInstanceClassName
-  );
+  const currentInstanceClassName = value && value.constructor && value.constructor.name;
+  const [selectedClassName, setSelectedClassName] = useState(currentInstanceClassName);
 
   const currentInstanceFields = useMemo(
-    () =>
-      selectedClassName &&
-      InstantiableClassRegistry.getFields(currentInstanceClassName),
+    () => selectedClassName && InstantiableClassRegistry.getFields(currentInstanceClassName),
     [selectedClassName, value]
   );
 
@@ -52,15 +41,10 @@ export const InstantiableClassEditor = ({
 
     // only create new instance when the user pick new object
     // or the system is instantiating a new object itself
-    if (
-      currentInstance &&
-      selectedClassName === currentInstance.constructor.name
-    )
-      return;
+    if (currentInstance && selectedClassName === currentInstance.constructor.name) return;
 
     // if instance is changed, then create a new instance
-    const classConstructor =
-      InstantiableClassRegistry.getClassConstructor(selectedClassName);
+    const classConstructor = InstantiableClassRegistry.getClassConstructor(selectedClassName);
 
     // abort if constructor not found
     if (!classConstructor) return;
@@ -71,33 +55,38 @@ export const InstantiableClassEditor = ({
     // init the instance with some initial values
     const fields = InstantiableClassRegistry.getFields(selectedClassName);
     fields.forEach((fieldEntry) => {
-      if (fieldEntry.defaultValue)
-        newInstance[fieldEntry.name] = fieldEntry.defaultValue;
+      if (fieldEntry.defaultValue) newInstance[fieldEntry.name] = fieldEntry.defaultValue;
     });
 
     onChange && onChange(newInstance);
   }, [selectedClassName]);
 
-  const classPicker = () => (
-    <DropDownSelect
-      selected={selectedClassName}
-      onSelect={(val) => setSelectedClassName(val)}
-    >
-      {instantiableClasses.reduce((dropDownItems, classEntry, index) => {
-        if (
-          !hasSpecifiedCategory || // add all items if no category specified
-          (hasSpecifiedCategory && classEntry.category === config.category) // filter out category if category is specified
-        ) {
-          dropDownItems.push(
-            <DropDownItem key={index} value={classEntry.name}>
-              {classEntry.name}
-            </DropDownItem>
-          );
-        }
-        return dropDownItems;
-      }, [])}
-    </DropDownSelect>
-  );
+  const classPicker = () => {
+    // only create a drop down list for more than one option
+    let itemCount = 0;
+
+    const dropDownSelect = (
+      <DropDownSelect selected={selectedClassName} onSelect={(val) => setSelectedClassName(val)}>
+        {instantiableClasses.reduce((dropDownItems, classEntry, index) => {
+          if (
+            !hasSpecifiedCategory || // add all items if no category specified
+            (hasSpecifiedCategory && classEntry.category === config.category) // filter out category if category is specified
+          ) {
+            itemCount++;
+            dropDownItems.push(
+              <DropDownItem key={index} value={classEntry.name}>
+                {classEntry.name}
+              </DropDownItem>
+            );
+          }
+          return dropDownItems;
+        }, [])}
+      </DropDownSelect>
+    );
+
+    if (itemCount > 1 && SIMPLIFY_DROPDOWN_UI) return;
+    return dropDownSelect;
+  };
 
   return (
     <>
@@ -105,9 +94,7 @@ export const InstantiableClassEditor = ({
         <div className="value-editor__label">
           {name}{" "}
           {hasSpecifiedCategory && (
-            <span className="value-editor__description">
-              Value: {config.category}
-            </span>
+            <span className="value-editor__description">Value: {config.category}</span>
           )}
         </div>
         <div>
@@ -141,14 +128,13 @@ export const InstantiableClassEditor = ({
           <div style={{ paddingLeft: "1rem" }}>
             {currentInstanceFields &&
               currentInstanceFields.map((field, index) => {
-                const fieldCurrentValue =
-                  currentInstance && currentInstance[field.name];
+                const fieldCurrentValue = currentInstance && currentInstance[field.name];
                 return (
                   <ValueEditor
                     key={index}
                     fieldName={field.name}
                     fieldType={field.type}
-                    config={{ category: field.category }}
+                    config={{ category: field.category, ...field.config }}
                     value={fieldCurrentValue || field.defaultValue}
                     onChange={(val: any) => handleFieldChange(field.name, val)}
                   />

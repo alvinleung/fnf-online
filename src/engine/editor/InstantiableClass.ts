@@ -1,4 +1,3 @@
-import { S_IFREG } from "node:constants";
 import { Editor } from "./EditorDecorators";
 
 type ClassEntry = {
@@ -14,7 +13,8 @@ type FieldEntry = {
   name: string;
   type: Editor;
   defaultValue: any;
-  category: Object;
+  category: string;
+  config: Object;
 };
 
 type ClassRegistry = {
@@ -27,11 +27,7 @@ type ClassRegistry = {
 export function Instantiable(classCategory?: string) {
   // category of class
   return function (target: Function) {
-    InstantiableClassRegistry.addClassIfEmpty(
-      target.name,
-      target,
-      classCategory
-    );
+    InstantiableClassRegistry.addClassIfEmpty(target.name, target, classCategory);
   };
 }
 
@@ -40,13 +36,9 @@ export function Instantiable(classCategory?: string) {
  */
 export function Field<T>(
   type: Editor,
-  options?: { defaultValue?: T; category?: any }
+  options?: { defaultValue?: T; category?: string; config?: Object }
 ) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor?: PropertyDescriptor
-  ) {
+  return function (target: any, propertyKey: string, descriptor?: PropertyDescriptor) {
     // extrect the editor information
     const ownerConstructor = target.constructor;
     const ownerClassName = target.constructor.name;
@@ -57,6 +49,7 @@ export function Field<T>(
       type: type,
       defaultValue: options && options.defaultValue,
       category: options && options.category,
+      config: options && options.config,
     };
 
     InstantiableClassRegistry.addClassIfEmpty(ownerClassName, ownerConstructor);
@@ -83,18 +76,14 @@ export module InstantiableClassRegistry {
 
   export function getFields(className: string): FieldEntry[] {
     if (!registry[className]) {
-      console.warn(
-        `Unable to get field: class "${className}" does not exists on the registry.`
-      );
+      console.warn(`Unable to get field: class "${className}" does not exists on the registry.`);
       return;
     }
     return Object.values(registry[className].fields);
   }
 
   export function getClassesByCategory(category: string): ClassEntry[] {
-    return Object.values(registry).filter(
-      (classEntry) => classEntry.category === category
-    );
+    return Object.values(registry).filter((classEntry) => classEntry.category === category);
   }
   export function getAllClasses(): ClassEntry[] {
     return Object.values(registry);

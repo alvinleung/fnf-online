@@ -1,21 +1,11 @@
 import { SpriteSheet } from ".";
-import { Editor, Field, Instantiable, InstantiableObject, ObjectField } from "../../editor";
+import { Editor, Field, Instantiable } from "../../editor";
 import { AbstractObservable } from "../../events/Observable";
 import { Image } from "../Image/Image";
 
 /**
  * This is a state machine for controlling spritesheet animation
  */
-// @InstantiableObject([
-//   {
-//     type: Editor.RESOURCE_IMAGE,
-//     defaultValue: Image.createEmpty(),
-//   },
-//   { type: Editor.INTEGER, defaultValue: 12 },
-//   { type: Editor.INTEGER, defaultValue: 16 },
-//   { type: Editor.INTEGER, defaultValue: 16 },
-// ])
-
 @Instantiable("SpriteSheetAnimator")
 export class SpriteSheetAnimator extends AbstractObservable {
   public readonly spriteSheet: SpriteSheet;
@@ -24,6 +14,14 @@ export class SpriteSheetAnimator extends AbstractObservable {
   private isPlaying: boolean = false;
   private loopAnimation: boolean = false;
 
+  @Field(Editor.OBJECT, {
+    config: {
+      fieldsInEachEntry: [
+        { name: "beginFrame", type: Editor.INTEGER, defaultValue: 0 },
+        { name: "endFrame", type: Editor.INTEGER, defaultValue: 0 },
+      ],
+    },
+  })
   private animationLookupTable: {
     [animationName: string]: SpriteSheetAnimationSequence;
   } = {};
@@ -98,20 +96,28 @@ export class SpriteSheetAnimator extends AbstractObservable {
    * Begin playing the animation
    * @param animation
    */
-  public play(animation: SpriteSheetAnimationSequence | string) {
+  public play(animation: string) {
     this.isPlaying = true;
     this.playBeginTime = Date.now();
 
-    // play the animation label or an animation sequence
-    this.currentAnimation =
-      typeof animation === "string" ? this.animationLookupTable[animation] : animation;
+    const currentAnimation = this.animationLookupTable[animation];
+
+    const animationSequence: SpriteSheetAnimationSequence = {
+      spriteSheet: this.spriteSheet,
+      frameRate: this.spriteSheet.frameRate,
+      beginFrame: currentAnimation.beginFrame,
+      endFrame: currentAnimation.endFrame,
+      totalFrames: currentAnimation.endFrame - currentAnimation.beginFrame + 1,
+    };
+
+    this.currentAnimation = animationSequence;
   }
 
   /**
    * Begin playing the animation sequence, restart when animation finish
    * @param animation
    */
-  public loop(animation: SpriteSheetAnimationSequence | string) {
+  public loop(animation: string) {
     this.loopAnimation = true;
     this.play(animation);
   }

@@ -1,11 +1,6 @@
 import { m4, v3 } from "twgl.js";
 import { Component } from "../ecs";
-import {
-  EditableField,
-  Editor,
-  Field,
-  Instantiable,
-} from "../editor";
+import { EditableField, Editor, Field, Instantiable } from "../editor";
 import { spreadArrayRecusively } from "../utils/ArrayUtils";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderer";
@@ -23,9 +18,13 @@ export class RenderableComponent implements Component {
 
 export class MaterialProperties {}
 
-@Instantiable()
+@Instantiable("Materials")
 export class Materials {
-  @Field(Editor.OBJECT)
+  @Field(Editor.OBJECT, {
+    config: {
+      fieldsInEachEntry: [{ name: "Property", editor: Editor.CLASS }],
+    },
+  })
   private properties = {};
 
   public getProperty<T extends MaterialProperties>(name: string): T {
@@ -42,8 +41,8 @@ export class Materials {
     this.properties[name] = val;
     return this;
   }
-  public hasProperty(name: string):boolean{
-    if(this.properties[name]){
+  public hasProperty(name: string): boolean {
+    if (this.properties[name]) {
       return true;
     } else {
       return false;
@@ -73,8 +72,8 @@ export class RenderableObject {
 
     this._material = new Materials()
       .addProperty("Phong", new PhongMaterialProperties())
-      .addProperty("Normals", new Normals(objectCoords,false))
-      //.addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
+      .addProperty("Normals", new Normals(objectCoords, false));
+    //.addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
 
     if (objectColors) {
       this.objectColors = objectColors;
@@ -90,6 +89,9 @@ export class RenderableObject {
   private _textureImage: Image;
   private _textureCoords: number[];
   private _objectColors: number[];
+
+  @Field(Editor.CLASS)
+  private _material: Materials;
 
   @Field(Editor.ARRAY_NUMBER, { defaultValue: [] })
   public set objectCoords(val) {
@@ -139,7 +141,6 @@ export class RenderableObject {
   private _texCoordsBuffer: AttribDataBuffer;
   private _colorBuffer: AttribDataBuffer;
   private _texture: Texture;
-  private _material: Materials;
 
   public loadIntoGPU(gl: WebGLRenderingContext) {
     this.createBufferObjectsInGPU(gl);
@@ -164,31 +165,17 @@ export class RenderableObject {
 
   protected createBufferObjectsInGPU(gl: WebGLRenderingContext) {
     // load the object onto a buffer
-    this._coordsBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(this.objectCoords),
-      3
-    );
-    this._texCoordsBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(this.textureCoords),
-      2
-    );
+    this._coordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectCoords), 3);
+    this._texCoordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.textureCoords), 2);
     // colors defaulted to gray
-    this._colorBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(this.objectColors),
-      4
-    );
+    this._colorBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectColors), 4);
 
     // load image onto the gpu
     if (this.textureImage) {
       this.loadTextureIntoGPU(gl);
     } else {
       VERBOSE &&
-        console.log(
-          "No texture image supplied, will not create texture for this renderable."
-        );
+        console.log("No texture image supplied, will not create texture for this renderable.");
     }
   }
 
@@ -199,9 +186,7 @@ export class RenderableObject {
 
   public getCoordsBuffer() {
     if (!this.isLoadedIntoGPUMemory()) {
-      console.warn(
-        "Cant get coords buffer, this RenderableObject has not been loaded into gpu."
-      );
+      console.warn("Cant get coords buffer, this RenderableObject has not been loaded into gpu.");
       return;
     }
     return this._coordsBuffer;
@@ -219,9 +204,7 @@ export class RenderableObject {
 
   public getColorBuffer() {
     if (!this.isLoadedIntoGPUMemory()) {
-      console.warn(
-        "Cant get color buffer, this RenderableObject has not been loaded into gpu."
-      );
+      console.warn("Cant get color buffer, this RenderableObject has not been loaded into gpu.");
       return;
     }
     return this._colorBuffer;

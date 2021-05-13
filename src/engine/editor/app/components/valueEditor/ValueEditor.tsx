@@ -8,6 +8,7 @@ import { NumberEditor } from "./NumberEditor";
 import { ImageResourceEditor } from "./ImageResourceEditor";
 import { ColorEditor } from "./ColorEditor";
 import { InstantiableClassEditor } from "./InstantiableClassEditor";
+import { ObjectEditor } from "./ObjectEditor";
 
 interface Props {
   fieldType: string;
@@ -59,6 +60,9 @@ export const ValueEditor = ({ fieldName, fieldType, value, onChange, config }: P
         config={config}
       />
     );
+
+  if (fieldType === Editor.OBJECT)
+    return <ObjectEditor name={formattedName} value={value} onChange={onChange} config={config} />;
 
   if (fieldType === Editor.RGBA)
     return <ColorEditor name={formattedName} value={value} onChange={onChange} />;

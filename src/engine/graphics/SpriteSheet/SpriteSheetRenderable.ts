@@ -4,13 +4,7 @@ import { FrameBuffer } from "../FrameBuffer";
 import { Texture } from "../Texture";
 import { SpriteSheet } from "./SpriteSheet";
 import { RenderableObject } from "../Renderable";
-import {
-  Editor,
-  Field,
-  Instantiable,
-  InstantiableObject,
-  ObjectField,
-} from "../../editor";
+import { Editor, Field, Instantiable } from "../../editor";
 import { SpriteSheetAnimator } from "./SpriteSheetAnimator";
 
 /**
@@ -28,19 +22,11 @@ export class SpriteSheetRenderable extends RenderableObject {
   private _frameBuffer: FrameBuffer;
   private _spriteSheetTexture: Texture;
 
-  @Field(Editor.CLASS, {
-    // defaultValue: new SpriteSheetAnimator(Image.createEmpty(), 12, 16, 16),
-    category: "SpriteSheetAnimator",
-  })
-  private animator: SpriteSheetAnimator;
+  @Field(Editor.CLASS, { category: "SpriteSheetAnimator" })
+  public readonly animator: SpriteSheetAnimator;
 
   constructor(
-    animator: SpriteSheetAnimator = new SpriteSheetAnimator(
-      Image.createEmpty(),
-      12,
-      32,
-      32
-    )
+    animator: SpriteSheetAnimator = new SpriteSheetAnimator(Image.createEmpty(), 12, 32, 32)
   ) {
     super(
       require("../3dRender/objects/Primitives").plane,
@@ -63,11 +49,7 @@ export class SpriteSheetRenderable extends RenderableObject {
     this._spriteSheetTexture = spriteSheet.getTexture(gl);
 
     // create framebuffer from the texture of this
-    this._frameBuffer = FrameBuffer.fromSize(
-      gl,
-      spriteSheet.frameWidth,
-      spriteSheet.frameHeight
-    );
+    this._frameBuffer = FrameBuffer.fromSize(gl, spriteSheet.frameWidth, spriteSheet.frameHeight);
 
     // set the output texture for render
     this.setRenderingTexture(this._frameBuffer.getOutputTexture());

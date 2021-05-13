@@ -1,0 +1,66 @@
+.object-editor {
+  /* padding-top: var(--spacing-s); */
+  margin-bottom: var(--spacing-m);
+
+  /* background-color: var(--clr-bg-lighter); */
+  border-radius: 2px;
+}
+
+.object-editor__field {
+  border: 1px solid var(--clr-bg);
+  border-radius: 3px;
+
+  padding-left: var(--spacing-xs);
+  padding-right: var(--spacing-xs);
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+
+  margin-top: var(--spacing-s);
+  margin-bottom: var(--spacing-s);
+
+  background-color: var(--clr-bg-lighter);
+
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.object-editor__field:hover {
+  border: 1px solid var(--clr-bg-lightest);
+}
+.object-editor__field--selected {
+  border: 1px solid var(--clr-accent) !important;
+}
+
+.object-editor__label {
+  margin-bottom: var(--spacing-xs);
+}
+
+input.object-editor__label-editor {
+  font-size: 12px;
+  border-radius: 4px;
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+  padding-left: var(--spacing-s);
+  padding-right: var(--spacing-s);
+
+  /* background-color: rgba(0, 0, 0, 0.1); */
+  border: 1px solid transparent;
+  background-color: rgba(0, 0, 0, 0.175);
+  color: var(--clr-accent-lighter);
+}
+
+input.object-editor__label-editor:focus {
+  border: 1px solid var(--clr-accent);
+}
+
+.object-editor__field-header {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: var(--spacing-xs);
+}
+
+.object-editor__field-header > * {
+  margin-right: var(--spacing-s);
+}
+.object-editor__field-header > *:last-child {
+  margin-right: 0rem;
+}
