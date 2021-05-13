@@ -134,7 +134,9 @@ const App = ({ game }: Props): JSX.Element => {
       const entityCount = originalEntityCountArr && originalEntityCountArr[0];
       // if entityCount is null means that the entity doesn not use a number
       // incremental naming scheme, it is save to set nubmer 1
-      const newEntityTrailingNumber = !entityCount ? "1" : `${Number(entityCount) + loopCount}`;
+      const newEntityTrailingNumber = !entityCount
+        ? `${loopCount}`
+        : `${Number(entityCount) + loopCount}`;
 
       finalId = !entityCount
         ? originalEntityId + newEntityTrailingNumber
