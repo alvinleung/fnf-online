@@ -121,7 +121,7 @@ export const ObjectEditor = ({ value, name, onChange, config }: Props) => {
       <div className="value-editor__label">
         {name}
         <button className="value-editor__button-icon" onClick={handleItemAdd}>
-          Add Entry <img src={ADD_BUTTON} />
+          <img src={ADD_BUTTON} alt="Add New Entry" />
         </button>
       </div>
       <div className="object-editor">

@@ -71,7 +71,7 @@
 
   font-size: 12px;
 
-  background-color: var(--clr-bg-lighter);
+  background-color: transparent;
   color: var(--clr-lighter);
   border-radius: 50rem 50rem 50rem 50rem;
 }
