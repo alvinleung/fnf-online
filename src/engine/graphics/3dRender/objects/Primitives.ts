@@ -67,6 +67,12 @@ export const COLORS_VEC4 = {
 
     return colorArray;
   },
+  /**
+   * 
+   * @param size the number of faces/lines/triangles , NOT number of vertices
+   * @param percentage 
+   * @returns 
+   */
   grayColor: function(size: number, percentage:number): number[]{
     let grayColor = this.grayFromPercent(percentage);
 
@@ -146,14 +152,13 @@ export function generateColoredCube(){
  * large room for optimization
  * @param triangleVertices 
  */
-export function wireFrameFromTriangles( triangleVertices:number[], trim = true ){
+export function wireFrameFromTriangles( triangleVertices:number[], trim = true ): number[]{
 
   // how many decimal points to be treated as different a vertex
-  const percision = 2;
+  const percision = 5;
   // Generate line vertices from triangles
   let lineVertices:number[] = [];
   for(let i = 0; i < triangleVertices.length; i+=9){
-
     // a triangle
     const vert0 = [ 
       roundTo( triangleVertices[ i ], percision ),
@@ -169,13 +174,14 @@ export function wireFrameFromTriangles( triangleVertices:number[], trim = true )
       roundTo( triangleVertices[i+8], percision ) ];
 
     lineVertices.push(...vert0,...vert1);
-    lineVertices.push(...vert1,...vert2);
+    lineVertices.push(...vert0,...vert2);
     lineVertices.push(...vert2,...vert1);
   }
 
   if(!trim){
     return lineVertices;
   }
+
   // trim duplicate lines
   let linesRegister = {};
   let linestrimmed = [];

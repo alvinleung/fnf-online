@@ -11,14 +11,15 @@ import { Instantiable } from "../../../editor";
 export class Sphere extends RenderableObject {
   constructor() {
     const radius = 1;
-    const subDAxis = 15;
-    const subDHeight = 15;
+    const subDAxis = 12;
+    const subDHeight = 12;
 
     const sphereVerticesIndexed = primitives.createSphereVertices(radius, subDAxis, subDHeight);
-
+    //console.log(sphereVerticesIndexed);
     const sphereVertices = primitives.deindexVertices(sphereVerticesIndexed);
-    //console.log(sphereVertices);
+    console.log(sphereVertices);
 
+    
     // TypedArray includes data of position, indices, normals, texcoords
     super([...sphereVertices.position], null, null);
   }

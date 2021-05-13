@@ -84,7 +84,7 @@ export class Normals implements MaterialProperties {
       objectNormals.push(...normal, ...normal, ...normal);
     }
     this.normals = spreadArrayRecusively(objectNormals);
-    this.normals = smoothNormals(this.normals, vertices);
+    //this.normals = smoothNormals(this.normals, vertices);
     this._isLoadedIntoGPUMemory = false;
   }
 
