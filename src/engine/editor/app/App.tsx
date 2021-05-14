@@ -17,32 +17,73 @@ import { Modal } from "./components/Modal";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { ComponentRegistry } from "../EditorDecorators";
 import { EditorContextWrapper } from "./EditorContextWrapper";
+import { useHotkeys } from "react-hotkeys-hook";
+import { HotkeyConfig } from "./Hotkeys";
+import lodashCloneDeep from "lodash.clonedeep";
+import useUndo from "use-undo";
+
 interface Props {
   game: Game;
 }
 
-interface EditorStateChange {
-  type: "entityChange" | "componentChange";
-  field: string;
-  value: string;
+interface EntityStateEdit {
+  type: "update" | "add" | "remove";
+  value: any;
+  index: number; // the index at which the entity was in at the moment
 }
-interface EditorState {
-  changes: EditorStateChange[];
-}
-const initialEditorState: EditorState = { changes: [] };
-const editorStateReducer = (state, action: EditorStateChange) => {
-  return {};
-};
 
 const App = ({ game }: Props): JSX.Element => {
+  const [
+    entitiesChanges,
+    { set: changeEntity, reset: resetEntites, undo: undoEdit, redo: redoEdit, canUndo, canRedo },
+  ] = useUndo<EntityStateEdit>(null);
+
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
 
-  const handleEntityAdded = (entity: Entity) => {
-    setEntities([...entities, entity]);
-  };
-  const handleEntityRemoved = (entity: Entity) => {
-    setEntities(entities.splice(entities.indexOf(entity), 1));
+  useHotkeys(HotkeyConfig.REDO, redoEdit, {}, [entitiesChanges]);
+  useHotkeys(HotkeyConfig.UNDO, undoEdit, {}, [entitiesChanges]);
+
+  // when entities record changes in the system
+  const [previousFutureLength, setPreviousFutureLength] = useState(0);
+  useEffect(() => {
+    // if the user is undo-ing
+    if (entitiesChanges.future.length > previousFutureLength) {
+      // the user just undone sth and haven't commit anything else
+      const change = entitiesChanges.future[0];
+
+      // do a revserse action of the latest do
+      //
+      // add the entity back in if removed
+      if (change.type === "remove") {
+        game.insertEntityAt(change.value, change.index);
+      }
+
+      // add the entity back in if removed
+      if (change.type === "add") {
+        game.removeEntity(change.value);
+      }
+    }
+
+    // if the user is redo-ing
+    if (entitiesChanges.future.length < previousFutureLength) {
+      // handle redo here
+      const redoChange = entitiesChanges.present;
+
+      if (redoChange.type === "remove") {
+        game.removeEntity(redoChange.value);
+      }
+      if (redoChange.type === "add") {
+        game.insertEntityAt(redoChange.value, redoChange.index);
+      }
+    }
+
+    setPreviousFutureLength(entitiesChanges.future.length);
+  }, [entitiesChanges]);
+
+  // sync the in game entities list with the Editor entities list
+  const syncEntities = (game: Game) => {
+    setEntities([...game.entities]);
   };
 
   const handleEntityListSelect = (val: string) => {
@@ -67,22 +108,38 @@ const App = ({ game }: Props): JSX.Element => {
 
   // add and remove entity in the list when notified
   useEffect(() => {
-    game.addEntityListener({
-      onEntityAdded: handleEntityAdded,
-      onEntityRemoved: handleEntityRemoved,
-    });
-    game.addEventListener(GameEvent.SELECT_ENTITY, (entity: Entity) => {
+    // game.addEntityListener({
+    //   onEntityAdded: handleEntityAdded,
+    //   onEntityRemoved: handleEntityRemoved,
+    // });
+    game.addEventListener(GameEvent.ENTITY_SELECT, (entity: Entity) => {
       if (entity) {
         setSelectedEntity(entity);
         return;
       }
       setSelectedEntity(null);
     });
+    // listen to game entity changes
+    game.addEventListener(GameEvent.ENTITY_LIST_CHANGE, (entitiesList: Entity[]) => {
+      syncEntities(game);
+    });
   }, []);
 
   const handleItemRemove = (entityId: string) => {
+    const entityToBeRemoved = game.getEntityById(entityId);
+
     setSelectedEntity(null);
-    game.removeEntity(game.getEntityById(entityId));
+    const removeIndex = game.removeEntity(entityToBeRemoved);
+
+    changeEntity({
+      type: "remove",
+      value: entityToBeRemoved,
+      index: removeIndex,
+    });
+    // add remove action to history
+
+    // sync the entity list with game
+    syncEntities(game);
   };
 
   /**
@@ -93,8 +150,17 @@ const App = ({ game }: Props): JSX.Element => {
   const createEntity = (name: string) => {
     if (!name) return;
 
+    const newEntity = Entity.create(name);
+
     // when the entity create
-    game.addEntity(Entity.create(name));
+    game.addEntity(newEntity);
+
+    changeEntity({
+      type: "add",
+      value: newEntity,
+      index: game.getEntityIndex(newEntity),
+    });
+
     setIsCreatingEntity(false);
   };
   const entityNameInputRef = useRef<HTMLInputElement>();
@@ -164,7 +230,7 @@ const App = ({ game }: Props): JSX.Element => {
               onItemRemove={handleItemRemove}
               value={selectedEntity && (selectedEntity.id as string)}
             >
-              {game.entities.map((entity, index) => {
+              {entities.map((entity, index) => {
                 return (
                   <ListItem value={entity.id as string} key={index}>
                     {entity.id as string}

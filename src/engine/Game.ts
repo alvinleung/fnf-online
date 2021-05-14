@@ -8,7 +8,7 @@ import { EventEmitter, IEventEmitter } from "./events/EventEmitter";
 
 export enum GameEvent {
   UPDATE = "update",
-  SELECT_ENTITY = "select-entity",
+  ENTITY_SELECT = "select-entity",
   ENTITY_LIST_CHANGE = "entity-list-change",
 }
 

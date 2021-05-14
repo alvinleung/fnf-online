@@ -36,9 +36,13 @@ export const List = ({ children, onSelect, removable = true, onItemRemove, value
   const handleListClick = () => {
     setIsListFocused(true);
   };
+
   useClickOutside(listContainerRef, () => {
     setIsListFocused(false);
   });
+  useEffect(() => {
+    setIsListFocused(true);
+  }, [value]);
 
   const removeSelectedEntity = () => {
     removable && onItemRemove && onItemRemove(selectedItemValue);
@@ -54,7 +58,7 @@ export const List = ({ children, onSelect, removable = true, onItemRemove, value
         removeSelectedEntity();
       }
     },
-    [selectedItemValue]
+    [selectedItemValue, isListFocused]
   );
 
   useEffect(() => {
