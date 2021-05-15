@@ -12,6 +12,8 @@ const HotkeyConfig = {
   SUBMIT: useBinding("enter", "enter"),
   UNDO: useBinding("cmd+z", "ctrl+z"),
   REDO: useBinding("cmd+shift+z", "cmd+shift+z"),
+  COPY: useBinding("cmd+c", "ctrl+c"),
+  PASTE: useBinding("cmd+v", "ctrl+v"),
 };
 
 export { HotkeyConfig };
