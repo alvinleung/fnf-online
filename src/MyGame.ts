@@ -29,7 +29,7 @@ import { DebugSystem } from "./engine/core/DebugSystem";
 import EditorSystem from "./engine/core/EditorSystem";
 import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheetAnimator";
 import { PhongRenderer } from "./engine/graphics/3dRender/PhongRenderer";
-import { LightComponent } from "./engine/graphics/light/Light";
+import { LightComponent } from "./engine/graphics/Light";
 import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
 import {
   wireFrameMaterialProperties,

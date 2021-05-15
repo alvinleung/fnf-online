@@ -1,7 +1,7 @@
+import { connect } from "node:http2";
 import { m4, v3 } from "twgl.js";
 import { Component } from "../ecs";
 import { EditableField, Editor, Field, Instantiable } from "../editor";
-import { spreadArrayRecusively } from "../utils/ArrayUtils";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderer";
 import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderer";
@@ -50,7 +50,11 @@ export class Materials {
   }
 }
 
-export class Geomatry {}
+export class GeomatryProperties {}
+export class Geomatry {
+
+
+}
 
 /**
  * Rendeable Objects types, this is designed to hold information
@@ -61,6 +65,7 @@ export class Geomatry {}
 @Instantiable("RenderableObject")
 export class RenderableObject {
   constructor(
+    
     objectCoords: number[] = [],
     textureCoords: number[] = [],
     textureImage?: Image, // texture name

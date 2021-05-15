@@ -1,8 +1,8 @@
 import { v3 } from "twgl.js";
-import { Component } from "../../ecs";
-import { EditableComponent, EditableField, Editor } from "../../editor";
-import { v4 } from "../../utils/MatrixUtils";
-import { MaterialProperties } from "../Renderable";
+import { Component } from "../ecs";
+import { EditableComponent, EditableField, Editor } from "../editor";
+import { v4 } from "../utils/MatrixUtils";
+import { MaterialProperties } from "./Renderable";
 
 
 @EditableComponent

@@ -10,7 +10,7 @@ import { Texture } from "./Texture";
 import { RenderPass } from "./RenderPass";
 import { FrameBuffer } from "./FrameBuffer";
 import { cameraMatrixFromTransform } from "../utils/MatrixUtils";
-import { LightComponent } from "./light/Light";
+import { LightComponent } from "./Light";
 
 /**
  * RENDERING CONFIG
