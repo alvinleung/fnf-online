@@ -19,12 +19,8 @@ import { ComponentRegistry } from "../EditorDecorators";
 import { EditorContextWrapper } from "./EditorContextWrapper";
 import { useHotkeys } from "react-hotkeys-hook";
 import { HotkeyConfig } from "./Hotkeys";
-import lodashCloneDeep from "lodash.clonedeep";
-import useUndo from "use-undo";
 import { useEditHistory, useUndoRedo } from "./EditHistory";
-import MyGame from "../../../MyGame";
 
-import fs from "fs";
 import { downloadFile } from "../../utils/DownloadFile";
 
 interface Props {

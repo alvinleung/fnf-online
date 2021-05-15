@@ -1,6 +1,6 @@
 import MyGame from "../../MyGame";
 import { System } from "../ecs";
-import { Game } from "../Game";
+import { Game, GameEvent } from "../Game";
 import { InputSourceFactory, AxisBinding } from "./InputSystem";
 
 const VERBOSE = false;
@@ -128,26 +128,20 @@ class MouseInput extends InputSourceFactory {
   private addEventListeners(game: Game) {
     let canvas = game.getCanvas();
     window.addEventListener("mousedown", this.handleMouseDown.bind(this));
-    canvas.addEventListener(
-      "mousedown",
-      this.handleMouseDownInCanvas.bind(this)
-    );
+    canvas.addEventListener("mousedown", this.handleMouseDownInCanvas.bind(this));
     canvas.addEventListener("wheel", this.handleMouseScrollInCanvas.bind(this));
     window.addEventListener("mouseup", this.handleMouseUp.bind(this));
     window.addEventListener("mousemove", this.handleMouseMove.bind(this));
 
     window.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    document.addEventListener(
-      "pointerlockchange",
-      this.lockChangeAlert.bind(this),
-      false
-    );
-    document.addEventListener(
-      "mozpointerlockchange",
-      this.lockChangeAlert.bind(this),
-      false
-    );
+    document.addEventListener("pointerlockchange", this.lockChangeAlert.bind(this), false);
+    document.addEventListener("mozpointerlockchange", this.lockChangeAlert.bind(this), false);
+
+    game.addEventListener(GameEvent.UPDATE, () => {
+      // reset change value here
+      this.scrollChange = 0;
+    });
   }
   private lockChangeAlert(event: MouseEvent) {
     const canvas = this.game.getCanvas();
@@ -213,8 +207,7 @@ class MouseInput extends InputSourceFactory {
     ) {
       this.mouseClickRegister.buttons[e.button] = 1;
     } else {
-      this.mouseClickRegister.buttons[e.button] =
-        this.mouseClickRegister.buttons[e.button] + 1;
+      this.mouseClickRegister.buttons[e.button] = this.mouseClickRegister.buttons[e.button] + 1;
     }
   }
 

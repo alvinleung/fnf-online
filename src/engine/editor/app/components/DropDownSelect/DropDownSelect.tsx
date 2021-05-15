@@ -113,6 +113,11 @@ export const DropDownSelect = ({ selected, children, onSelect, focus = false, on
         return dropDownItem.props.value === currentItem;
       });
 
+      if (e.code === "Tab") {
+        e.preventDefault();
+        setFilterValue(currentItem);
+      }
+
       if (e.code === "ArrowUp" && currentItemIndex > 0) {
         // get the next item on list
         const prevItem = currentItemIndex - 1;
@@ -154,17 +159,14 @@ export const DropDownSelect = ({ selected, children, onSelect, focus = false, on
               className="drop-down-select__sheet"
               initial={{
                 transformOrigin: "top center",
-                // y: -20,
                 scale: 0.9,
                 opacity: 0,
               }}
               animate={{
-                // y: 0,
                 scale: 1,
                 opacity: 1,
               }}
               exit={{
-                // y: -20,
                 scale: 0.9,
                 opacity: 0,
               }}
