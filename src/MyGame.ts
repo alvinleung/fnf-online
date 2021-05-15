@@ -35,6 +35,7 @@ import {
   wireFrameMaterialProperties,
   WireFrameRenderer,
 } from "./engine/graphics/3dRender/WireframeRenderer";
+import { TouchInput } from "./engine/input/TouchInput";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -154,6 +155,8 @@ class MyGame extends Game {
     // bind input
     const keyboard = new KeyboardInput(this);
     const mouse = new MouseInput(this);
+    const trackpad = new TouchInput(this);
+
     mouse.enablePointerLockSetting();
 
     input.bindAction("left", keyboard.createKeyBinding("KeyA"));
@@ -167,9 +170,17 @@ class MyGame extends Game {
     input.bindAxis("horizontal", keyboard.createAxisBinding("KeyA|KeyD"));
     input.bindAxis("foward", keyboard.createAxisBinding("KeyW|KeyS"));
     input.bindAxis("vertical", keyboard.createAxisBinding("KeyC|Space"));
+
+    input.bindAxis("editor:trackpad-x", trackpad.createAxisBinding("panX"));
+    input.bindAxis("editor:trackpad-y", trackpad.createAxisBinding("panY"));
+    input.bindAxis("editor:mouse-x", mouse.createAxisBinding("x"));
+    input.bindAxis("editor:mouse-y", mouse.createAxisBinding("y"));
+
+    input.bindAxis("editor:trackpad-zoom", trackpad.createAxisBinding("scroll"));
+    input.bindAxis("editor:mouse-zoom", mouse.createAxisBinding("scroll"));
+    // input.bindAxis("scroll", mouse.createAxisBinding("scroll"));
     input.bindAxis("pointerX", mouse.createAxisBinding("x"));
     input.bindAxis("pointerY", mouse.createAxisBinding("y"));
-    input.bindAxis("scroll", mouse.createAxisBinding("scroll"));
 
     input.bindAction("hoverMode", keyboard.createKeyBinding("ShiftLeft"));
     input.bindAction("speedMode", mouse.createKeyBinding("mouseright"));

@@ -18,6 +18,7 @@ interface AxisBinding {
 abstract class InputSourceFactory {
   constructor() {}
 
+  protected abstract getAxis(axis: string): number;
   protected abstract getAxisChange(axis: string): number;
   protected abstract isActive(axis: string): boolean;
   protected abstract wasClicked(axis: string): boolean;
@@ -26,7 +27,7 @@ abstract class InputSourceFactory {
     return {
       axis: axis,
       getAxisChange: this.getAxisChange.bind(this),
-      getAxis: this.getAxisChange.bind(this),
+      getAxis: this.getAxis.bind(this),
     };
   }
 
