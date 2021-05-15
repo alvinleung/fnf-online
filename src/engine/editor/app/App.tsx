@@ -135,6 +135,7 @@ const App = ({ game }: Props): JSX.Element => {
     });
 
     setIsCreatingEntity(false);
+    setSelectedEntity(newEntity);
   };
   const entityNameInputRef = useRef<HTMLInputElement>();
   useEffect(() => {
