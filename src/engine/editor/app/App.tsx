@@ -22,6 +22,7 @@ import { HotkeyConfig } from "./Hotkeys";
 import { useEditHistory, useUndoRedo } from "./EditHistory";
 
 import { downloadFile } from "../../utils/DownloadFile";
+import { TransformComponent } from "../../core/TransformComponent";
 
 interface Props {
   game: Game;
@@ -170,6 +171,9 @@ const App = ({ game }: Props): JSX.Element => {
     if (!name) return;
 
     const newEntity = Entity.create(name);
+
+    // add transform component
+    newEntity.useComponent(TransformComponent);
 
     // when the entity create
     game.addEntity(newEntity);
