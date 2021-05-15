@@ -34,23 +34,23 @@ interface EntityStateEdit {
 
 const App = ({ game }: Props): JSX.Element => {
   const [
-    entitiesChanges,
-    { set: changeEntity, reset: resetEntites, undo: undoEdit, redo: redoEdit, canUndo, canRedo },
+    editHistory,
+    { set: pushEditHistory, reset: resetEntites, undo: undoEdit, redo: redoEdit, canUndo, canRedo },
   ] = useUndo<EntityStateEdit>(null);
 
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
 
-  useHotkeys(HotkeyConfig.REDO, redoEdit, {}, [entitiesChanges]);
-  useHotkeys(HotkeyConfig.UNDO, undoEdit, {}, [entitiesChanges]);
+  useHotkeys(HotkeyConfig.REDO, redoEdit, {}, [editHistory]);
+  useHotkeys(HotkeyConfig.UNDO, undoEdit, {}, [editHistory]);
 
   // when entities record changes in the system
   const [previousFutureLength, setPreviousFutureLength] = useState(0);
   useEffect(() => {
     // if the user is undo-ing
-    if (entitiesChanges.future.length > previousFutureLength) {
+    if (editHistory.future.length > previousFutureLength) {
       // the user just undone sth and haven't commit anything else
-      const change = entitiesChanges.future[0];
+      const change = editHistory.future[0];
 
       // do a revserse action of the latest do
       //
@@ -66,9 +66,9 @@ const App = ({ game }: Props): JSX.Element => {
     }
 
     // if the user is redo-ing
-    if (entitiesChanges.future.length < previousFutureLength) {
+    if (editHistory.future.length < previousFutureLength) {
       // handle redo here
-      const redoChange = entitiesChanges.present;
+      const redoChange = editHistory.present;
 
       if (redoChange.type === "remove") {
         game.removeEntity(redoChange.value);
@@ -78,8 +78,8 @@ const App = ({ game }: Props): JSX.Element => {
       }
     }
 
-    setPreviousFutureLength(entitiesChanges.future.length);
-  }, [entitiesChanges]);
+    setPreviousFutureLength(editHistory.future.length);
+  }, [editHistory]);
 
   // sync the in game entities list with the Editor entities list
   const syncEntities = (game: Game) => {
@@ -131,7 +131,7 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedEntity(null);
     const removeIndex = game.removeEntity(entityToBeRemoved);
 
-    changeEntity({
+    pushEditHistory({
       type: "remove",
       value: entityToBeRemoved,
       index: removeIndex,
@@ -155,7 +155,7 @@ const App = ({ game }: Props): JSX.Element => {
     // when the entity create
     game.addEntity(newEntity);
 
-    changeEntity({
+    pushEditHistory({
       type: "add",
       value: newEntity,
       index: game.getEntityIndex(newEntity),
