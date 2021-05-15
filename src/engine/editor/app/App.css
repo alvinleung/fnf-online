@@ -23,6 +23,35 @@
   user-select: none; /* Likely future */
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  width: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(133, 133, 133, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0);
+  background-clip: padding-box;
+
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+}
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
 /* disable pointer event for mouse viewport navigation */
 #editor-ui {
   pointer-events: none;
