@@ -36,7 +36,7 @@ app.get(ASSET_SHEET_PUBLIC_ACCESS, (req, res) => {
 const server = http.createServer(app);
 
 const serverListen = () => {
-  const serverURL = `http://localhost:${app.get("port")}/`;
+  const serverURL = `http://localhost:${app.get("port")}`;
 
   console.log(`Editor server started on ${serverURL}`);
   console.log(`----------------------------------------------------------`);
