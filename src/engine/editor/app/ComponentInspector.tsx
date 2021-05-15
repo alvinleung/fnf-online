@@ -6,13 +6,11 @@ import { ValueEditor } from "./components/valueEditor/ValueEditor";
 import { ComponentRegistry } from "../EditorDecorators";
 import { camelCaseToSentenceCase } from "../../utils/StringUtils";
 import useClickOutside from "./hooks/useClickOutside";
-import {
-  useComponentContext,
-  useEntityContext,
-  useGameContext,
-} from "./EditorContextWrapper";
+import { useComponentContext, useEntityContext, useGameContext } from "./EditorContextWrapper";
 import { DropDownSelect } from "./components/DropDownSelect/DropDownSelect";
 import { DropDownItem } from "./components/DropDownSelect/DropDownItem";
+import { useEditHistory } from "./EditHistory";
+import lodashCloneDeep from "lodash.clonedeep";
 
 interface Props {
   selectedEntity?: Entity;
@@ -20,19 +18,12 @@ interface Props {
   onSelectComponent?: (component: string) => void;
 }
 
-export const ComponentInspector = ({
-  selectedEntity,
-  game,
-  onSelectComponent,
-}: Props) => {
+export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: Props) => {
   // get the informaiton of component whne component changed
   const getEntityComponent = useCallback(() => {
-    if (!selectedEntity || !game.getEntityById(selectedEntity.id as string))
-      return;
+    if (!selectedEntity || !game.getEntityById(selectedEntity.id as string)) return;
 
-    const componentList = game
-      .getEntityById(selectedEntity.id as string)
-      .listComponents();
+    const componentList = game.getEntityById(selectedEntity.id as string).listComponents();
     const editableComponentList = componentList.filter((c) => {
       if (ComponentRegistry.isComponentEditable(c)) {
         return true;
@@ -42,13 +33,30 @@ export const ComponentInspector = ({
     return editableComponentList;
   }, [selectedEntity]);
 
+  const [editHistory, pushEditHistory] = useEditHistory();
+
   const onEntityValueUpdate = (
     liveComponentInstance: ComponentClass<any>,
     field: any,
     val: any
   ) => {
+    if (liveComponentInstance[field] === val) return;
+
+    const beforeValue = liveComponentInstance[field];
+
     // write change to the in game component field value
     liveComponentInstance[field] = val;
+
+    pushEditHistory(
+      {
+        type: "componentFieldChange",
+        component: liveComponentInstance,
+        field: field,
+        beforeValue: beforeValue,
+        value: val,
+      },
+      200 // push change every 200 milisec
+    );
   };
 
   const handleComponentSelection = (component: string) => {
@@ -71,8 +79,7 @@ export const ComponentInspector = ({
   const entityContext = useEntityContext();
   const [isCreatingComponent, setIsCreatingComponent] = useState(false);
   useEffect(() => {
-    if (componentContext.selectedComponent === "New Component")
-      setIsCreatingComponent(true);
+    if (componentContext.selectedComponent === "New Component") setIsCreatingComponent(true);
   }, [componentContext, isCreatingComponent]);
 
   const handleComponentCreation = (componentName: string) => {
@@ -94,11 +101,9 @@ export const ComponentInspector = ({
     <div ref={inspectorContainerRef}>
       {getEntityComponent() &&
         getEntityComponent().map((componentInstance, index) => {
-          if (!componentInstance)
-            return <div>No editable fields in this component</div>;
+          if (!componentInstance) return <div>No editable fields in this component</div>;
 
-          const fields =
-            ComponentRegistry.getComponentEditableFields(componentInstance);
+          const fields = ComponentRegistry.getComponentEditableFields(componentInstance);
           const componentName = componentInstance.constructor.name;
           const fieldNames = Object.keys(fields);
 
@@ -112,9 +117,7 @@ export const ComponentInspector = ({
               onContextMenu={handleUseInteractWithComponent}
               onMouseDown={handleUseInteractWithComponent}
             >
-              <CollapsableSection
-                header={camelCaseToSentenceCase(componentName)}
-              >
+              <CollapsableSection header={camelCaseToSentenceCase(componentName)}>
                 {fieldNames.map((fieldName, index) => {
                   const field = ComponentRegistry.getComponentFieldEditor(
                     componentInstance,
@@ -125,11 +128,7 @@ export const ComponentInspector = ({
                   );
                   const currentComponentVal = currentComponent[fieldName];
                   const handleEditorValueChange = (val) => {
-                    onEntityValueUpdate(
-                      componentInstance as ComponentClass<any>,
-                      fieldName,
-                      val
-                    );
+                    onEntityValueUpdate(componentInstance as ComponentClass<any>, fieldName, val);
                   };
                   return (
                     <ValueEditor
@@ -153,15 +152,13 @@ export const ComponentInspector = ({
           focus={true}
           onBlur={handleDismissComponentCreation}
         >
-          {Object.keys(ComponentRegistry.getEditableComponentMap()).map(
-            (componentName, index) => {
-              return (
-                <DropDownItem value={componentName} key={index}>
-                  {componentName}
-                </DropDownItem>
-              );
-            }
-          )}
+          {Object.keys(ComponentRegistry.getEditableComponentMap()).map((componentName, index) => {
+            return (
+              <DropDownItem value={componentName} key={index}>
+                {componentName}
+              </DropDownItem>
+            );
+          })}
         </DropDownSelect>
       )}
     </div>

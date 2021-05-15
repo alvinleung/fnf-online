@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useCallback, useEffect, useMemo } from "react";
 import { ListItem } from "./ListItem";
 
 import "./List.css";
@@ -36,11 +36,20 @@ export const List = ({ children, onSelect, removable = true, onItemRemove, value
   const handleListClick = () => {
     setIsListFocused(true);
   };
-  useClickOutside(listContainerRef, () => {
+
+  // hack for allowing to press delete when focus in the canvas
+  const viewport = useMemo(() => document.querySelector("canvas"), []);
+  useClickOutside([listContainerRef, viewport], () => {
     setIsListFocused(false);
   });
 
+  useEffect(() => {
+    setIsListFocused(true);
+  }, [value]);
+
   const removeSelectedEntity = () => {
+    if (!selectedItemValue) return;
+
     removable && onItemRemove && onItemRemove(selectedItemValue);
     // clear the selection
     setSelectedItemIndex(null);
@@ -54,7 +63,7 @@ export const List = ({ children, onSelect, removable = true, onItemRemove, value
         removeSelectedEntity();
       }
     },
-    [selectedItemValue]
+    [selectedItemValue, isListFocused]
   );
 
   useEffect(() => {

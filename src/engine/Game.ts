@@ -8,7 +8,8 @@ import { EventEmitter, IEventEmitter } from "./events/EventEmitter";
 
 export enum GameEvent {
   UPDATE = "update",
-  SELECT_ENTITY = "select-entity",
+  ENTITY_SELECT = "select-entity",
+  ENTITY_LIST_CHANGE = "entity-list-change",
 }
 
 export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
@@ -137,8 +138,29 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
 
     this._entitiesRefMap[entity.id] = entity;
     super.addEntity(entity);
+    this.fireEvent(GameEvent.ENTITY_LIST_CHANGE, this.entities);
+
     return this;
   }
+
+  public insertEntityAt(entity: Entity, index: number) {
+    if (entity.isNew())
+      throw new Error(
+        `Unable to add entity: Entity "id" property need to be set before adding to the engine, currently null.`
+      );
+
+    if (this._entitiesRefMap[entity.id])
+      throw new Error(
+        `Unable to add entity: Entity with id ${entity.id} already exist in the system`
+      );
+
+    this._entitiesRefMap[entity.id] = entity;
+    super.insertEntityAt(entity, index);
+    this.fireEvent(GameEvent.ENTITY_LIST_CHANGE, this.entities);
+
+    return this;
+  }
+
   /**
    * Override addEntity to add mapping functionality
    */
@@ -147,6 +169,8 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
     const self = super.removeEntity(entity);
     // remove entity reference from the ref map list
     delete this._entitiesRefMap[entity.id];
+
+    this.fireEvent(GameEvent.ENTITY_LIST_CHANGE, this.entities);
     return self;
   }
 

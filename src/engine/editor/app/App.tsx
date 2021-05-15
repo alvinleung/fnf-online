@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useRef, useState } from "react";
 import "./App.css";
 import "./style/typography.css";
 import "./style/layout.css";
@@ -17,32 +17,35 @@ import { Modal } from "./components/Modal";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { ComponentRegistry } from "../EditorDecorators";
 import { EditorContextWrapper } from "./EditorContextWrapper";
+import { useHotkeys } from "react-hotkeys-hook";
+import { HotkeyConfig } from "./Hotkeys";
+import lodashCloneDeep from "lodash.clonedeep";
+import useUndo from "use-undo";
+import { useEditHistory, useUndoRedo } from "./EditHistory";
+
 interface Props {
   game: Game;
 }
 
-interface EditorStateChange {
-  type: "entityChange" | "componentChange";
-  field: string;
-  value: string;
+interface EntityStateEdit {
+  type: "update" | "add" | "remove";
+  value: any;
+  index: number; // the index at which the entity was in at the moment
 }
-interface EditorState {
-  changes: EditorStateChange[];
-}
-const initialEditorState: EditorState = { changes: [] };
-const editorStateReducer = (state, action: EditorStateChange) => {
-  return {};
-};
 
 const App = ({ game }: Props): JSX.Element => {
+  const [editHistory, pushEditHistory] = useEditHistory();
+  const [undo, redo] = useUndoRedo();
+
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
 
-  const handleEntityAdded = (entity: Entity) => {
-    setEntities([...entities, entity]);
-  };
-  const handleEntityRemoved = (entity: Entity) => {
-    setEntities(entities.splice(entities.indexOf(entity), 1));
+  useHotkeys(HotkeyConfig.REDO, redo, {}, [editHistory]);
+  useHotkeys(HotkeyConfig.UNDO, undo, {}, [editHistory]);
+
+  // sync the in game entities list with the Editor entities list
+  const syncEditorEntityList = (game: Game) => {
+    setEntities([...game.entities]);
   };
 
   const handleEntityListSelect = (val: string) => {
@@ -67,22 +70,35 @@ const App = ({ game }: Props): JSX.Element => {
 
   // add and remove entity in the list when notified
   useEffect(() => {
-    game.addEntityListener({
-      onEntityAdded: handleEntityAdded,
-      onEntityRemoved: handleEntityRemoved,
-    });
-    game.addEventListener(GameEvent.SELECT_ENTITY, (entity: Entity) => {
+    game.addEventListener(GameEvent.ENTITY_SELECT, (entity: Entity) => {
       if (entity) {
         setSelectedEntity(entity);
         return;
       }
       setSelectedEntity(null);
     });
+
+    // listen to game entity changes
+    game.addEventListener(GameEvent.ENTITY_LIST_CHANGE, (entitiesList: Entity[]) => {
+      syncEditorEntityList(game);
+    });
   }, []);
 
   const handleItemRemove = (entityId: string) => {
+    const entityToBeRemoved = game.getEntityById(entityId);
+
     setSelectedEntity(null);
-    game.removeEntity(game.getEntityById(entityId));
+    const removeIndex = game.removeEntity(entityToBeRemoved);
+
+    // add remove action to history
+    pushEditHistory({
+      type: "remove",
+      entity: entityToBeRemoved.clone(),
+      index: removeIndex,
+    });
+
+    // sync the entity list with game
+    syncEditorEntityList(game);
   };
 
   /**
@@ -93,8 +109,17 @@ const App = ({ game }: Props): JSX.Element => {
   const createEntity = (name: string) => {
     if (!name) return;
 
+    const newEntity = Entity.create(name);
+
     // when the entity create
-    game.addEntity(Entity.create(name));
+    game.addEntity(newEntity);
+
+    pushEditHistory({
+      type: "add",
+      entity: newEntity.clone(),
+      index: game.getEntityIndex(newEntity),
+    });
+
     setIsCreatingEntity(false);
   };
   const entityNameInputRef = useRef<HTMLInputElement>();
@@ -164,7 +189,7 @@ const App = ({ game }: Props): JSX.Element => {
               onItemRemove={handleItemRemove}
               value={selectedEntity && (selectedEntity.id as string)}
             >
-              {game.entities.map((entity, index) => {
+              {entities.map((entity, index) => {
                 return (
                   <ListItem value={entity.id as string} key={index}>
                     {entity.id as string}

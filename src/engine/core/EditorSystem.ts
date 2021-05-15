@@ -34,7 +34,7 @@ export default class EditorSystem extends System {
       } else {
         console.log("not found");
       }
-      game.fireEvent(GameEvent.SELECT_ENTITY, targetEntity);
+      game.fireEvent(GameEvent.ENTITY_SELECT, targetEntity);
     }
 
     this.frameCount++;

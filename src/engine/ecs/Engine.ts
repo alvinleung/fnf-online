@@ -72,6 +72,22 @@ class Engine {
     return this;
   }
 
+  insertEntityAt(entity: Entity, index: number) {
+    if (this._entities.indexOf(entity) === -1) {
+      // insert at a certain position
+      this._entities.splice(index, 0, entity);
+
+      for (let listener of this._entityListeners) {
+        listener.onEntityAdded(entity);
+      }
+    }
+    return this;
+  }
+
+  getEntityIndex(entity: Entity) {
+    return this._entities.indexOf(entity);
+  }
+
   /**
    * Add a list of entities to the engine.
    * The listeners will be notified once per entity.
@@ -88,8 +104,9 @@ class Engine {
    * Removes an entity to the engine.
    * The listeners will be notified.
    * @param entity The entity to remove
+   * @return index the index at which hte entity was removed from
    */
-  removeEntity(entity: Entity) {
+  removeEntity(entity: Entity): number {
     const index = this._entities.indexOf(entity);
     if (index !== -1) {
       this._entities.splice(index, 1);
@@ -97,6 +114,8 @@ class Engine {
         listener.onEntityRemoved(entity);
       }
     }
+
+    return index;
   }
 
   /**
