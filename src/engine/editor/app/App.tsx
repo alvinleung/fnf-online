@@ -189,7 +189,10 @@ const App = ({ game }: Props): JSX.Element => {
   };
   const entityNameInputRef = useRef<HTMLInputElement>();
   useEffect(() => {
-    if (isCreatingEntity && entityNameInputRef.current) entityNameInputRef.current.focus();
+    if (isCreatingEntity && entityNameInputRef.current) {
+      setEntityCreationName("");
+      entityNameInputRef.current.focus();
+    }
   }, [isCreatingEntity]);
 
   /**
@@ -289,7 +292,6 @@ const App = ({ game }: Props): JSX.Element => {
               })}
             </List>
           </ContextMenuTrigger>
-
           <ContextMenu id="item-menu-trigger">
             <MenuItem
               data={{ action: "add-entity" }}
@@ -299,23 +301,26 @@ const App = ({ game }: Props): JSX.Element => {
             >
               Add Entity
             </MenuItem>
-            <MenuItem divider={true} />
-            <MenuItem
-              data={{ action: "add-entity" }}
-              onClick={() => duplicateEntity(selectedEntity && (selectedEntity.id as string))}
-            >
-              Duplicate "{selectedEntity && selectedEntity.id}"
-            </MenuItem>
-            <MenuItem
-              data={{ action: "remove-entity" }}
-              onClick={() => {
-                handleItemRemove(selectedEntity.id as string);
-              }}
-            >
-              Remove "{selectedEntity && selectedEntity.id}"
-            </MenuItem>
+            {selectedEntity && (
+              <>
+                <MenuItem divider={true} />
+                <MenuItem
+                  data={{ action: "add-entity" }}
+                  onClick={() => duplicateEntity(selectedEntity.id as string)}
+                >
+                  Duplicate "{selectedEntity.id}"
+                </MenuItem>
+                <MenuItem
+                  data={{ action: "remove-entity" }}
+                  onClick={() => {
+                    handleItemRemove(selectedEntity.id as string);
+                  }}
+                >
+                  Remove "{selectedEntity.id}"
+                </MenuItem>
+              </>
+            )}
           </ContextMenu>
-
           <Modal
             isVisible={isCreatingEntity}
             onHide={() => {
@@ -337,7 +342,14 @@ const App = ({ game }: Props): JSX.Element => {
                     ref={entityNameInputRef}
                     type="text"
                     value={entityCreationName}
-                    onChange={(e) => setEntityCreationName(e.target.value)}
+                    onChange={(e) =>
+                      setEntityCreationName(
+                        e.target.value
+                          .match(/^[A-Za-z0-9 -]*$/)
+                          .join("")
+                          .replace(" ", "-")
+                      )
+                    }
                   />
                 </label>
               </div>
