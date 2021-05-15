@@ -21,8 +21,7 @@ export default class PlayerControlSystem extends System {
   }
   update(game: Game, delta: number): void {
     // assuming there is only one player entity in the scene
-    if (!this.playerEntity.entities || this.playerEntity.entities.length === 0)
-      return;
+    if (!this.playerEntity.entities || this.playerEntity.entities.length === 0) return;
 
     const playerEntity = this.playerEntity.entities[0];
 
@@ -30,12 +29,15 @@ export default class PlayerControlSystem extends System {
 
     // Rotation
     this.rotXAmount += game.input.getAxisChange("pointerX") * ROT_SPEED * delta;
-    this.rotYAmount = Math.max(Math.min(this.rotYAmount - game.input.getAxisChange("pointerY") * ROT_SPEED * delta, Math.PI / 2),-1.0);
-    transform.rotation = q.fromEulerAngles(0, this.rotXAmount, 0);
-    transform.rotation = q.mult(
-      q.fromEulerAngles(this.rotYAmount, 0, 0),
-      transform.rotation
+    this.rotYAmount = Math.max(
+      Math.min(
+        this.rotYAmount + game.input.getAxisChange("pointerY") * ROT_SPEED * delta,
+        Math.PI / 2
+      ),
+      -1.0
     );
+    transform.rotation = q.fromEulerAngles(0, this.rotXAmount, 0);
+    transform.rotation = q.mult(q.fromEulerAngles(this.rotYAmount, 0, 0), transform.rotation);
 
     // Translation
     const forwardSpeed = game.input.getAxisChange("foward") * SPEED * delta;
@@ -46,7 +48,7 @@ export default class PlayerControlSystem extends System {
       q.inverse(transform.rotation),
       v3.create(sideSpeed, verticalSpeed, forwardSpeed)
     );
-    
+
     transform.position = v3.add(transform.position, direction);
   }
 }
