@@ -22,6 +22,10 @@ import { HotkeyConfig } from "./Hotkeys";
 import lodashCloneDeep from "lodash.clonedeep";
 import useUndo from "use-undo";
 import { useEditHistory, useUndoRedo } from "./EditHistory";
+import MyGame from "../../../MyGame";
+
+import fs from "fs";
+import { downloadFile } from "../../utils/DownloadFile";
 
 interface Props {
   game: Game;
@@ -36,6 +40,51 @@ const App = ({ game }: Props): JSX.Element => {
 
   useHotkeys(HotkeyConfig.REDO, redo, {}, [editHistory]);
   useHotkeys(HotkeyConfig.UNDO, undo, {}, [editHistory]);
+
+  useHotkeys(HotkeyConfig.SAVE, (e) => {
+    e.preventDefault();
+    const serializedScene = game.saveScene();
+    downloadFile(serializedScene, "Scene.json", "application/json");
+  });
+
+  // for scene file drop
+  useEffect(() => {
+    const dropArea = document.querySelector("body");
+
+    const handleDragOver = (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      // Style the drag-and-drop as a "copy file" operation.
+      event.dataTransfer.dropEffect = "copy";
+    };
+
+    const handleDrop = (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      const fileList = event.dataTransfer.files;
+      const sceneFile = fileList[0];
+
+      // typecheck the scene file
+      if (sceneFile.type && !sceneFile.type.startsWith("application/json")) {
+        console.log("File is not a text/json file.", sceneFile.type, sceneFile);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => game.loadScene(reader.result as string);
+      reader.onerror = () => console.log(reader.error);
+
+      reader.readAsText(sceneFile);
+    };
+
+    dropArea.addEventListener("dragover", handleDragOver);
+    dropArea.addEventListener("drop", handleDrop);
+
+    return () => {
+      dropArea.removeEventListener("dragover", handleDragOver);
+      dropArea.removeEventListener("drop", handleDrop);
+    };
+  }, []);
 
   /**
    * copy and pasting entities
@@ -94,6 +143,7 @@ const App = ({ game }: Props): JSX.Element => {
 
     // listen to game entity changes
     game.addEventListener(GameEvent.ENTITY_LIST_CHANGE, (entitiesList: Entity[]) => {
+      // console.log(entitiesList);
       syncEditorEntityList(game);
     });
   }, []);
@@ -139,7 +189,10 @@ const App = ({ game }: Props): JSX.Element => {
   };
   const entityNameInputRef = useRef<HTMLInputElement>();
   useEffect(() => {
-    if (isCreatingEntity && entityNameInputRef.current) entityNameInputRef.current.focus();
+    if (isCreatingEntity && entityNameInputRef.current) {
+      setEntityCreationName("");
+      entityNameInputRef.current.focus();
+    }
   }, [isCreatingEntity]);
 
   /**
@@ -185,11 +238,35 @@ const App = ({ game }: Props): JSX.Element => {
       loopCount++;
     }
 
+    console.log(game.getEntityById(finalId));
+
     newEntity.id = finalId;
     game.addEntity(newEntity);
 
+    pushEditHistory({
+      type: "add",
+      entity: newEntity.clone(),
+      index: game.getEntityIndex(newEntity),
+    });
+
     return newEntity;
   };
+
+  /**
+   * Hacky way to allow context menu click in the game viewport
+   */
+  const entityContextMenuTriggerRef = useRef();
+  useEffect(() => {
+    const gameViewportContainer = document.querySelector("#game");
+    const handleMenu = (e) => {
+      //@ts-ignore
+      entityContextMenuTriggerRef.current.handleContextClick(e);
+    };
+    gameViewportContainer.addEventListener("contextmenu", handleMenu);
+    return () => {
+      gameViewportContainer.removeEventListener("contextmenu", handleMenu);
+    };
+  }, []);
 
   return (
     <EditorContextWrapper
@@ -200,7 +277,7 @@ const App = ({ game }: Props): JSX.Element => {
     >
       <PanelGroup>
         <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
-          <ContextMenuTrigger id="item-menu-trigger">
+          <ContextMenuTrigger id="item-menu-trigger" ref={entityContextMenuTriggerRef}>
             <List
               onSelect={handleEntityListSelect}
               onItemRemove={handleItemRemove}
@@ -215,7 +292,6 @@ const App = ({ game }: Props): JSX.Element => {
               })}
             </List>
           </ContextMenuTrigger>
-
           <ContextMenu id="item-menu-trigger">
             <MenuItem
               data={{ action: "add-entity" }}
@@ -225,23 +301,26 @@ const App = ({ game }: Props): JSX.Element => {
             >
               Add Entity
             </MenuItem>
-            <MenuItem divider={true} />
-            <MenuItem
-              data={{ action: "add-entity" }}
-              onClick={() => duplicateEntity(selectedEntity && (selectedEntity.id as string))}
-            >
-              Duplicate "{selectedEntity && selectedEntity.id}"
-            </MenuItem>
-            <MenuItem
-              data={{ action: "remove-entity" }}
-              onClick={() => {
-                handleItemRemove(selectedEntity.id as string);
-              }}
-            >
-              Remove "{selectedEntity && selectedEntity.id}"
-            </MenuItem>
+            {selectedEntity && (
+              <>
+                <MenuItem divider={true} />
+                <MenuItem
+                  data={{ action: "add-entity" }}
+                  onClick={() => duplicateEntity(selectedEntity.id as string)}
+                >
+                  Duplicate "{selectedEntity.id}"
+                </MenuItem>
+                <MenuItem
+                  data={{ action: "remove-entity" }}
+                  onClick={() => {
+                    handleItemRemove(selectedEntity.id as string);
+                  }}
+                >
+                  Remove "{selectedEntity.id}"
+                </MenuItem>
+              </>
+            )}
           </ContextMenu>
-
           <Modal
             isVisible={isCreatingEntity}
             onHide={() => {
@@ -263,7 +342,14 @@ const App = ({ game }: Props): JSX.Element => {
                     ref={entityNameInputRef}
                     type="text"
                     value={entityCreationName}
-                    onChange={(e) => setEntityCreationName(e.target.value)}
+                    onChange={(e) =>
+                      setEntityCreationName(
+                        e.target.value
+                          .match(/^[A-Za-z0-9 -]*$/)
+                          .join("")
+                          .replace(" ", "-")
+                      )
+                    }
                   />
                 </label>
               </div>

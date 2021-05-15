@@ -5,6 +5,7 @@ import InputSystem from "./input";
 import { AssetLoader, AssetManager } from "./assets";
 import { RenderingSystem } from "./graphics/RenderingSystem";
 import { EventEmitter, IEventEmitter } from "./events/EventEmitter";
+import { GameStateParser } from "./utils/GameStateParser";
 
 export enum GameEvent {
   UPDATE = "update",
@@ -120,6 +121,20 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   public getCanvas(): HTMLCanvasElement {
     // return this.renderer.domElement;
     return this.canvasElement;
+  }
+
+  public saveScene() {
+    const serializedScene = GameStateParser.fromGame(this).getString();
+    console.log(serializedScene);
+    return serializedScene;
+  }
+
+  public loadScene(sceneData: string) {
+    // clean up all the entities in the scene first
+    this.removeEntities(...this.entities);
+
+    const newSceneEntities = GameStateParser.fromString(sceneData, this.assets.image).getEntities();
+    this.addEntities(...newSceneEntities);
   }
 
   /**

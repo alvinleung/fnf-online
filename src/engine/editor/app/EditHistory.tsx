@@ -34,11 +34,19 @@ export const EditHistoryContextWrapper = ({
 
   // when entities record changes in the system
   const [previousFutureLength, setPreviousFutureLength] = useState(0);
+  const [hasNewChangeJustPushed, setHasNewChangeJustPushed] = useState(false);
 
   // resolve edit state change
   useEffect(() => {
-    // if the user is undo-ing
+    // don't have to process do/undo the change is a new "commit"
+    if (hasNewChangeJustPushed) {
+      setHasNewChangeJustPushed(false);
+      setPreviousFutureLength(editHistory.future.length);
+      return;
+    }
+
     if (editHistory.future.length > previousFutureLength) {
+      // if the user is undo-ing
       // the user just undone sth and haven't commit anything else
       const change = editHistory.future[0];
 
@@ -51,7 +59,7 @@ export const EditHistoryContextWrapper = ({
 
       // add the entity back in if removed
       if (change.type === "add") {
-        game.removeEntity(change.entity);
+        game.removeEntity(game.getEntityById(change.entity.id as string));
       }
 
       if (change.type === "componentFieldChange") {
@@ -66,7 +74,7 @@ export const EditHistoryContextWrapper = ({
       const redoChange = editHistory.present;
 
       if (redoChange.type === "remove") {
-        game.removeEntity(redoChange.entity);
+        game.removeEntity(game.getEntityById(redoChange.entity.id as string));
       }
       if (redoChange.type === "add") {
         game.insertEntityAt(redoChange.entity, redoChange.index);
@@ -85,7 +93,10 @@ export const EditHistoryContextWrapper = ({
     <EditHistoryContext.Provider
       value={{
         history: editHistory,
-        pushEditChange: pushEditChange,
+        pushEditChange: (param) => {
+          setHasNewChangeJustPushed(true);
+          pushEditChange(param);
+        },
         undo: undoEdit,
         redo: redoEdit,
       }}

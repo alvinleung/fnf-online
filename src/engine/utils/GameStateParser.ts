@@ -1,6 +1,8 @@
+import { ImageLoader } from "../assets";
 import { TransformComponent } from "../core/TransformComponent";
 import { Component, ComponentClass, Entity } from "../ecs";
-import { ComponentRegistry } from "../editor";
+import { ComponentRegistry, SerializedClassObject } from "../editor";
+import { InstantiableClassRegistry } from "../editor";
 import { Game } from "../Game";
 
 /**
@@ -40,34 +42,36 @@ export class GameStateParser {
 
       const editableComponents = allComponents.filter((component) => {
         const componentName = component.constructor.name;
-        const isComponentEditable = editableComponentMap[componentName]
-          ? true
-          : false;
+        const isComponentEditable = editableComponentMap[componentName] ? true : false;
         return isComponentEditable;
       });
 
       // STEP 2 - compile a list of relevent(editable) values inside the component
-      const componentWithCurrentValues: ComponentEntry[] = editableComponents.map(
-        (component) => {
-          const componentName = component.constructor.name;
-          // all the editable fields inside the component
-          const editableFieldNames = Object.keys(
-            editableComponentMap[componentName]
-          );
-          const fieldWithCurrentValues: ComponentFieldEntry[] = editableFieldNames.map(
-            (name) => {
-              return {
-                name: name,
-                value: component[name],
-              };
-            }
-          );
+      const componentWithCurrentValues: ComponentEntry[] = editableComponents.map((component) => {
+        const componentName = component.constructor.name;
+
+        // all the editable fields inside the component
+        const editableFieldNames = Object.keys(editableComponentMap[componentName]);
+        const fieldWithCurrentValues: ComponentFieldEntry[] = editableFieldNames.map((name) => {
+          let fieldValue = component[name];
+
+          // check if the field a part of the instantiable class
+          const fieldClassName = fieldValue.constructor.name;
+          if (InstantiableClassRegistry.hasClass(fieldClassName)) {
+            // serialize the class
+            fieldValue = InstantiableClassRegistry.serialize(fieldClassName, fieldValue);
+          }
+
           return {
-            name: componentName,
-            fields: fieldWithCurrentValues,
+            name: name,
+            value: fieldValue,
           };
-        }
-      );
+        });
+        return {
+          name: componentName,
+          fields: fieldWithCurrentValues,
+        };
+      });
 
       return {
         id: entity.id as string,
@@ -77,10 +81,11 @@ export class GameStateParser {
 
     parser._string = JSON.stringify(formattedEntityData);
     parser._entities = entities;
+
     return parser;
   }
 
-  public static fromString(gameState: string): GameStateParser {
+  public static fromString(gameState: string, imageLoader: ImageLoader): GameStateParser {
     const parser = new this();
     const gameStateObject = JSON.parse(gameState) as EntityEntry[];
 
@@ -89,21 +94,25 @@ export class GameStateParser {
 
       // add components to the entity
       entityEntry.components.forEach((componentEntry) => {
-        const componentClass = ComponentRegistry.getComponentClass(
-          componentEntry.name
-        );
+        const componentClass = ComponentRegistry.getComponentClass(componentEntry.name);
         const componentInstance = entity.useComponent(componentClass);
 
         componentEntry.fields.forEach((componentFieldEntry) => {
-          componentInstance[componentFieldEntry.name] =
-            componentFieldEntry.value;
+          let componentFieldValue = componentFieldEntry.value;
+
+          // it is a serializable class if it has class name
+          if ((componentFieldEntry.value as SerializedClassObject).className) {
+            componentFieldValue = InstantiableClassRegistry.deserialize(
+              componentFieldEntry.value as SerializedClassObject,
+              imageLoader
+            );
+          }
+          componentInstance[componentFieldEntry.name] = componentFieldValue;
         });
       });
 
       return entity;
     });
-
-    console.log(entities);
 
     parser._entities = entities;
     parser._string = gameState;

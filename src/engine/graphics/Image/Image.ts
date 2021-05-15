@@ -10,12 +10,7 @@ export class Image implements Asset {
     return new Image("", "", document.createElement("img"), false);
   }
 
-  constructor(
-    name: string,
-    path: string,
-    elm: HTMLImageElement,
-    useSmoothScaling = false
-  ) {
+  constructor(name: string, path: string, elm: HTMLImageElement, useSmoothScaling = false) {
     this.elm = elm;
     this.path = path;
     this.name = name;

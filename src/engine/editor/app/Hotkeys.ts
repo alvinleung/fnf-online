@@ -14,6 +14,8 @@ const HotkeyConfig = {
   REDO: useBinding("cmd+shift+z", "cmd+shift+z"),
   COPY: useBinding("cmd+c", "ctrl+c"),
   PASTE: useBinding("cmd+v", "ctrl+v"),
+  SAVE: useBinding("cmd+s", "ctrl+s"),
+  OPEN: useBinding("cmd+o", "ctrl+o"),
 };
 
 export { HotkeyConfig };

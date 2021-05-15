@@ -1,3 +1,5 @@
+import { ImageLoader } from "../assets";
+import { Game } from "../Game";
 import { Editor } from "./EditorDecorators";
 
 type ClassEntry = {
@@ -20,6 +22,15 @@ type FieldEntry = {
 type ClassRegistry = {
   [className: string]: ClassEntry;
 };
+
+export interface SerializedClassObject {
+  className: string;
+  fields: { [name: string]: SerializedFieldObject };
+}
+export interface SerializedFieldObject {
+  fieldName: string;
+  fieldValue: any;
+}
 
 /**
  * Decorator function to declare an Instantiable Class
@@ -63,6 +74,65 @@ export function Field<T>(
 export module InstantiableClassRegistry {
   // record for all the instantiable class
   const registry: ClassRegistry = {};
+
+  export function serialize<T>(className: string, instance: T) {
+    const classFields = getFields(className);
+
+    const serializedFields: SerializedFieldObject[] = classFields.map((field) => {
+      let currentFieldValue = instance[field.name];
+
+      if (field.type === Editor.CLASS) {
+        // recursively run the class serializer if the instance is a class
+        const className = currentFieldValue.constructor.name;
+        currentFieldValue = serialize(className, currentFieldValue);
+      }
+      return { fieldName: field.name, fieldValue: currentFieldValue };
+    });
+
+    const serializedFieldsKeyAndValue = serializedFields.reduce(
+      (result, field: SerializedFieldObject) => {
+        result[field.fieldName] = field;
+        return result;
+      },
+      {}
+    );
+
+    const seralizedClass: SerializedClassObject = {
+      className: className,
+      fields: serializedFieldsKeyAndValue,
+    };
+
+    return seralizedClass;
+  }
+
+  export function deserialize(serializedClass: SerializedClassObject, imageLoader: ImageLoader) {
+    const classConstructor = getClassConstructor(serializedClass.className);
+    const configurableFields = getFields(serializedClass.className);
+
+    const newInstance = new classConstructor();
+    // configure the instance
+    configurableFields.forEach((field) => {
+      let fieldValue = serializedClass.fields[field.name];
+
+      if (field.type === Editor.CLASS) {
+        // recursively deserialize class
+        fieldValue.fieldValue = deserialize(
+          fieldValue.fieldValue as SerializedClassObject,
+          imageLoader
+        );
+      }
+
+      // TODO: Find a more extesnible way of handling image loading
+      if (field.type === Editor.RESOURCE_IMAGE) {
+        fieldValue.fieldValue = imageLoader.get(fieldValue.fieldValue.name);
+      }
+
+      newInstance[fieldValue.fieldName] = fieldValue.fieldValue;
+    });
+
+    // return deserializedClass;
+    return newInstance;
+  }
 
   export function getClassConstructor(className: string): any {
     if (!registry[className]) {
