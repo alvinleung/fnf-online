@@ -24,6 +24,9 @@ import useUndo from "use-undo";
 import { useEditHistory, useUndoRedo } from "./EditHistory";
 import MyGame from "../../../MyGame";
 
+import fs from "fs";
+import { downloadFile } from "../../utils/DownloadFile";
+
 interface Props {
   game: Game;
 }
@@ -38,9 +41,50 @@ const App = ({ game }: Props): JSX.Element => {
   useHotkeys(HotkeyConfig.REDO, redo, {}, [editHistory]);
   useHotkeys(HotkeyConfig.UNDO, undo, {}, [editHistory]);
 
-  useHotkeys(HotkeyConfig.SAVE, () => {
-    game.saveScene();
+  useHotkeys(HotkeyConfig.SAVE, (e) => {
+    e.preventDefault();
+    const serializedScene = game.saveScene();
+    downloadFile(serializedScene, "Scene.json", "application/json");
   });
+
+  // for scene file drop
+  useEffect(() => {
+    const dropArea = document.querySelector("body");
+
+    const handleDragOver = (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      // Style the drag-and-drop as a "copy file" operation.
+      event.dataTransfer.dropEffect = "copy";
+    };
+
+    const handleDrop = (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      const fileList = event.dataTransfer.files;
+      const sceneFile = fileList[0];
+
+      // typecheck the scene file
+      if (sceneFile.type && !sceneFile.type.startsWith("application/json")) {
+        console.log("File is not a text/json file.", sceneFile.type, sceneFile);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => game.loadScene(reader.result as string);
+      reader.onerror = () => console.log(reader.error);
+
+      reader.readAsText(sceneFile);
+    };
+
+    dropArea.addEventListener("dragover", handleDragOver);
+    dropArea.addEventListener("drop", handleDrop);
+
+    return () => {
+      dropArea.removeEventListener("dragover", handleDragOver);
+      dropArea.removeEventListener("drop", handleDrop);
+    };
+  }, []);
 
   /**
    * copy and pasting entities
