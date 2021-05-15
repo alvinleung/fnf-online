@@ -50,7 +50,10 @@ const App = ({ game }: Props): JSX.Element => {
   );
   useHotkeys(
     HotkeyConfig.PASTE,
-    () => duplicateEntity(copyingEntity && (copyingEntity.id as string)),
+    () => {
+      const duplicatedInstance = duplicateEntity(copyingEntity && (copyingEntity.id as string));
+      setSelectedEntity(duplicatedInstance);
+    },
     [copyingEntity]
   );
 
@@ -183,6 +186,8 @@ const App = ({ game }: Props): JSX.Element => {
 
     newEntity.id = finalId;
     game.addEntity(newEntity);
+
+    return newEntity;
   };
 
   return (
