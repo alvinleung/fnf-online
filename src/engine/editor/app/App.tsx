@@ -143,6 +143,7 @@ const App = ({ game }: Props): JSX.Element => {
 
     // listen to game entity changes
     game.addEventListener(GameEvent.ENTITY_LIST_CHANGE, (entitiesList: Entity[]) => {
+      // console.log(entitiesList);
       syncEditorEntityList(game);
     });
   }, []);
@@ -234,8 +235,16 @@ const App = ({ game }: Props): JSX.Element => {
       loopCount++;
     }
 
+    console.log(game.getEntityById(finalId));
+
     newEntity.id = finalId;
     game.addEntity(newEntity);
+
+    pushEditHistory({
+      type: "add",
+      entity: newEntity.clone(),
+      index: game.getEntityIndex(newEntity),
+    });
 
     return newEntity;
   };
