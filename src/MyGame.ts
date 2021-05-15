@@ -166,6 +166,9 @@ class MyGame extends Game {
 
     input.bindAction("select", mouse.createKeyBinding("mouseleft"));
 
+    input.bindAction("editor:mouse-left", mouse.createKeyBinding("mouseleft"));
+    input.bindAction("editor:mouse-right", mouse.createKeyBinding("mouseright"));
+
     // hold middle button to look around
     mouse.setPointerLockButton("mousemiddle", true);
 
