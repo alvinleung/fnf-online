@@ -4,7 +4,7 @@ import { EditableField, Editor, Field, Instantiable } from "../editor";
 import { spreadArrayRecusively } from "../utils/ArrayUtils";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderer";
-import { wireFrameMaterialProperties } from "./3dRender/WireFrameRenderer";
+import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderer";
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Image } from "./Image/Image";
 import { Texture } from "./Texture";
