@@ -5,4 +5,5 @@ import { initEditor } from "./engine/editor/app";
 
 const game = new MyGame();
 document.querySelector("#game").appendChild(game.getCanvas());
-initEditor(document.querySelector("#editor-ui"), game);
+
+if (window.location.hash !== "#no-editor") initEditor(document.querySelector("#editor-ui"), game);
