@@ -38,14 +38,16 @@ const server = http.createServer(app);
 const serverListen = () => {
   const serverURL = `http://localhost:${app.get("port")}`;
 
-  console.log(`Editor server started on ${serverURL}`);
-  console.log(`----------------------------------------------------------`);
-  console.log(`Asset public url      ${serverURL + ASSET_SHEET_PUBLIC_ACCESS}`);
-  console.log(`Asset sheet source    ${ASSET_SHEET_PATH}`);
-  console.log(`Asset source folder   ${ASSET_FOLDER_PATH}`);
-  console.log(`Asset public url      ${serverURL + ASSET_PUBLIC_ACCESS}`);
-  console.log(``);
-  console.log(``);
+  const log = console.log;
+
+  log(`Editor server started on ${serverURL}`);
+  log(`----------------------------------------------------------`);
+  log(`Asset sheet public url  ${serverURL + ASSET_SHEET_PUBLIC_ACCESS}`);
+  log(`Asset sheet source      ${ASSET_SHEET_PATH}`);
+  log(`Asset source folder     ${ASSET_FOLDER_PATH}`);
+  log(`Asset public base url   ${serverURL + ASSET_PUBLIC_ACCESS}`);
+  log(``);
+  log(``);
 };
 
 // Reload code here
