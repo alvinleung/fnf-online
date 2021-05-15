@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useRef, useState } from "react";
 import "./App.css";
 import "./style/typography.css";
 import "./style/layout.css";
@@ -21,6 +21,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { HotkeyConfig } from "./Hotkeys";
 import lodashCloneDeep from "lodash.clonedeep";
 import useUndo from "use-undo";
+import { useEditHistory, useUndoRedo } from "./EditHistory";
 
 interface Props {
   game: Game;
@@ -33,56 +34,17 @@ interface EntityStateEdit {
 }
 
 const App = ({ game }: Props): JSX.Element => {
-  const [
-    editHistory,
-    { set: pushEditHistory, reset: resetEntites, undo: undoEdit, redo: redoEdit, canUndo, canRedo },
-  ] = useUndo<EntityStateEdit>(null);
+  const [editHistory, pushEditHistory] = useEditHistory();
+  const [undo, redo] = useUndoRedo();
 
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
 
-  useHotkeys(HotkeyConfig.REDO, redoEdit, {}, [editHistory]);
-  useHotkeys(HotkeyConfig.UNDO, undoEdit, {}, [editHistory]);
-
-  // when entities record changes in the system
-  const [previousFutureLength, setPreviousFutureLength] = useState(0);
-  useEffect(() => {
-    // if the user is undo-ing
-    if (editHistory.future.length > previousFutureLength) {
-      // the user just undone sth and haven't commit anything else
-      const change = editHistory.future[0];
-
-      // do a revserse action of the latest do
-      //
-      // add the entity back in if removed
-      if (change.type === "remove") {
-        game.insertEntityAt(change.value, change.index);
-      }
-
-      // add the entity back in if removed
-      if (change.type === "add") {
-        game.removeEntity(change.value);
-      }
-    }
-
-    // if the user is redo-ing
-    if (editHistory.future.length < previousFutureLength) {
-      // handle redo here
-      const redoChange = editHistory.present;
-
-      if (redoChange.type === "remove") {
-        game.removeEntity(redoChange.value);
-      }
-      if (redoChange.type === "add") {
-        game.insertEntityAt(redoChange.value, redoChange.index);
-      }
-    }
-
-    setPreviousFutureLength(editHistory.future.length);
-  }, [editHistory]);
+  useHotkeys(HotkeyConfig.REDO, redo, {}, [editHistory]);
+  useHotkeys(HotkeyConfig.UNDO, undo, {}, [editHistory]);
 
   // sync the in game entities list with the Editor entities list
-  const syncEntities = (game: Game) => {
+  const syncEditorEntityList = (game: Game) => {
     setEntities([...game.entities]);
   };
 
@@ -108,10 +70,6 @@ const App = ({ game }: Props): JSX.Element => {
 
   // add and remove entity in the list when notified
   useEffect(() => {
-    // game.addEntityListener({
-    //   onEntityAdded: handleEntityAdded,
-    //   onEntityRemoved: handleEntityRemoved,
-    // });
     game.addEventListener(GameEvent.ENTITY_SELECT, (entity: Entity) => {
       if (entity) {
         setSelectedEntity(entity);
@@ -119,9 +77,10 @@ const App = ({ game }: Props): JSX.Element => {
       }
       setSelectedEntity(null);
     });
+
     // listen to game entity changes
     game.addEventListener(GameEvent.ENTITY_LIST_CHANGE, (entitiesList: Entity[]) => {
-      syncEntities(game);
+      syncEditorEntityList(game);
     });
   }, []);
 
@@ -131,15 +90,15 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedEntity(null);
     const removeIndex = game.removeEntity(entityToBeRemoved);
 
+    // add remove action to history
     pushEditHistory({
       type: "remove",
       value: entityToBeRemoved,
       index: removeIndex,
     });
-    // add remove action to history
 
     // sync the entity list with game
-    syncEntities(game);
+    syncEditorEntityList(game);
   };
 
   /**
