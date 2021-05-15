@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { config } from "../../AnimationConfig";
 import useClickOutside from "../../hooks/useClickOutside";
@@ -28,18 +28,13 @@ interface Props {
   onBlur?: () => void;
 }
 
-export const DropDownSelect = ({
-  selected,
-  children,
-  onSelect,
-  focus = false,
-  onBlur,
-}: Props) => {
+export const DropDownSelect = ({ selected, children, onSelect, focus = false, onBlur }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const [currentItem, setCurrentItem] = useState(selected);
 
   const filterRef = useRef<HTMLInputElement>();
   const [filterValue, setFilterValue] = useState("");
+  const [filteredList, setFilteredList] = useState([]);
 
   const dropDownContainerRef = useRef();
   useClickOutside(dropDownContainerRef, () => {
@@ -82,24 +77,56 @@ export const DropDownSelect = ({
     }
   );
 
-  const handleFilterKeyDown = (e: React.KeyboardEvent) => {
-    const currentItemIndex = children.findIndex((dropDownItem) => {
+  children = children instanceof Array ? children : [children];
+
+  useEffect(() => {
+    // when there is no filter
+    if (filterValue === "") {
+      setFilteredList(children);
+      return;
+    }
+
+    const filteredChildren = children.filter((child: ReactNode) => {
       //@ts-ignore
-      return dropDownItem.props.value === currentItem;
+      const { children, value } = child.props;
+
+      const isSatisfyFilter =
+        children.toLowerCase().includes(filterValue.toLowerCase()) ||
+        value.toLowerCase().includes(filterValue.toLowerCase());
+
+      return isSatisfyFilter;
     });
 
-    if (e.code === "ArrowUp" && currentItemIndex > 0) {
-      // get the next item on list
-      const prevItem = currentItemIndex - 1;
+    // auto select the first item in the filtered list
+    if (filteredChildren.length !== 0) {
       //@ts-ignore
-      setCurrentItem(children[prevItem].props.value);
+      setCurrentItem(filteredChildren[0].props.children);
     }
-    if (e.code === "ArrowDown" && currentItemIndex < children.length - 1) {
-      const nextItem = currentItemIndex + 1;
-      //@ts-ignore
-      setCurrentItem(children[nextItem].props.value);
-    }
-  };
+
+    setFilteredList(filteredChildren);
+  }, [filterValue]);
+
+  const handleFilterKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const currentItemIndex = filteredList.findIndex((dropDownItem) => {
+        //@ts-ignore
+        return dropDownItem.props.value === currentItem;
+      });
+
+      if (e.code === "ArrowUp" && currentItemIndex > 0) {
+        // get the next item on list
+        const prevItem = currentItemIndex - 1;
+        //@ts-ignore
+        setCurrentItem(filteredList[prevItem].props.value);
+      }
+      if (e.code === "ArrowDown" && currentItemIndex < filteredList.length - 1) {
+        const nextItem = currentItemIndex + 1;
+        //@ts-ignore
+        setCurrentItem(filteredList[nextItem].props.value);
+      }
+    },
+    [filteredList, filterValue, currentItem]
+  );
 
   const handleSelectCommit = (value: string) => {
     onSelect && onSelect(value);
@@ -157,24 +184,15 @@ export const DropDownSelect = ({
                 ) : (
                   <>
                     <span>{filterValue}</span>
-                    <span>
-                      {
-                        currentItem.split(
-                          new RegExp(`(${filterValue})`, "ig")
-                        )[2]
-                      }
-                    </span>
+                    <span>{currentItem.split(new RegExp(`(${filterValue})`, "ig"))[2]}</span>
                   </>
                 )}
               </div>
-              <div>{children}</div>
+              <div>{filteredList}</div>
             </motion.div>
           )}
         </AnimatePresence>
-        <button
-          className="drop-down-select__toggle"
-          onClick={() => setExpanded(!expanded)}
-        >
+        <button className="drop-down-select__toggle" onClick={() => setExpanded(!expanded)}>
           {selected ? selected : "\u00A0"}
           <motion.img
             src={ARROW_DOWN}

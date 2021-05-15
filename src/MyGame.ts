@@ -34,7 +34,7 @@ import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
 import {
   wireFrameMaterialProperties,
   WireFrameRenderer,
-} from "./engine/graphics/3dRender/WireFrameRenderer";
+} from "./engine/graphics/3dRender/WireframeRenderer";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -165,6 +165,9 @@ class MyGame extends Game {
     input.bindAction("editor:pan", keyboard.createKeyBinding("ShiftLeft"));
 
     input.bindAction("select", mouse.createKeyBinding("mouseleft"));
+
+    input.bindAction("editor:mouse-left", mouse.createKeyBinding("mouseleft"));
+    input.bindAction("editor:mouse-right", mouse.createKeyBinding("mouseright"));
 
     // hold middle button to look around
     mouse.setPointerLockButton("mousemiddle", true);

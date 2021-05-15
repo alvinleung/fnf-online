@@ -27,12 +27,6 @@ interface Props {
   game: Game;
 }
 
-interface EntityStateEdit {
-  type: "update" | "add" | "remove";
-  value: any;
-  index: number; // the index at which the entity was in at the moment
-}
-
 const App = ({ game }: Props): JSX.Element => {
   const [editHistory, pushEditHistory] = useEditHistory();
   const [undo, redo] = useUndoRedo();
@@ -42,6 +36,26 @@ const App = ({ game }: Props): JSX.Element => {
 
   useHotkeys(HotkeyConfig.REDO, redo, {}, [editHistory]);
   useHotkeys(HotkeyConfig.UNDO, undo, {}, [editHistory]);
+
+  /**
+   * copy and pasting entities
+   */
+  const [copyingEntity, setCopyingEntity] = useState<Entity>();
+  useHotkeys(
+    HotkeyConfig.COPY,
+    () => {
+      setCopyingEntity(selectedEntity);
+    },
+    [selectedEntity]
+  );
+  useHotkeys(
+    HotkeyConfig.PASTE,
+    () => {
+      const duplicatedInstance = duplicateEntity(copyingEntity && (copyingEntity.id as string));
+      setSelectedEntity(duplicatedInstance);
+    },
+    [copyingEntity]
+  );
 
   // sync the in game entities list with the Editor entities list
   const syncEditorEntityList = (game: Game) => {
@@ -121,6 +135,7 @@ const App = ({ game }: Props): JSX.Element => {
     });
 
     setIsCreatingEntity(false);
+    setSelectedEntity(newEntity);
   };
   const entityNameInputRef = useRef<HTMLInputElement>();
   useEffect(() => {
@@ -143,7 +158,7 @@ const App = ({ game }: Props): JSX.Element => {
     selectedEntity.removeComponent(componentClass);
   }, [selectedEntity, selectedComponent]);
 
-  const handleEntityDuplicate = (entityId: string) => {
+  const duplicateEntity = (entityId: string) => {
     const newEntity = game.getEntityById(entityId).clone();
 
     const trailingNumberRegex = /\d+$/;
@@ -172,6 +187,8 @@ const App = ({ game }: Props): JSX.Element => {
 
     newEntity.id = finalId;
     game.addEntity(newEntity);
+
+    return newEntity;
   };
 
   return (
@@ -211,7 +228,7 @@ const App = ({ game }: Props): JSX.Element => {
             <MenuItem divider={true} />
             <MenuItem
               data={{ action: "add-entity" }}
-              onClick={() => handleEntityDuplicate(selectedEntity && (selectedEntity.id as string))}
+              onClick={() => duplicateEntity(selectedEntity && (selectedEntity.id as string))}
             >
               Duplicate "{selectedEntity && selectedEntity.id}"
             </MenuItem>

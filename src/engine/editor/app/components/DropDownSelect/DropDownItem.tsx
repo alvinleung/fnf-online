@@ -8,12 +8,6 @@ interface Props {
 
 export const DropDownItem = ({ value, children }: Props) => {
   const context = useDropDownContext();
-
-  const isSatisfyFilter =
-    children.toLowerCase().includes(context.filter.toLowerCase()) ||
-    value.toLowerCase().includes(context.filter.toLowerCase()) ||
-    context.filter === "";
-
   const isSelected = context.selected === value;
 
   return (
@@ -23,11 +17,8 @@ export const DropDownItem = ({ value, children }: Props) => {
           ? "drop-down-select__item drop-down-select__item--selected"
           : "drop-down-select__item"
       }
-      style={{ display: isSatisfyFilter ? "block" : "none" }}
       onMouseEnter={() => context.select(value)}
-      onClick={() =>
-        context.onCommitSelection && context.onCommitSelection(value)
-      }
+      onClick={() => context.onCommitSelection && context.onCommitSelection(value)}
     >
       {children}
     </div>

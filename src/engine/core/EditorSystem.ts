@@ -14,32 +14,20 @@ import { TransformComponent } from "./TransformComponent";
 export default class EditorSystem extends System {
   private editorCameras: Family;
   private systemRenderables: Family;
-  private frameCount: number; // debug
 
   onAttach(game: Game) {
     this.editorCameras = new FamilyBuilder(game)
       .include(EditorControlComponent, TransformComponent)
       .build();
     this.systemRenderables = new FamilyBuilder(game).include(RenderableComponent).build();
-    this.frameCount = 0;
   }
   update(game: Game, delta: number): void {
-    let clicked = game.input.wasClicked("select");
+    let clicked =
+      game.input.wasClicked("editor:mouse-right") || game.input.wasClicked("editor:mouse-left");
+
     if (clicked) {
       let targetEntity = this.castRayOnCursor(game);
-      if (targetEntity) {
-        console.log((targetEntity as Entity).id);
-        // fire event
-        // EVENT TODO:
-      } else {
-        console.log("not found");
-      }
       game.fireEvent(GameEvent.ENTITY_SELECT, targetEntity);
-    }
-
-    this.frameCount++;
-    if (this.frameCount % 30 == 0) {
-      return;
     }
   }
 
