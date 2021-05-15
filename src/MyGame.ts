@@ -200,22 +200,14 @@ class MyGame extends Game {
   }
 
   // @override
-  protected setupAssets(): AssetManager {
-    const imageLoader = new ImageLoader();
-    const soundLoader = new SoundLoader();
-
+  protected setupAssets(assets: AssetManager) {
     ASSET_DECLARATION.images.forEach((imageAsset) => {
-      imageLoader.add(imageAsset);
+      assets.image.add(imageAsset);
     });
 
     ASSET_DECLARATION.sounds.forEach((soundAsset) => {
-      soundLoader.add(soundAsset);
+      assets.sound.add(soundAsset);
     });
-
-    return {
-      image: imageLoader,
-      sound: soundLoader,
-    };
   }
 
   protected setupSystems() {

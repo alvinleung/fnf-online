@@ -1,3 +1,4 @@
+import { EventEmitter } from "../events/EventEmitter";
 import { Asset } from "./Asset";
 
 export interface AssetConfig {
@@ -5,7 +6,13 @@ export interface AssetConfig {
   name: string;
 }
 
-export abstract class AssetLoader<T extends Asset> {
+export enum AssetLoaderEvent {
+  PROGRESS = "asset-load",
+  COMPLETE = "asset-all-complete",
+  ERROR = "asset-error", // not implemented
+}
+
+export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoaderEvent> {
   private assetsDict: { [name: string]: T } = {};
   private assetConfigs: Array<AssetConfig> = [];
 
@@ -13,14 +20,7 @@ export abstract class AssetLoader<T extends Asset> {
   private totalCount: number = 0;
   private isDone: boolean = false;
 
-  private loadedCallback: Function = () => {};
-  private progressCallback: Function = () => {};
-
   public add(config: AssetConfig) {
-    // this.assetsDict[name] = {
-    //   path: path,
-    //   name: name,
-    // } as T;
     this.assetConfigs.push(config);
     this.totalCount++;
   }
@@ -40,48 +40,19 @@ export abstract class AssetLoader<T extends Asset> {
       const onLoadCallback = () => {
         this.loadedCount++;
         this.onProgress();
-        this.onLoad(this.assetsDict[config.name]);
+        this.fireEvent(AssetLoaderEvent.PROGRESS, this.assetsDict[config.name]);
       };
       this.assetsDict[config.name] = this.loadItem(config, onLoadCallback);
     });
-
-    // Object.keys(this.assetsDict).forEach((key) => {
-    //   this.assetsDict[key] = this.loadItem(
-    //     this.assetsDict[key].name,
-    //     this.assetsDict[key].path,
-    //     () => {
-    //       // this.assetsDict[key].isLoaded = true;
-    //       this.loadedCount++;
-    //       this.onProgress();
-    //       this.onLoad(this.assetsDict[key]);
-    //     }
-    //   );
-    // });
   }
 
-  // protected abstract loadItem(
-  //   name: string,
-  //   path: string,
-  //   callback: Function
-  // ): T;
   protected abstract loadItem(config: AssetConfig, onLoadCallback: Function): T;
 
-  protected onLoad(asset: T) {
-    // call back when an asset is loaded
-  }
-
   protected onProgress() {
-    this.progressCallback(this.getProgress);
-
     if (this.loadedCount === this.totalCount) {
       this.isDone = true;
-      this.onComplete();
+      this.fireEvent(AssetLoaderEvent.COMPLETE, this);
     }
-  }
-
-  protected onComplete() {
-    // when loaded
-    this.loadedCallback();
   }
 
   public getProgress(): number {
@@ -91,19 +62,4 @@ export abstract class AssetLoader<T extends Asset> {
   public isLoaded(): boolean {
     return this.isDone;
   }
-
-  public addLoadedListener(callback = () => {}) {
-    this.loadedCallback = callback;
-  }
-
-  public addProgressListener(callback = (progress: number) => {}) {
-    this.progressCallback = callback;
-  }
-}
-
-interface AssetEntry {
-  path: string;
-  name: string;
-  isLoaded: boolean;
-  reference: any;
 }
