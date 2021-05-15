@@ -249,6 +249,22 @@ const App = ({ game }: Props): JSX.Element => {
     return newEntity;
   };
 
+  /**
+   * Hacky way to allow context menu click in the game viewport
+   */
+  const entityContextMenuTriggerRef = useRef();
+  useEffect(() => {
+    const gameViewportContainer = document.querySelector("#game");
+    const handleMenu = (e) => {
+      //@ts-ignore
+      entityContextMenuTriggerRef.current.handleContextClick(e);
+    };
+    gameViewportContainer.addEventListener("contextmenu", handleMenu);
+    return () => {
+      gameViewportContainer.removeEventListener("contextmenu", handleMenu);
+    };
+  }, []);
+
   return (
     <EditorContextWrapper
       game={game}
@@ -258,7 +274,7 @@ const App = ({ game }: Props): JSX.Element => {
     >
       <PanelGroup>
         <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
-          <ContextMenuTrigger id="item-menu-trigger">
+          <ContextMenuTrigger id="item-menu-trigger" ref={entityContextMenuTriggerRef}>
             <List
               onSelect={handleEntityListSelect}
               onItemRemove={handleItemRemove}
