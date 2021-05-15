@@ -15,7 +15,7 @@ interface Props {
   stepSize?: number;
   precision?: number; // correct to certain decimal place
   color?: string;
-  stepMode: boolean;
+  stepMode?: boolean;
 }
 
 export const DEFAULT_SENSITIVITY = 0.1;
@@ -46,18 +46,24 @@ export const NumberSlider = ({
   const [isPreciseMode, seIsPreciseMode] = useState(false);
   const [isStepMode, setIsStepMode] = useState(false);
   sensitivity = isPreciseMode ? sensitivity * precisionModeScale : sensitivity;
+
   useEffect(() => {
+    let isComponentMounted = true;
+
     const keyDownHandler = (e: KeyboardEvent) => {
+      if (!isComponentMounted) return;
       if (e.key === "Shift") seIsPreciseMode(true);
       if (e.key === "Meta" || e.key === "Control") setIsStepMode(true);
     };
     const keyUpHandler = (e: KeyboardEvent) => {
+      if (!isComponentMounted) return;
       if (e.key === "Shift") seIsPreciseMode(false);
       if (e.key === "Meta" || e.key === "Control") setIsStepMode(false);
     };
     window.addEventListener("keydown", keyDownHandler);
     window.addEventListener("keyup", keyUpHandler);
     return () => {
+      isComponentMounted = false;
       window.removeEventListener("keydown", keyDownHandler);
       window.removeEventListener("keyUp", keyUpHandler);
     };
