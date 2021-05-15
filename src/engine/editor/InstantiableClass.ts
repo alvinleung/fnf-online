@@ -1,3 +1,5 @@
+import { ImageLoader } from "../assets";
+import { Game } from "../Game";
 import { Editor } from "./EditorDecorators";
 
 type ClassEntry = {
@@ -103,7 +105,7 @@ export module InstantiableClassRegistry {
     return seralizedClass;
   }
 
-  export function deserialize(serializedClass: SerializedClassObject) {
+  export function deserialize(serializedClass: SerializedClassObject, imageLoader: ImageLoader) {
     const classConstructor = getClassConstructor(serializedClass.className);
     const configurableFields = getFields(serializedClass.className);
 
@@ -114,10 +116,18 @@ export module InstantiableClassRegistry {
 
       if (field.type === Editor.CLASS) {
         // recursively deserialize class
-        fieldValue = deserialize(fieldValue.fieldValue as SerializedClassObject);
+        fieldValue.fieldValue = deserialize(
+          fieldValue.fieldValue as SerializedClassObject,
+          imageLoader
+        );
       }
 
-      newInstance[field.name] = fieldValue;
+      // TODO: Find a more extesnible way of handling image loading
+      if (field.type === Editor.RESOURCE_IMAGE) {
+        fieldValue.fieldValue = imageLoader.get(fieldValue.fieldValue.name);
+      }
+
+      newInstance[fieldValue.fieldName] = fieldValue.fieldValue;
     });
 
     // return deserializedClass;
