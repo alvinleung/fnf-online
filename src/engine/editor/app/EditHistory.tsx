@@ -1,9 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import useUndo from "use-undo";
+import { Component, Entity } from "../../ecs";
+import { Game } from "../../Game";
 
 interface EntityStateEdit {
-  type: "update" | "add" | "remove";
-  value: any;
+  type: "update" | "add" | "remove" | "componentFieldChange";
+  entity: Entity;
+  component?: Component;
+  value?: any;
+  field?: any;
+  beforeValue?: any;
   index: number; // the index at which the entity was in at the moment
 }
 
@@ -14,7 +20,13 @@ const EditHistoryContext = React.createContext({
   redo: () => {},
 });
 
-export const EditHistoryContextWrapper = ({ children, game }) => {
+export const EditHistoryContextWrapper = ({
+  children,
+  game,
+}: {
+  children: React.ReactNode;
+  game: Game;
+}) => {
   const [
     editHistory,
     { set: pushEditChange, reset: resetEntites, undo: undoEdit, redo: redoEdit, canUndo, canRedo },
@@ -34,12 +46,17 @@ export const EditHistoryContextWrapper = ({ children, game }) => {
       //
       // add the entity back in if removed
       if (change.type === "remove") {
-        game.insertEntityAt(change.value, change.index);
+        game.insertEntityAt(change.entity, change.index);
       }
 
       // add the entity back in if removed
       if (change.type === "add") {
-        game.removeEntity(change.value);
+        game.removeEntity(change.entity);
+      }
+
+      if (change.type === "componentFieldChange") {
+        // revert to valueBefore
+        change.component[change.field] = change.beforeValue;
       }
     }
 
@@ -49,10 +66,15 @@ export const EditHistoryContextWrapper = ({ children, game }) => {
       const redoChange = editHistory.present;
 
       if (redoChange.type === "remove") {
-        game.removeEntity(redoChange.value);
+        game.removeEntity(redoChange.entity);
       }
       if (redoChange.type === "add") {
-        game.insertEntityAt(redoChange.value, redoChange.index);
+        game.insertEntityAt(redoChange.entity, redoChange.index);
+      }
+
+      if (redoChange.type === "componentFieldChange") {
+        // revert to valueBefore
+        redoChange.component[redoChange.field] = redoChange.value;
       }
     }
 
@@ -75,7 +97,27 @@ export const EditHistoryContextWrapper = ({ children, game }) => {
 
 export const useEditHistory = () => {
   const { history, pushEditChange } = useContext(EditHistoryContext);
-  return [history, pushEditChange];
+
+  const timeoutRef = useRef(setTimeout(() => {}, 0));
+  const hasEditPushed = useRef(true);
+  const beforeValue = useRef(0);
+
+  const rateLimitPushEditChange = (update, delay) => {
+    if (!delay) pushEditChange(update);
+
+    if (hasEditPushed.current === true) {
+      hasEditPushed.current = false;
+      beforeValue.current = update.beforeValue;
+    }
+
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      pushEditChange({ ...update, beforeValue: beforeValue.current });
+      hasEditPushed.current = true;
+    }, delay);
+  };
+
+  return [history, rateLimitPushEditChange];
 };
 
 export const useUndoRedo = () => {

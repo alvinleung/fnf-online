@@ -93,7 +93,7 @@ const App = ({ game }: Props): JSX.Element => {
     // add remove action to history
     pushEditHistory({
       type: "remove",
-      value: entityToBeRemoved,
+      entity: entityToBeRemoved.clone(),
       index: removeIndex,
     });
 
@@ -116,7 +116,7 @@ const App = ({ game }: Props): JSX.Element => {
 
     pushEditHistory({
       type: "add",
-      value: newEntity,
+      entity: newEntity.clone(),
       index: game.getEntityIndex(newEntity),
     });
 
