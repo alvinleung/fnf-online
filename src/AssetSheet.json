@@ -1,0 +1,26 @@
+{
+  "images": [
+    {
+      "name": "test",
+      "path": "assets/images/Adventurer/adventurer-Sheet.png"
+    },
+    {
+      "name": "test2",
+      "path": "images/Adventurer-Bow/adventurer-bow-Sheet.png"
+    },
+    {
+      "name": "test3",
+      "path": "images/Adventurer-Hand-Combat/adventurer-hand-combat-Sheet.png"
+    }
+  ],
+  "sounds": [
+    {
+      "name": "menu-theme",
+      "path": "sounds/soundtrack/GameThemeMain_01.mp3"
+    },
+    {
+      "name": "action-theme",
+      "path": "sounds/soundtrack/actionFull.mp3"
+    }
+  ]
+}
