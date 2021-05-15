@@ -11,7 +11,7 @@ const HotkeyConfig = {
   DELETE: useBinding("backspace", "del"),
   SUBMIT: useBinding("enter", "enter"),
   UNDO: useBinding("cmd+z", "ctrl+z"),
-  REDO: useBinding("cmd+shift+z", "cmd+shift+z"),
+  REDO: useBinding("cmd+shift+z", "ctrl+y"),
   COPY: useBinding("cmd+c", "ctrl+c"),
   PASTE: useBinding("cmd+v", "ctrl+v"),
   SAVE: useBinding("cmd+s", "ctrl+s"),

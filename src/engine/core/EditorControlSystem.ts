@@ -4,6 +4,7 @@ import { TransformComponent } from "./TransformComponent";
 import * as q from "../utils/quaternion";
 import { m4, v3 } from "twgl.js";
 import { EditorControlComponent } from "./EditorControlComponent";
+import { clamp } from "../utils/MathUtils";
 
 const SPEED = 5;
 const SPEED_MODIFIER = 4;
@@ -17,8 +18,8 @@ const INITIAL_CAMERA_ANGLE = [0, Math.PI / 6, -Math.PI / 8]; // euler angles
 export default class EditorControlSystem extends System {
   private mainCameraEntity: Family;
 
-  private rotXAmount = 0;
-  private rotYAmount = 0;
+  private rotXAmount = -INITIAL_CAMERA_ANGLE[1];
+  private rotYAmount = -INITIAL_CAMERA_ANGLE[2];
   private scrollAmount = 0;
 
   private rotPivotPoint: v3.Vec3 = [0, 0, 0];
@@ -70,10 +71,7 @@ export default class EditorControlSystem extends System {
 
     this.rotYAmount = panMode
       ? this.rotYAmount
-      : Math.max(
-          Math.min(this.rotYAmount + pointerY * ROTATION_SPEED * delta, Math.PI / 2),
-          -Math.PI / 2
-        );
+      : clamp(this.rotYAmount + pointerY * ROTATION_SPEED * delta, -Math.PI/2, Math.PI/2);
 
     const speedCoefficent = SPEED * delta * PAN_SPEED;
 
@@ -90,8 +88,8 @@ export default class EditorControlSystem extends System {
     const cameraDist = Math.pow(1 / 2, -(INITIAL_ZOOM_LEVEL + this.scrollAmount * 0.0025));
 
     // rotate the scene about origin
-    let rotMatrix = m4.rotationY(INITIAL_CAMERA_ANGLE[1] + -this.rotXAmount * ROTATION_SPEED);
-    rotMatrix = m4.rotateX(rotMatrix, INITIAL_CAMERA_ANGLE[2] + -this.rotYAmount * ROTATION_SPEED);
+    let rotMatrix = m4.rotationY( -this.rotXAmount );
+    rotMatrix = m4.rotateX(rotMatrix, -this.rotYAmount);
 
     // create a translation base on pivot point
     const translationMatrix = m4.translation(this.rotPivotPoint);

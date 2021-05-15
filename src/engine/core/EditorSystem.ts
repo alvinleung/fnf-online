@@ -54,7 +54,7 @@ export default class EditorSystem extends System {
     const direction = v3.normalize(v3.subtract(worldPoint0, worldPoint1));
 
     let targetEntity = null;
-    let maxlength = 0;
+    let minlength = Number.MAX_VALUE;
 
     // cast ray onto the world with direction and cameraPosition
     this.systemRenderables.entities.forEach((renderableEntity) => {
@@ -99,9 +99,9 @@ export default class EditorSystem extends System {
 
         if (rayLength) {
           // not null
-          if (rayLength > maxlength) {
+          if (rayLength < minlength) {
             targetEntity = renderableEntity;
-            maxlength = rayLength;
+            minlength = rayLength;
           }
         }
       }
