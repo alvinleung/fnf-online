@@ -201,13 +201,7 @@ class MyGame extends Game {
 
   // @override
   protected setupAssets(assets: AssetManager) {
-    ASSET_DECLARATION.images.forEach((imageAsset) => {
-      assets.image.add(imageAsset);
-    });
-
-    ASSET_DECLARATION.sounds.forEach((soundAsset) => {
-      assets.sound.add(soundAsset);
-    });
+    assets.loadFromAssetSheet("/asset-sheet");
   }
 
   protected setupSystems() {

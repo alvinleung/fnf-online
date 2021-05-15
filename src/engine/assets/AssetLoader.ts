@@ -21,6 +21,12 @@ export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoa
   private isDone: boolean = false;
 
   public add(config: AssetConfig) {
+    if (this.assetsDict[config.name]) {
+      console.warn(
+        `Item "${config.name}" already exist in the AssetLoader, abort loading process.`
+      );
+      return;
+    }
     this.assetConfigs.push(config);
     this.totalCount++;
   }

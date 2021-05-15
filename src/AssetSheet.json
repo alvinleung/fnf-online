@@ -1,26 +1,26 @@
 {
-  "images": [
+  "image": [
     {
       "name": "test",
       "path": "assets/images/Adventurer/adventurer-Sheet.png"
     },
     {
       "name": "test2",
-      "path": "images/Adventurer-Bow/adventurer-bow-Sheet.png"
+      "path": "assets/images/Adventurer-Bow/adventurer-bow-Sheet.png"
     },
     {
       "name": "test3",
-      "path": "images/Adventurer-Hand-Combat/adventurer-hand-combat-Sheet.png"
+      "path": "assets/images/Adventurer-Hand-Combat/adventurer-hand-combat-Sheet.png"
     }
   ],
-  "sounds": [
+  "sound": [
     {
       "name": "menu-theme",
-      "path": "sounds/soundtrack/GameThemeMain_01.mp3"
+      "path": "assets/sounds/soundtrack/GameThemeMain_01.mp3"
     },
     {
       "name": "action-theme",
-      "path": "sounds/soundtrack/actionFull.mp3"
+      "path": "assets/sounds/soundtrack/actionFull.mp3"
     }
   ]
 }

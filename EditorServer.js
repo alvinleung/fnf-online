@@ -3,7 +3,7 @@ const http = require("http");
 const path = require("path");
 const reload = require("reload");
 
-const ASSET_SHEET_PUBLIC_ACCESS = "/assets-sheet";
+const ASSET_SHEET_PUBLIC_ACCESS = "/asset-sheet";
 const ASSET_SHEET_PATH = "/src/AssetSheet.json";
 
 const ASSET_PUBLIC_ACCESS = "/assets/";
@@ -17,7 +17,7 @@ clearConsole();
 
 app.set("port", process.env.PORT || 3000);
 app.use("/", express.static("dist"));
-app.use("/assets", express.static("public"));
+app.use("/assets", express.static("assets"));
 
 app.get("/favicon.ico", (req, res) => {
   res.status(204);

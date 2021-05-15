@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Image as GameImage, Image } from "../../../../graphics/Image/Image";
+import { useGameContext } from "../../EditorContextWrapper";
 import useClickOutside from "../../hooks/useClickOutside";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -20,28 +21,40 @@ const assetList = require("../../../../../MyGameAssets").default;
 
 export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
   const containerRef = useRef();
+  const gameRef = useGameContext();
 
   const [selected, setSelected] = useState(value ? value.name : "");
   const [focused, setFocused] = useState(false);
 
-  const images = assetList.images;
+  // const images = assetList.images;
+  const assetImageDict = useMemo(() => gameRef.assets.image.getAssetDictionary(), []);
+  const images = useMemo(
+    () =>
+      Object.values(assetImageDict).reduce((list, image, index) => {
+        list.push(image);
+
+        return list;
+      }, []),
+    []
+  );
   const [filteredImageList, setFilteredImageList] = useState(images);
 
   useEffect(() => {
     if (!selected || selected === "") return;
 
-    const imgRes = assetList.images.find(
-      (element) => element.name === selected
-    );
+    // const imgRes = assetList.images.find(
+    //   (element) => element.name === selected
+    // );
 
-    const htmlImage = document.createElement("img");
-    htmlImage.src = imgRes.path;
-    htmlImage.onload = () => {
-      // create a new image base on the selected
-      const img = new GameImage(imgRes.name, imgRes.path, htmlImage);
+    // const htmlImage = document.createElement("img");
+    // htmlImage.src = imgRes.path;
+    // htmlImage.onload = () => {
+    //   // create a new image base on the selected
+    //   const img = new GameImage(imgRes.name, imgRes.path, htmlImage);
 
-      onChange && onChange(img);
-    };
+    //   onChange && onChange(img);
+    // };
+    onChange && onChange(gameRef.assets.image.get(selected) || Image.createEmpty());
   }, [selected]);
 
   useClickOutside(containerRef, () => {
@@ -104,11 +117,7 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
           </label>
         </div>
       </div>
-      <Modal
-        isVisible={isVisible}
-        onHide={hideModal}
-        canDismissClickOutside={true}
-      >
+      <Modal isVisible={isVisible} onHide={hideModal} canDismissClickOutside={true}>
         <h2>Select Image</h2>
         <label>
           Filter
@@ -121,9 +130,7 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
         </label>
         <div
           className={
-            focused
-              ? "resource-container resource-container--focus"
-              : "resource-container"
+            focused ? "resource-container resource-container--focus" : "resource-container"
           }
           onClick={() => {
             setSelected(null);
@@ -134,9 +141,7 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
             <div
               key={index}
               className={
-                selected === image.name
-                  ? "resource-item resource-item--selected"
-                  : "resource-item"
+                selected === image.name ? "resource-item resource-item--selected" : "resource-item"
               }
               onClickCapture={(e) => {
                 e.preventDefault();
@@ -145,11 +150,7 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
                 setFocused(true);
               }}
             >
-              <img
-                className="resource-item__image"
-                src={image.path}
-                draggable={false}
-              />
+              <img className="resource-item__image" src={image.path} draggable={false} />
               <div className="resource-item__name">{image.name}</div>
             </div>
           ))}
