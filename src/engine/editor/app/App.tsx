@@ -22,6 +22,7 @@ import { HotkeyConfig } from "./Hotkeys";
 import lodashCloneDeep from "lodash.clonedeep";
 import useUndo from "use-undo";
 import { useEditHistory, useUndoRedo } from "./EditHistory";
+import MyGame from "../../../MyGame";
 
 interface Props {
   game: Game;
@@ -36,6 +37,10 @@ const App = ({ game }: Props): JSX.Element => {
 
   useHotkeys(HotkeyConfig.REDO, redo, {}, [editHistory]);
   useHotkeys(HotkeyConfig.UNDO, undo, {}, [editHistory]);
+
+  useHotkeys(HotkeyConfig.SAVE, () => {
+    game.saveScene();
+  });
 
   /**
    * copy and pasting entities

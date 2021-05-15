@@ -1,3 +1,4 @@
+import { ImageLoader } from "../assets";
 import { TransformComponent } from "../core/TransformComponent";
 import { Component, ComponentClass, Entity } from "../ecs";
 import { ComponentRegistry, SerializedClassObject } from "../editor";
@@ -84,7 +85,7 @@ export class GameStateParser {
     return parser;
   }
 
-  public static fromString(gameState: string): GameStateParser {
+  public static fromString(gameState: string, imageLoader: ImageLoader): GameStateParser {
     const parser = new this();
     const gameStateObject = JSON.parse(gameState) as EntityEntry[];
 
@@ -102,7 +103,8 @@ export class GameStateParser {
           // it is a serializable class if it has class name
           if ((componentFieldEntry.value as SerializedClassObject).className) {
             componentFieldValue = InstantiableClassRegistry.deserialize(
-              componentFieldEntry.value as SerializedClassObject
+              componentFieldEntry.value as SerializedClassObject,
+              imageLoader
             );
           }
           componentInstance[componentFieldEntry.name] = componentFieldValue;

@@ -25,10 +25,8 @@ export class Texture implements ITexture {
     const desiredWidth = config.width;
     const desiredHeight = config.height;
 
-    const width =
-      desiredWidth !== undefined ? desiredWidth : image && image.width;
-    const height =
-      desiredHeight !== undefined ? desiredHeight : image && image.height;
+    const width = desiredWidth !== undefined ? desiredWidth : image && image.width;
+    const height = desiredHeight !== undefined ? desiredHeight : image && image.height;
 
     const useSmoothScaling = config.useSmoothScaling || false;
 
@@ -53,14 +51,7 @@ export class Texture implements ITexture {
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
     if (image && image.elm) {
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        level,
-        internalFormat,
-        srcFormat,
-        srcType,
-        image.elm
-      );
+      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image.elm);
     } else {
       // create and empty texture if there are no image supplied
       // const data = new ImageData(width, height);

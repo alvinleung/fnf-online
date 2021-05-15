@@ -118,8 +118,8 @@ class MyGame extends Game {
 
     // console.log(getPublicProperties(new TransformComponent));
 
-    const parser = GameStateParser.fromGame(this);
-    const entities = GameStateParser.fromString(parser.getString()).getEntities();
+    // const parser = GameStateParser.fromGame(this);
+    // const entities = GameStateParser.fromString(parser.getString()).getEntities();
 
     // console.log(entities[1].getComponent(RenderableComponent));
 
@@ -134,6 +134,17 @@ class MyGame extends Game {
     lightProperties.isDirectional = true;
     light.useComponent(TransformComponent).position = [3, 3, 3];
     this.addEntity(light);
+  }
+
+  public loadScene(serializedScene: string) {
+    super.loadScene(serializedScene);
+
+    // inject the camera component
+    this.entities.forEach((e) => {
+      if (e.hasComponent(CameraComponent)) {
+        e.useComponent(EditorControlComponent);
+      }
+    });
   }
 
   // @override

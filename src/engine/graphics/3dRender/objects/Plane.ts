@@ -2,12 +2,7 @@
  * 3d Objects types
  */
 
-import {
-  InstantiableObject,
-  Editor,
-  Instantiable,
-  Field,
-} from "../../../editor";
+import { Editor, Instantiable, Field } from "../../../editor";
 import { Image } from "../../Image/Image";
 import { RenderableObject } from "../../Renderable";
 
@@ -20,13 +15,9 @@ import { RenderableObject } from "../../Renderable";
 @Instantiable("RenderableObject")
 export class Plane extends RenderableObject {
   constructor(textureImage?: Image) {
-    super(
-      require("./Primitives").plane,
-      require("./Primitives").quad_2d,
-      textureImage
-    );
+    super(require("./Primitives").plane, require("./Primitives").quad_2d, textureImage);
   }
-  @Field(Editor.RESOURCE_IMAGE, Image.createEmpty())
+  @Field(Editor.RESOURCE_IMAGE)
   public set textureImage(val) {
     super.textureImage = val;
   }

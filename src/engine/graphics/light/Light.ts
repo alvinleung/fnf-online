@@ -4,19 +4,17 @@ import { EditableComponent, EditableField, Editor } from "../../editor";
 import { v4 } from "../../utils/MatrixUtils";
 import { MaterialProperties } from "../Renderable";
 
-
 @EditableComponent
-export class LightComponent implements Component{
+export class LightComponent implements Component {
   private _isDirectional: boolean;
   private _color: v3.Vec3;
   private _intensity: number;
 
-  constructor(){
+  constructor() {
     this._isDirectional = true;
-    this._color = v3.create(1,1,1);
+    this._color = v3.create(1, 1, 1);
     this._intensity = 1;
   }
-
 
   @EditableField(Editor.RGBA)
   public set color([r, b, g, a]: v3.Vec3) {
@@ -44,12 +42,4 @@ export class LightComponent implements Component{
   public get intensity() {
     return this._intensity;
   }
-
-
 }
-
-
-
-
-
-
