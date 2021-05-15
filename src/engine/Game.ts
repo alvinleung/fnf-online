@@ -6,6 +6,7 @@ import { AssetLoader, AssetManager } from "./assets";
 import { RenderingSystem } from "./graphics/RenderingSystem";
 import { EventEmitter, IEventEmitter } from "./events/EventEmitter";
 import { GameStateParser } from "./utils/GameStateParser";
+import { AssetLoaderEvent } from "./assets/AssetLoader";
 
 export enum GameEvent {
   UPDATE = "update",
@@ -37,30 +38,31 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
     this.input = this.setupInput();
 
     // setup load all assets
-    this.assets = this.setupAssets();
-    Object.values(this.assets).forEach((assetLoader: AssetLoader<any>) => {
-      assetLoader.loadAll();
-      assetLoader.addLoadedListener(handleLoadProgress);
-    });
+    this.assets = AssetManager.getInstance();
+    this.setupAssets(this.assets);
 
-    let that = this;
-
-    function handleLoadProgress() {
-      if (!that.isAllAssetAloaded()) return;
+    const handleLoadProgress = () => {
+      if (!this.assets.haveAllAssetLoaded()) return;
       // continue the rest of initialisation after all the assets loaded
 
       // setup the rendering system
-      that._rendering = that.setupRendering();
+      this._rendering = this.setupRendering();
 
       // setup other game systems
-      that.setupSystems();
+      this.setupSystems();
 
       // finished setup
-      that.gameDidInit();
+      this.gameDidInit();
 
       // init the game
-      that.tick();
-    }
+      this.tick();
+
+      // event listener clean up
+      this.assets.removeEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
+    };
+
+    this.assets.addEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
+    this.assets.loadAll();
   }
 
   addEventListener(eventType: GameEvent, callback: Function): void {
@@ -79,13 +81,6 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   // getter for rendering system
   public get rendering() {
     return this._rendering;
-  }
-
-  private isAllAssetAloaded() {
-    const isUnfinish = Object.values(this.assets).some((assetLoader: AssetLoader<any>) => {
-      return assetLoader.isLoaded() === false;
-    });
-    return !isUnfinish;
   }
 
   private setupCanvas(): HTMLCanvasElement {
@@ -110,7 +105,7 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
 
   // facotry function for binding input controls
   protected abstract setupInput(): InputSystem;
-  protected abstract setupAssets(): AssetManager;
+  protected abstract setupAssets(assetManager: AssetManager): void;
   protected abstract setupRendering(): RenderingSystem;
 
   protected gameDidInit() {

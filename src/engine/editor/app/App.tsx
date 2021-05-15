@@ -22,6 +22,7 @@ import { HotkeyConfig } from "./Hotkeys";
 import { useEditHistory, useUndoRedo } from "./EditHistory";
 
 import { downloadFile } from "../../utils/DownloadFile";
+import { TransformComponent } from "../../core/TransformComponent";
 
 interface Props {
   game: Game;
@@ -171,6 +172,9 @@ const App = ({ game }: Props): JSX.Element => {
 
     const newEntity = Entity.create(name);
 
+    // add transform component
+    newEntity.useComponent(TransformComponent);
+
     // when the entity create
     game.addEntity(newEntity);
 
@@ -205,6 +209,12 @@ const App = ({ game }: Props): JSX.Element => {
     const componentClass = ComponentRegistry.getComponentClass(selectedComponent);
     // remove the current component in the
     selectedEntity.removeComponent(componentClass);
+
+    pushEditHistory({
+      type: "componentRemove",
+      entity: selectedEntity,
+      component: componentClass,
+    });
   }, [selectedEntity, selectedComponent]);
 
   const duplicateEntity = (entityId: string) => {
