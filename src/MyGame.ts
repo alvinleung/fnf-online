@@ -34,7 +34,7 @@ import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
 import {
   wireFrameMaterialProperties,
   WireFrameRenderer,
-} from "./engine/graphics/3dRender/WireFrameRenderer";
+} from "./engine/graphics/3dRender/WireframeRenderer";
 
 class MyGame extends Game {
   protected gameDidInit() {
