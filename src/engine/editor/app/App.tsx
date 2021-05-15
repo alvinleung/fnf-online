@@ -209,6 +209,12 @@ const App = ({ game }: Props): JSX.Element => {
     const componentClass = ComponentRegistry.getComponentClass(selectedComponent);
     // remove the current component in the
     selectedEntity.removeComponent(componentClass);
+
+    pushEditHistory({
+      type: "componentRemove",
+      entity: selectedEntity,
+      component: componentClass,
+    });
   }, [selectedEntity, selectedComponent]);
 
   const duplicateEntity = (entityId: string) => {

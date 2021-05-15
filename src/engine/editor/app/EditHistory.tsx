@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import useUndo from "use-undo";
-import { Component, Entity } from "../../ecs";
+import { Component, ComponentClass, Entity } from "../../ecs";
 import { Game } from "../../Game";
 
 interface EntityStateEdit {
-  type: "update" | "add" | "remove" | "componentFieldChange";
+  type: "update" | "add" | "remove" | "componentFieldChange" | "componentAdd" | "componentRemove";
   entity: Entity;
-  component?: Component;
+  component?: ComponentClass<any>;
   value?: any;
   field?: any;
   beforeValue?: any;
@@ -66,6 +66,14 @@ export const EditHistoryContextWrapper = ({
         // revert to valueBefore
         change.component[change.field] = change.beforeValue;
       }
+
+      if (change.type === "componentAdd") {
+        change.entity.removeComponent(change.component);
+      }
+
+      if (change.type === "componentRemove") {
+        change.entity.useComponent(change.component);
+      }
     }
 
     // if the user is redo-ing
@@ -83,6 +91,14 @@ export const EditHistoryContextWrapper = ({
       if (redoChange.type === "componentFieldChange") {
         // revert to valueBefore
         redoChange.component[redoChange.field] = redoChange.value;
+      }
+
+      if (redoChange.type === "componentAdd") {
+        redoChange.entity.useComponent(redoChange.component);
+      }
+
+      if (redoChange.type === "componentRemove") {
+        redoChange.entity.removeComponent(redoChange.component);
       }
     }
 

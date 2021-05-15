@@ -87,6 +87,12 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
     const componentClass = ComponentRegistry.getComponentClass(componentName);
     entityContext.selectedEntity.useComponent(componentClass);
 
+    pushEditHistory({
+      type: "componentAdd",
+      entity: selectedEntity,
+      component: componentClass,
+    });
+
     // select the newly created entity
     componentContext.setSelectedComponent(componentName);
     setIsCreatingComponent(false);
