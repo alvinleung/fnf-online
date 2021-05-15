@@ -103,7 +103,10 @@ export const useEditHistory = () => {
   const beforeValue = useRef(0);
 
   const rateLimitPushEditChange = (update, delay) => {
-    if (!delay) pushEditChange(update);
+    if (!delay) {
+      pushEditChange(update);
+      return;
+    }
 
     if (hasEditPushed.current === true) {
       hasEditPushed.current = false;
