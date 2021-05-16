@@ -7,7 +7,7 @@ const reload = require("reload");
 const ASSET_SHEET_PUBLIC_ACCESS = "/asset-sheet";
 const ASSET_SHEET_PATH = "/src/AssetSheet.json";
 
-const ASSET_PUBLIC_ACCESS = "assets/";
+const ASSET_PUBLIC_ACCESS = "/assets/";
 const ASSET_FOLDER_PATH = "./assets/";
 
 const app = express();
@@ -67,6 +67,21 @@ app.post("/writeFile", (req, res) => {
 
   // move the file to the target directory
   req.files.fileUploadField.mv(combinedPath);
+
+  res.status(200);
+  res.end();
+});
+
+app.get("/listFolder", (req, res) => {
+  const listPath = req.headers.listpath;
+  const combinedPath = path.join(__dirname, ASSET_FOLDER_PATH, listPath);
+
+  const dir = fs.readdirSync(combinedPath);
+
+  // filter hidden file in the system
+  const filteredDir = dir.filter((item) => !/(^|\/)\.[^/.]/g.test(item));
+
+  res.json(filteredDir);
 });
 
 const server = http.createServer(app);

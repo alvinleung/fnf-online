@@ -17,6 +17,22 @@ export class EditorServerIO {
     return EditorServerIO._instance;
   }
 
+  public async listFolder(path: string) {
+    if (!EDITOR_ENV) {
+      console.warn(`Aborting: Writing only available when running on editor server.`);
+      return;
+    }
+
+    const response = await fetch("/listFolder", {
+      method: "GET",
+      headers: {
+        listpath: path,
+      },
+    });
+
+    return response.json();
+  }
+
   public async writeFile(path: string, file: any) {
     if (!EDITOR_ENV) {
       console.warn(`Aborting: Writing only available when running on editor server.`);
@@ -36,6 +52,5 @@ export class EditorServerIO {
       },
       body: formData,
     });
-    console.log(response.json());
   }
 }
