@@ -24,6 +24,7 @@ import { useEditHistory, useUndoRedo } from "./EditHistory";
 import { downloadFile } from "../../utils/DownloadFile";
 import { TransformComponent } from "../../core/TransformComponent";
 import { EditorServerIO } from "../EditorServerIO";
+import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
 
 interface Props {
   game: Game;
@@ -287,6 +288,9 @@ const App = ({ game }: Props): JSX.Element => {
     >
       <PanelGroup>
         <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
+          <Modal isVisible={true}>
+            <AssetExplorer />
+          </Modal>
           <ContextMenuTrigger id="item-menu-trigger" ref={entityContextMenuTriggerRef}>
             <List
               onSelect={handleEntityListSelect}

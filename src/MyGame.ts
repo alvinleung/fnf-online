@@ -36,6 +36,7 @@ import {
   WireFrameRenderer,
 } from "./engine/graphics/3dRender/WireframeRenderer";
 import { TouchInput } from "./engine/input/TouchInput";
+import { EditorServerIO } from "./engine/editor/EditorServerIO";
 
 class MyGame extends Game {
   protected gameDidInit() {

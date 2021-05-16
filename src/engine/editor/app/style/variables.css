@@ -12,6 +12,8 @@
   --spacing-s: 0.5rem;
   --spacing-m: 1rem;
   --spacing-l: 2rem;
+
+  --shadow-default: 0px 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 body {

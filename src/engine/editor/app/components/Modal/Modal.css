@@ -15,12 +15,14 @@
   min-width: 20rem;
   max-width: 40rem;
 
-  padding: var(--spacing-m);
-
   background-color: var(--clr-bg);
 
   display: flex;
   flex-direction: column;
 
   border-radius: 8px;
+}
+
+.modal-content--padding {
+  padding: var(--spacing-m);
 }
