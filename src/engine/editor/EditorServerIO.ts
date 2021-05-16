@@ -17,6 +17,11 @@ export class EditorServerIO {
     return EditorServerIO._instance;
   }
 
+  /**
+   * List folder content in path.
+   * @param path Path relative to the editor server-defined base path
+   * @returns
+   */
   public async listFolder(path: string) {
     if (!EDITOR_ENV) {
       console.warn(`Aborting: Writing only available when running on editor server.`);
@@ -33,7 +38,13 @@ export class EditorServerIO {
     return response.json();
   }
 
-  public async writeFile(path: string, file: any) {
+  /**
+   * Write file at directory. If the path does not include file name, it will automatically inferred from the file.
+   * @param path
+   * @param file
+   * @returns
+   */
+  public async writeFile(path: string, file: File) {
     if (!EDITOR_ENV) {
       console.warn(`Aborting: Writing only available when running on editor server.`);
       return;
