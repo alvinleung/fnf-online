@@ -30,7 +30,7 @@ interface Props {
 
 export const DropDownSelect = ({ selected, children, onSelect, focus = false, onBlur }: Props) => {
   const [expanded, setExpanded] = useState(false);
-  const [currentItem, setCurrentItem] = useState(selected);
+  const [currentItem, setCurrentItem] = useState(selected || "");
 
   const filterRef = useRef<HTMLInputElement>();
   const [filterValue, setFilterValue] = useState("");
@@ -186,7 +186,9 @@ export const DropDownSelect = ({ selected, children, onSelect, focus = false, on
                 ) : (
                   <>
                     <span>{filterValue}</span>
-                    <span>{currentItem.split(new RegExp(`(${filterValue})`, "ig"))[2]}</span>
+                    <span>
+                      {currentItem && currentItem.split(new RegExp(`(${filterValue})`, "ig"))[2]}
+                    </span>
                   </>
                 )}
               </div>
