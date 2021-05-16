@@ -4,7 +4,7 @@
   "author": "Alvin Leung",
   "license": "MIT",
   "scripts": {
-    "start": "parcel watch ./src/index.html | nodemon EditorServer.js 3000",
+    "start": "parcel watch ./src/index.html | nodemon EditorServer.js --ignore 'assets/'",
     "serve": "parcel ./src/index.html | node EditorServer.js",
     "build": "parcel build ./src/index.html --dist-dir ./dist --no-optimize"
   },
@@ -27,6 +27,7 @@
   "dependencies": {
     "classnames": "^2.3.1",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
     "framer-motion": "^4.1.11",
     "jest": "^26.6.3",
     "lodash.clonedeep": "^4.5.0",

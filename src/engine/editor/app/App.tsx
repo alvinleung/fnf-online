@@ -23,6 +23,7 @@ import { useEditHistory, useUndoRedo } from "./EditHistory";
 
 import { downloadFile } from "../../utils/DownloadFile";
 import { TransformComponent } from "../../core/TransformComponent";
+import { EditorServerIO } from "../EditorServerIO";
 
 interface Props {
   game: Game;
@@ -60,6 +61,9 @@ const App = ({ game }: Props): JSX.Element => {
       event.preventDefault();
       const fileList = event.dataTransfer.files;
       const sceneFile = fileList[0];
+
+      // yet it is working
+      // EditorServerIO.getInstance().writeFile(`./sceneData/${sceneFile.name}`, sceneFile);
 
       // typecheck the scene file
       if (sceneFile.type && !sceneFile.type.startsWith("application/json")) {

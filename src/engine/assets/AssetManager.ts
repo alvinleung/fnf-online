@@ -28,6 +28,12 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     this.assetLoaders = [this.image, this.sound];
   }
 
+  public async loadAssetSheet(url: string): Promise<AssetSheet> {
+    const response = await fetch(url);
+    const assetSheetContent = (await response.json()) as AssetSheet;
+    return assetSheetContent;
+  }
+
   public async loadFromAssetSheet(url: string) {
     const response = await fetch(url);
     const assetSheetContent = (await response.json()) as AssetSheet;
