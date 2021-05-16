@@ -18,6 +18,7 @@ clearConsole();
 app.set("port", process.env.PORT || 3000);
 app.use("/", express.static("dist"));
 app.use("/assets", express.static("assets"));
+app.use("/src", express.static("src")); // for source map support
 
 app.get("/favicon.ico", (req, res) => {
   res.status(204);
