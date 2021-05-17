@@ -14,7 +14,9 @@ import {
 import { DirectoryLevel, FolderTreeView } from "./TreeView";
 import { FolderContentView } from "./FolderContentView";
 
-interface Props {}
+interface Props {
+  onChange: (resourcePath: string) => void;
+}
 
 export interface DirItem {
   name: string;
@@ -25,20 +27,18 @@ export interface DirItem {
 
 const editorServerIO = EditorServerIO.getInstance();
 
-const ICON_FOLDER = require("url:../../images/asset-explorer-icons/folder_white_24dp.svg");
-const ICON_FOLDER_OPEN = require("url:../../images/asset-explorer-icons/folder_open_white_24dp.svg");
-const ICON_UNKNOWN = require("url:../../images/asset-explorer-icons/folder_white_24dp.svg");
-const ICON_IMAGE = require("url:../../images/asset-explorer-icons/image_white_24dp.svg");
-
-export const AssetExplorer = (props: Props) => {
+export const AssetExplorer = ({ onChange }: Props) => {
   // a copy of the file structure in the system
   const [localDirList, setLocalDirList] = useState<string[]>([]);
+
   // map representation of the dir list
   const [localDirMap, setLocalDirMap] = useState<DirItem>();
 
   // for navigation
   const [currentDir, setCurrentDir] = useState(withRoot("/"));
   const [dirFiles, setDirFiles] = useState([]);
+
+  // for selection
   const [selectedItemPath, setSelectedItemPath] = useState("");
 
   const handleItemDoubleClick = (target: string) => {
@@ -58,6 +58,11 @@ export const AssetExplorer = (props: Props) => {
         break;
     }
   };
+
+  // trigger on change
+  useEffect(() => {
+    onChange && onChange(selectedItemPath);
+  }, [selectedItemPath]);
 
   // refresh the file explorer view
   useEffect(() => {
