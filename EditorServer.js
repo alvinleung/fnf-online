@@ -84,6 +84,19 @@ app.get("/listFolder", (req, res) => {
   res.json(filteredDir);
 });
 
+app.get("/listAllFolders", async (req, res) => {
+  const combinedPath = path.join(__dirname, ASSET_FOLDER_PATH);
+  // return a json map of folders
+  const files = await getFiles(combinedPath);
+
+  // trim the base path
+  const relPaths = files.map((file) => {
+    return path.relative(__dirname, file);
+  });
+
+  res.json(relPaths);
+});
+
 const server = http.createServer(app);
 
 const serverListen = () => {
@@ -144,4 +157,29 @@ function splitPath(path) {
     extension: result[3] || "",
     params: result[4] || "",
   };
+}
+
+//https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
+async function getFiles(dir) {
+  const dirents = await fs.promises.readdir(dir, { withFileTypes: true });
+  const files = await Promise.all(
+    dirents.reduce((arr, dirent) => {
+      const res = path.resolve(dir, dirent.name);
+
+      // search folder
+      if (dirent.isDirectory()) {
+        arr.push(getFiles(res));
+      }
+
+      // ignore system files
+      if (!isSystemFile(res)) arr.push(res);
+
+      return arr;
+    }, [])
+  );
+  return Array.prototype.concat(...files);
+}
+
+function isSystemFile(file) {
+  return /(^|\/)\.[^/.]/g.test(file);
 }

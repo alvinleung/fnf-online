@@ -17,6 +17,16 @@ export class EditorServerIO {
     return EditorServerIO._instance;
   }
 
+  public async listAllFolders() {
+    if (!EDITOR_ENV) {
+      console.warn(`Aborting: getFolderStructure only available when running on editor server.`);
+      return;
+    }
+    const response = await fetch("/listAllFolders");
+
+    return response.json();
+  }
+
   /**
    * List folder content in path.
    * @param path Path relative to the editor server-defined base path
@@ -24,7 +34,7 @@ export class EditorServerIO {
    */
   public async listFolder(path: string) {
     if (!EDITOR_ENV) {
-      console.warn(`Aborting: Writing only available when running on editor server.`);
+      console.warn(`Aborting: listFolder only available when running on editor server.`);
       return;
     }
 
@@ -56,7 +66,9 @@ export class EditorServerIO {
     if (!splitPath(path).filename) {
       path.concat(file.name);
     }
-    const response = await fetch("/writeFile", {
+
+    // write server file
+    fetch("/writeFile", {
       method: "POST",
       headers: {
         savepath: path,

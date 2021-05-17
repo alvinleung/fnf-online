@@ -22,13 +22,13 @@
   grid-area: main-content;
 }
 
-.file-explorer-container {
+.folder-browser-container {
   height: 60vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-.file-explorer {
+.folder-browser {
   display: grid;
   padding-top: var(--spacing-m);
   padding-left: var(--spacing-m);
@@ -43,7 +43,7 @@
   );
 }
 
-.file-explorer__item {
+.folder-browser__item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -60,20 +60,20 @@
   border-radius: 4px;
 }
 
-.file-explorer__item > img {
+.folder-browser__item > img {
   width: 100%;
   min-height: var(--icon-scale);
   object-fit: contain;
 }
 
-.file-explorer__item--selected {
+.folder-browser__item--selected {
   background-color: var(--clr-bg-lighter);
 }
-.file-explorer__item--selected > .file-explorer__item-label {
+.folder-browser__item--selected > .folder-browser__item-label {
   opacity: 1;
 }
 
-.file-explorer__item-label {
+.folder-browser__item-label {
   font-size: 12px;
   text-align: center;
   opacity: 0.6;
@@ -135,6 +135,8 @@
 
   display: flex;
   flex-direction: column;
+
+  overflow-y: scroll;
 }
 
 .file-tree__item {
@@ -154,4 +156,5 @@
 
 .file-tree__item-label {
   margin-left: var(--spacing-xs);
+  text-align: left;
 }
