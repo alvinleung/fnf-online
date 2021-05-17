@@ -18,15 +18,22 @@
 /*2 columns layout for sidebar and files */
 .asset-explorer {
   display: grid;
-  grid-template-columns: 2fr 5fr;
-  grid-template-rows: 60vh 2rem;
+  /* grid-template-columns: 2fr 5fr;
+  grid-template-rows: 60vh 2rem; */
 
-  /* height: 60vh; */
+  height: 60vh;
 
-  grid-template-areas:
+  /* grid-template-areas:
     "side-bar main-content"
-    "side-bar bottom-bar";
+    "side-bar bottom-bar"; */
 }
+
+.asset-explorer-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .asset-explorer__bottom-bar {
   grid-area: bottom-bar;
 }
@@ -35,7 +42,8 @@
   overflow: hidden;
 }
 .asset-explorer__main-content {
-  grid-area: main-content;
+  flex-grow: 1;
+  overflow-y: scroll;
 }
 
 .folder-content-view-container {

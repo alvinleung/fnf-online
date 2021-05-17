@@ -14,6 +14,8 @@ import {
 import { DirectoryLevel, FolderTreeView } from "./TreeView";
 import { FolderContentView } from "./FolderContentView";
 
+import { Col, ColsWrapper, HOR_SEPERATOR, Row, RowsWrapper } from "../react-grid-resizable";
+
 interface Props {
   onChange: (resourcePath: string) => void;
 }
@@ -130,30 +132,69 @@ export const AssetExplorer = ({ onChange }: Props) => {
 
   return (
     <div className="asset-explorer">
-      <div className="asset-explorer__side-bar">
-        <FolderTreeView
-          localDirMap={localDirMap}
-          currentDir={currentDir}
-          setCurrentDir={setCurrentDir}
-          selectedItemPath={selectedItemPath}
-          setSelectedItemPath={setSelectedItemPath}
-          handleDirToggle={handleDirToggle}
-        ></FolderTreeView>
-      </div>
-      <div className="folder-content-view-container asset-explorer__main-content">
-        <h2 className="asset-explorer-header">{path.parse(currentDir).name}</h2>
-        <FolderContentView
-          currentDir={currentDir}
-          selectedItemPath={selectedItemPath}
-          setSelectedItemPath={setSelectedItemPath}
-          handleItemDoubleClick={handleItemDoubleClick}
-          currentDirContent={currentDirContent}
-          noFileInDirectory={noFileInDirectory}
-        ></FolderContentView>
-      </div>
-      <div className="asset-explorer__bottom-bar">
-        <Breadcrumbs dir={localDirMap} currentDir={currentDir} setCurrentDir={setCurrentDir} />
-      </div>
+      <ColsWrapper separatorProps={HOR_SEPERATOR}>
+        <Col initialWidth={200}>
+          <FolderTreeView
+            localDirMap={localDirMap}
+            currentDir={currentDir}
+            setCurrentDir={setCurrentDir}
+            selectedItemPath={selectedItemPath}
+            setSelectedItemPath={setSelectedItemPath}
+            handleDirToggle={handleDirToggle}
+          ></FolderTreeView>
+        </Col>
+        <Col>
+          <div className="asset-explorer-main">
+            <div className="asset-explorer__main-content">
+              <h2 className="asset-explorer-header">{path.parse(currentDir).name}</h2>
+              <FolderContentView
+                currentDir={currentDir}
+                selectedItemPath={selectedItemPath}
+                setSelectedItemPath={setSelectedItemPath}
+                handleItemDoubleClick={handleItemDoubleClick}
+                currentDirContent={currentDirContent}
+                noFileInDirectory={noFileInDirectory}
+              ></FolderContentView>
+            </div>
+            <div className="asset-explorer__bottom-bar">
+              <Breadcrumbs
+                dir={localDirMap}
+                currentDir={currentDir}
+                setCurrentDir={setCurrentDir}
+              />
+            </div>
+          </div>
+        </Col>
+      </ColsWrapper>
     </div>
   );
+
+  // return (
+  //   <div className="asset-explorer">
+  //     <div className="asset-explorer__side-bar">
+  //       <FolderTreeView
+  //         localDirMap={localDirMap}
+  //         currentDir={currentDir}
+  //         setCurrentDir={setCurrentDir}
+  //         selectedItemPath={selectedItemPath}
+  //         setSelectedItemPath={setSelectedItemPath}
+  //         handleDirToggle={handleDirToggle}
+  //       ></FolderTreeView>
+  //     </div>
+  //     <div className="folder-content-view-container asset-explorer__main-content">
+  //       <h2 className="asset-explorer-header">{path.parse(currentDir).name}</h2>
+  //       <FolderContentView
+  //         currentDir={currentDir}
+  //         selectedItemPath={selectedItemPath}
+  //         setSelectedItemPath={setSelectedItemPath}
+  //         handleItemDoubleClick={handleItemDoubleClick}
+  //         currentDirContent={currentDirContent}
+  //         noFileInDirectory={noFileInDirectory}
+  //       ></FolderContentView>
+  //     </div>
+  //     <div className="asset-explorer__bottom-bar">
+  //       <Breadcrumbs dir={localDirMap} currentDir={currentDir} setCurrentDir={setCurrentDir} />
+  //     </div>
+  //   </div>
+  // );
 };
