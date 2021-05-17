@@ -1,12 +1,12 @@
 :root {
-  --clr-text: #fff;
-  --clr-accent: #9b51e0;
-  --clr-accent-lighter: #b773f7;
+  --clr-text: hsl(0, 0%, 100%);
+  --clr-accent: rgb(155, 81, 224);
+  --clr-accent-lighter: rgb(183, 115, 247);
   --clr-accent-muted: rgba(155, 81, 224, 0.5);
-  --clr-bg: #292929;
-  --clr-bg-darker: #1f1f1f;
-  --clr-bg-lighter: #3b3b3b;
-  --clr-bg-lightest: #535353;
+  --clr-bg: rgb(41, 41, 41);
+  --clr-bg-darker: rgb(31, 31, 31);
+  --clr-bg-lighter: rgb(59, 59, 59);
+  --clr-bg-lightest: rgb(83, 83, 83);
 
   --spacing-xs: 0.25rem;
   --spacing-s: 0.5rem;

@@ -21,6 +21,8 @@
   flex-direction: column;
 
   border-radius: 8px;
+  /* to preserve border radius */
+  overflow: hidden;
 }
 
 .modal-content--padding {
