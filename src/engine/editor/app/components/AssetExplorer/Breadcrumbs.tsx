@@ -23,7 +23,6 @@ export const Breadcrumbs = ({ dir, currentDir, setCurrentDir }: Props) => {
         const dirBefore = currentDir.split(dirName)[0];
         const fullDir = path.join(...dirBefore.split("/"), dirName);
 
-        console.log(dirName);
         if (index === 0) {
           return (
             <button

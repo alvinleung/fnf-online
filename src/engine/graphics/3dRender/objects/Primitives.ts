@@ -202,7 +202,6 @@ export function wireFrameFromTriangles( triangleVertices:number[], trim = true )
     }
 
   }
-  console.log("trimmed:" + elimitated);
   return linestrimmed;
 }
 
