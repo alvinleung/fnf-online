@@ -3,6 +3,8 @@ import React from "react";
 import { DirItem } from "./AssetExplorer";
 import { splitPathIntoArray, withRoot } from "./AssetExplorerUtils";
 
+import "./Breadcrumbs.css";
+
 interface Props {
   currentDir: string;
   dir: DirItem;
@@ -47,30 +49,6 @@ export const Breadcrumbs = ({ dir, currentDir, setCurrentDir }: Props) => {
           </React.Fragment>
         );
       })}
-
-      {/* <button className="breadcrumbs__folder" onClick={() => setCurrentDir("/")}>
-        {BASE_DIR_NAME}
-      </button>
-      {currentDir.split("/").map((dirName, index) => {
-        // the final tail of split(junk)
-        if (!dirName) return;
-
-        const dirBefore = currentDir.split(dirName)[0];
-        const fullDir = path.join(...dirBefore.split("/"), dirName);
-
-        return (
-          <React.Fragment key={index}>
-            <img src={ICON_ARROW_RIGHT} className="breadcrumbs__connector" />
-            <button
-              key={index}
-              onClick={() => setCurrentDir(fullDir)}
-              className="breadcrumbs__folder"
-            >
-              {dirName}
-            </button>
-          </React.Fragment>
-        );
-      })} */}
     </div>
   );
 };

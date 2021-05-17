@@ -1,6 +1,8 @@
 import React from "react";
 import { resolveIcon } from "./AssetExplorerUtils";
 
+import "./FolderContentView.css";
+
 export function FolderContentView(props) {
   return (
     <div className="folder-content-view">

@@ -3,6 +3,8 @@ import { Dispatch, SetStateAction } from "react";
 import { DirItem } from "./AssetExplorer";
 import { isFolder, resolveIcon } from "./AssetExplorerUtils";
 
+import "./TreeView.css";
+
 const ICON_FOLDER = require("url:../../images/asset-explorer-icons/folder_white_24dp.svg");
 const ICON_FOLDER_OPEN = require("url:../../images/asset-explorer-icons/folder_open_white_24dp.svg");
 const ICON_UNKNOWN = require("url:../../images/asset-explorer-icons/folder_white_24dp.svg");

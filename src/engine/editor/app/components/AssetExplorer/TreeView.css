@@ -1,0 +1,37 @@
+/**
+ * 
+ * File Tree
+ * 
+ */
+.tree-view {
+  background-color: var(--clr-bg-lighter);
+  height: 100%;
+  border-radius: 4px 0px 0px 4px;
+
+  padding: var(--spacing-s);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: scroll;
+}
+
+.tree-view__item {
+  display: flex;
+  align-items: center;
+
+  background-color: transparent;
+  color: var(--clr-text);
+  border: none;
+
+  border-radius: 4px;
+}
+
+.tree-view__item--selected {
+  background-color: var(--clr-bg-lightest);
+}
+
+.tree-view__item-label {
+  margin-left: var(--spacing-xs);
+  text-align: left;
+}

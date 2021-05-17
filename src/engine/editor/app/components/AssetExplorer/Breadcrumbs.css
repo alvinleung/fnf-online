@@ -1,0 +1,41 @@
+/**
+ * 
+ * Breadcrumbs
+ * 
+ */
+.breadcrumbs {
+  padding: var(--spacing-xs);
+  /* border-top: 1px solid var(--clr-bg-lightest); */
+  /* border-bottom: 1px solid var(--clr-bg-lightest); */
+  background-color: rgba(99, 99, 99, 0.2);
+}
+
+.breadcrumbs,
+.breadcrumbs > * {
+  display: flex;
+  flex-direction: row;
+}
+
+.breadcrumbs__connector {
+  width: 1rem;
+  opacity: 0.2;
+}
+
+.breadcrumbs__folder {
+  padding: var(--spacing-xs) var(--spacing-xs);
+
+  color: var(--clr-text);
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+
+  opacity: 0.5;
+}
+.breadcrumbs__folder:last-child {
+  opacity: 1;
+}
+
+.breadcrumbs__folder:hover {
+  background-color: var(--clr-bg-lightest);
+  opacity: 1;
+}
