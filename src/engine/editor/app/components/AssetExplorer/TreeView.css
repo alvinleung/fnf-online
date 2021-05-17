@@ -10,7 +10,9 @@
   height: 100%;
   border-radius: 4px 0px 0px 4px;
 
-  padding: var(--spacing-s);
+  padding-left: var(--spacing-s);
+  padding-top: var(--spacing-s);
+  padding-bottom: var(--spacing-s);
 
   display: flex;
   flex-direction: column;
