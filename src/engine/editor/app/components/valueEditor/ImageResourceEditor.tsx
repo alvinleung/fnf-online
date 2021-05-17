@@ -114,10 +114,10 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
 
   const isSelectionValid = (selection: string) => {
     const isImage = getFileType(selection) === FileTypes.IMAGE;
-    if (!isImage) {
-      return false;
-    }
-    return true;
+
+    console.log(selection);
+    console.log(isImage);
+    return isImage;
   };
 
   const commitSelection = () => {
@@ -193,8 +193,8 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
       >
         <AssetExplorer onChange={setAssetSelection} />
         <div className="explorer-controls">
-          <Button onClick={commitSelection} disabled={isSelectionValid(assetSelection)}>
-            Select
+          <Button onClick={commitSelection} disabled={!isSelectionValid(assetSelection)}>
+            Select Image
           </Button>
           <Button onClick={hideModal} secondary>
             Cancel

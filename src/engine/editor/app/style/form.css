@@ -81,8 +81,8 @@ label:focus-within {
   color: var(--clr-text);
 }
 
-.btn-secondary:disabled {
-  background-color: var(--clr-accent-muted);
+.btn-primary:disabled {
+  opacity: 0.3;
 }
 
 button[type="submit"],
