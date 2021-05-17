@@ -22,13 +22,13 @@
   grid-area: main-content;
 }
 
-.folder-browser-container {
+.folder-content-view-container {
   height: 60vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-.folder-browser {
+.folder-content-view {
   display: grid;
   padding-top: var(--spacing-m);
   padding-left: var(--spacing-m);
@@ -43,7 +43,7 @@
   );
 }
 
-.folder-browser__item {
+.folder-content-view__item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -60,20 +60,20 @@
   border-radius: 4px;
 }
 
-.folder-browser__item > img {
+.folder-content-view__item > img {
   width: 100%;
   min-height: var(--icon-scale);
   object-fit: contain;
 }
 
-.folder-browser__item--selected {
+.folder-content-view__item--selected {
   background-color: var(--clr-bg-lighter);
 }
-.folder-browser__item--selected > .folder-browser__item-label {
+.folder-content-view__item--selected > .folder-content-view__item-label {
   opacity: 1;
 }
 
-.folder-browser__item-label {
+.folder-content-view__item-label {
   font-size: 12px;
   text-align: center;
   opacity: 0.6;
@@ -126,7 +126,7 @@
  * File Tree
  * 
  */
-.file-tree {
+.tree-view {
   background-color: var(--clr-bg-lighter);
   height: 100%;
   border-radius: 4px 0px 0px 4px;
@@ -139,7 +139,7 @@
   overflow-y: scroll;
 }
 
-.file-tree__item {
+.tree-view__item {
   display: flex;
   align-items: center;
 
@@ -150,11 +150,11 @@
   border-radius: 4px;
 }
 
-.file-tree__item--selected {
+.tree-view__item--selected {
   background-color: var(--clr-bg-lightest);
 }
 
-.file-tree__item-label {
+.tree-view__item-label {
   margin-left: var(--spacing-xs);
   text-align: left;
 }

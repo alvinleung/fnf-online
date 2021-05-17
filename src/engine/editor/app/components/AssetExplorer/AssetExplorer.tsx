@@ -11,6 +11,8 @@ import {
   resolveIcon,
   withRoot,
 } from "./AssetExplorerUtils";
+import { DirectoryLevel, FolderTreeView } from "./TreeView";
+import { FolderContentView } from "./FolderContentView";
 
 interface Props {}
 
@@ -119,135 +121,29 @@ export const AssetExplorer = (props: Props) => {
   return (
     <div className="asset-explorer">
       <div className="asset-explorer__side-bar">
-        <div className="file-tree">
-          <DirectoryLevel
-            dir={localDirMap}
-            currentDir={currentDir}
-            setCurrentDir={setCurrentDir}
-            selectedItemPath={selectedItemPath}
-            setSelectedItemPath={setSelectedItemPath}
-            onToggleFolder={handleDirToggle}
-          />
-        </div>
+        <FolderTreeView
+          localDirMap={localDirMap}
+          currentDir={currentDir}
+          setCurrentDir={setCurrentDir}
+          selectedItemPath={selectedItemPath}
+          setSelectedItemPath={setSelectedItemPath}
+          handleDirToggle={handleDirToggle}
+        ></FolderTreeView>
       </div>
-      <div className="folder-browser-container asset-explorer__main-content">
+      <div className="folder-content-view-container asset-explorer__main-content">
         <h2 className="asset-explorer-header">{path.parse(currentDir).name}</h2>
-        <div className="folder-browser">
-          {currentDirContent &&
-            currentDirContent.children.map((file, index) => {
-              return (
-                <button
-                  draggable="true"
-                  key={index}
-                  onClick={() => setSelectedItemPath(file.fullPath)}
-                  onDoubleClick={() => handleItemDoubleClick(file.name)}
-                  className={
-                    selectedItemPath === file.fullPath
-                      ? "folder-browser__item folder-browser__item--selected"
-                      : "folder-browser__item"
-                  }
-                >
-                  <img
-                    src={resolveIcon(file.name, currentDir, true)}
-                    draggable="false"
-                    alt="folder"
-                  />
-                  <span className="folder-browser__item-label" draggable="false">
-                    {file.name}
-                  </span>
-                </button>
-              );
-            })}
-          {noFileInDirectory && <div>No files in directory</div>}
-        </div>
+        <FolderContentView
+          currentDir={currentDir}
+          selectedItemPath={selectedItemPath}
+          setSelectedItemPath={setSelectedItemPath}
+          handleItemDoubleClick={handleItemDoubleClick}
+          currentDirContent={currentDirContent}
+          noFileInDirectory={noFileInDirectory}
+        ></FolderContentView>
       </div>
       <div className="asset-explorer__bottom-bar">
         <Breadcrumbs dir={localDirMap} currentDir={currentDir} setCurrentDir={setCurrentDir} />
       </div>
     </div>
-  );
-};
-
-const DirectoryLevel = ({
-  dir,
-  currentDir,
-  setCurrentDir,
-  selectedItemPath,
-  setSelectedItemPath,
-  onToggleFolder,
-}: {
-  dir: DirItem;
-  currentDir: string;
-  setCurrentDir: Dispatch<SetStateAction<string>>;
-  selectedItemPath: string;
-  setSelectedItemPath: Dispatch<SetStateAction<string>>;
-  onToggleFolder: (path: string) => void;
-}) => {
-  if (!dir) return <></>;
-
-  const handlItemSelect = (path: string, isFolder: boolean) => {
-    setSelectedItemPath(path);
-    isFolder === true && setCurrentDir(path);
-  };
-
-  return (
-    <>
-      <DirectoryItem
-        isSelected={dir.fullPath === selectedItemPath}
-        onToggle={() => onToggleFolder(dir.fullPath)}
-        onClick={() => handlItemSelect(dir.fullPath, isFolder(dir.name))}
-        icon={dir.expanded ? ICON_FOLDER_OPEN : ICON_FOLDER}
-      >
-        {dir.name}
-      </DirectoryItem>
-      <div style={{ paddingLeft: "var(--spacing-s)" }}>
-        {dir.expanded &&
-          dir.children.map((item, index) => {
-            // if (selectedItemPath.includes(item.fullPath)) item.expanded = true;
-
-            if (item.expanded) {
-              // there are sub folder
-              return (
-                <DirectoryLevel
-                  key={index}
-                  dir={item}
-                  currentDir={currentDir}
-                  setSelectedItemPath={setSelectedItemPath}
-                  selectedItemPath={selectedItemPath}
-                  onToggleFolder={onToggleFolder}
-                  setCurrentDir={setCurrentDir}
-                />
-              );
-            }
-
-            return (
-              <DirectoryItem
-                key={index}
-                isSelected={item.fullPath === selectedItemPath}
-                onToggle={() => onToggleFolder(item.fullPath)}
-                onClick={() => {
-                  handlItemSelect(item.fullPath, isFolder(item.name));
-                }}
-                icon={resolveIcon(item.name, currentDir, false)}
-              >
-                {item.name}
-              </DirectoryItem>
-            );
-          })}
-      </div>
-    </>
-  );
-};
-
-const DirectoryItem = ({ isSelected, onClick, onToggle, icon, children }) => {
-  return (
-    <button
-      className={isSelected ? "file-tree__item file-tree__item--selected" : "file-tree__item"}
-      onDoubleClick={onToggle}
-      onClick={onClick}
-    >
-      <img onClick={onToggle} src={icon} alt="folder" />
-      <span className="file-tree__item-label">{children}</span>
-    </button>
   );
 };
