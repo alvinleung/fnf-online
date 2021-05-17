@@ -288,9 +288,6 @@ const App = ({ game }: Props): JSX.Element => {
     >
       <PanelGroup>
         <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
-          <Modal isVisible={true}>
-            <AssetExplorer />
-          </Modal>
           <ContextMenuTrigger id="item-menu-trigger" ref={entityContextMenuTriggerRef}>
             <List
               onSelect={handleEntityListSelect}

@@ -19,6 +19,52 @@ interface Props {
 // get the resource list here
 const assetList = require("../../../../../MyGameAssets").default;
 
+function ImageSelectModal(props) {
+  return (
+    <Modal isVisible={props.isVisible} onHide={props.hideModal} canDismissClickOutside={true}>
+      <h2>Select Image</h2>
+      <label>
+        Filter
+        <input
+          type="text"
+          onChange={props.handleFilterTextChange}
+          value={props._filterText}
+          ref={props.filterTextRef}
+        />
+      </label>
+      <div
+        className={
+          props.focused ? "resource-container resource-container--focus" : "resource-container"
+        }
+        onClick={() => {
+          props.setSelected(null);
+          props.setFocused(true);
+        }}
+      >
+        {props.filteredImageList.map((image, index) => (
+          <div
+            key={index}
+            className={
+              props.selected === image.name
+                ? "resource-item resource-item--selected"
+                : "resource-item"
+            }
+            onClickCapture={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              props.setSelected(image.name);
+              props.setFocused(true);
+            }}
+          >
+            <img className="resource-item__image" src={image.path} draggable={false} />
+            <div className="resource-item__name">{image.name}</div>
+          </div>
+        ))}
+      </div>
+    </Modal>
+  );
+}
+
 export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
   const containerRef = useRef();
   const gameRef = useGameContext();
@@ -42,18 +88,6 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
   useEffect(() => {
     if (!selected || selected === "") return;
 
-    // const imgRes = assetList.images.find(
-    //   (element) => element.name === selected
-    // );
-
-    // const htmlImage = document.createElement("img");
-    // htmlImage.src = imgRes.path;
-    // htmlImage.onload = () => {
-    //   // create a new image base on the selected
-    //   const img = new GameImage(imgRes.name, imgRes.path, htmlImage);
-
-    //   onChange && onChange(img);
-    // };
     onChange && onChange(gameRef.assets.image.get(selected) || Image.createEmpty());
   }, [selected]);
 
@@ -117,45 +151,19 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
           </label>
         </div>
       </div>
-      <Modal isVisible={isVisible} onHide={hideModal} canDismissClickOutside={true}>
-        <h2>Select Image</h2>
-        <label>
-          Filter
-          <input
-            type="text"
-            onChange={handleFilterTextChange}
-            value={filterText}
-            ref={filterTextRef}
-          />
-        </label>
-        <div
-          className={
-            focused ? "resource-container resource-container--focus" : "resource-container"
-          }
-          onClick={() => {
-            setSelected(null);
-            setFocused(true);
-          }}
-        >
-          {filteredImageList.map((image, index) => (
-            <div
-              key={index}
-              className={
-                selected === image.name ? "resource-item resource-item--selected" : "resource-item"
-              }
-              onClickCapture={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setSelected(image.name);
-                setFocused(true);
-              }}
-            >
-              <img className="resource-item__image" src={image.path} draggable={false} />
-              <div className="resource-item__name">{image.name}</div>
-            </div>
-          ))}
-        </div>
-      </Modal>
+      <ImageSelectModal
+        selected={selected}
+        setSelected={setSelected}
+        focused={focused}
+        setFocused={setFocused}
+        filteredImageList={filteredImageList}
+        filterTextRef={filterTextRef}
+        filterText={filterText}
+        handleFilterTextChange={handleFilterTextChange}
+        _filterText={filterText}
+        isVisible={isVisible}
+        hideModal={hideModal}
+      ></ImageSelectModal>
     </>
   );
 };

@@ -14,6 +14,7 @@ interface Props {
   width?: string | number;
   canDismiss?: boolean;
   canDismissClickOutside?: boolean;
+  noPadding?: boolean;
 }
 
 export const Modal = ({
@@ -23,6 +24,7 @@ export const Modal = ({
   width,
   canDismiss = true,
   canDismissClickOutside = false,
+  noPadding,
 }: Props) => {
   useHotkeys(
     HotkeyConfig.ESCAPE,
@@ -57,7 +59,7 @@ export const Modal = ({
           onClick={attemptDismiss}
         >
           <motion.div
-            className="modal-content"
+            className={!noPadding ? "modal-content modal-content--padding" : "modal-content"}
             style={{
               width: width,
             }}

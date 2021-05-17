@@ -17,7 +17,7 @@ import { FolderContentView } from "./FolderContentView";
 import { Col, ColsWrapper, HOR_SEPERATOR, Row, RowsWrapper } from "../react-grid-resizable";
 
 interface Props {
-  onChange: (resourcePath: string) => void;
+  onChange?: (resourcePath: string) => void;
 }
 
 export interface DirItem {
