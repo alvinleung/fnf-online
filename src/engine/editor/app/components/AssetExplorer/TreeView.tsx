@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dispatch, SetStateAction } from "react";
+import useClickOutside from "../../hooks/useClickOutside";
+import { useFocus } from "../../hooks/useFocus";
 import { DirItem } from "./AssetExplorer";
 import { isFolder, resolveIcon } from "./AssetExplorerUtils";
 
@@ -11,8 +13,11 @@ const ICON_UNKNOWN = require("url:../../images/asset-explorer-icons/folder_white
 const ICON_IMAGE = require("url:../../images/asset-explorer-icons/image_white_24dp.svg");
 
 export function FolderTreeView(props) {
+  const [focusRef, isFocused] = useFocus();
+  useEffect(() => {}, [isFocused]);
+
   return (
-    <div className="tree-view">
+    <div className="tree-view" ref={focusRef}>
       <DirectoryLevel
         dir={props.localDirMap}
         currentDir={props.currentDir}
