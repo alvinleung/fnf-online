@@ -54,8 +54,6 @@ export const getDirFromMap = (localDirMap: DirItem, filePath: string) => {
   const rootlessPath = stripRoot(filePath);
   const pathArr = splitPathIntoArray(rootlessPath);
 
-  console.log(filePath);
-
   // the client is asking for the root folder
   if (
     filePath === "" ||
@@ -83,6 +81,34 @@ export const getDirFromMap = (localDirMap: DirItem, filePath: string) => {
   return result;
 };
 
+/**
+ * Do something for each directory along the path
+ * @param localDirMap
+ * @param path
+ * @param handler
+ */
+export const doUntilDir = (
+  localDirMap: DirItem,
+  path: string,
+  handler: (dir: DirItem, currentDir: string) => void
+) => {
+  const pathArr = splitPathIntoArray(stripRoot(path));
+  pathArr.reduce((map, currentDir, index) => {
+    handler && handler(map, currentDir);
+    return map.children.find(({ name }) => {
+      console.log(currentDir);
+      return name === currentDir;
+    });
+  }, localDirMap);
+
+  return localDirMap;
+};
+
+/**
+ * Split each item on a string path in to an array
+ * @param dirPath
+ * @returns
+ */
 export const splitPathIntoArray = (dirPath: string) => {
   // make sure the path is in right format
   const noramlizePath = path.normalize(dirPath);

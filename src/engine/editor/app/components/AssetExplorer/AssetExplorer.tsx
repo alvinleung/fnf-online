@@ -4,11 +4,11 @@ import path from "path";
 import "./AssetExplorer.css";
 import { Breadcrumbs } from "./Breadcrumbs";
 import {
+  doUntilDir,
   FileTypes,
   getDirFromMap,
   getFileType,
   isFolder,
-  resolveIcon,
   withRoot,
 } from "./AssetExplorerUtils";
 import { DirectoryLevel, FolderTreeView } from "./TreeView";
@@ -28,7 +28,7 @@ export interface DirItem {
 const editorServerIO = EditorServerIO.getInstance();
 
 export const AssetExplorer = ({ onChange }: Props) => {
-  // a copy of the file structure in the system
+  // a copy of the file paths in the editor server
   const [localDirList, setLocalDirList] = useState<string[]>([]);
 
   // map representation of the dir list
@@ -36,7 +36,6 @@ export const AssetExplorer = ({ onChange }: Props) => {
 
   // for navigation
   const [currentDir, setCurrentDir] = useState(withRoot("/"));
-  const [dirFiles, setDirFiles] = useState([]);
 
   // for selection
   const [selectedItemPath, setSelectedItemPath] = useState("");
@@ -47,8 +46,11 @@ export const AssetExplorer = ({ onChange }: Props) => {
 
     switch (fileType) {
       case FileTypes.FOLDER:
+        const targetFolder = withRoot(path.join(currentDir, target));
         // navigate to that folder
-        setCurrentDir(withRoot(path.join(currentDir, target)));
+        setCurrentDir(targetFolder);
+        // expand the tree view to that folder
+        expandUntilFolder(targetFolder);
         break;
       case FileTypes.IMAGE:
         // TODO: preview image
@@ -59,18 +61,21 @@ export const AssetExplorer = ({ onChange }: Props) => {
     }
   };
 
-  // trigger on change
+  const expandUntilFolder = useCallback(
+    (path: string) => {
+      const newLocalDirMap = doUntilDir(localDirMap, path, (dir: DirItem, currentDir: string) => {
+        dir.expanded = true;
+      });
+
+      setLocalDirMap(newLocalDirMap);
+    },
+    [localDirMap]
+  );
+
+  // trigger onChange when selection changes
   useEffect(() => {
     onChange && onChange(selectedItemPath);
   }, [selectedItemPath]);
-
-  // refresh the file explorer view
-  useEffect(() => {
-    if (!currentDir || !localDirMap) return;
-
-    const pathFiles = getDirFromMap(localDirMap, currentDir);
-    setDirFiles(pathFiles.children.map(({ name }) => name));
-  }, [currentDir, localDirMap]);
 
   // list out all the directories
   useEffect(() => {
