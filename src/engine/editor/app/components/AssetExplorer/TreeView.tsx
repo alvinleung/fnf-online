@@ -14,10 +14,9 @@ const ICON_IMAGE = require("url:../../images/asset-explorer-icons/image_white_24
 
 export function FolderTreeView(props) {
   const [focusRef, isFocused] = useFocus();
-  useEffect(() => {}, [isFocused]);
 
   return (
-    <div className="tree-view" ref={focusRef}>
+    <div className={isFocused ? "tree-view tree-view--focused" : "tree-view"} ref={focusRef}>
       <DirectoryLevel
         dir={props.localDirMap}
         currentDir={props.currentDir}

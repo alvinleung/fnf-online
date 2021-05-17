@@ -24,10 +24,16 @@
   background-color: transparent;
   border: none;
 
+  --clr-selection: var(--clr-bg-lighter);
+
   padding-top: var(--spacing-s);
   padding-bottom: var(--spacing-s);
 
   border-radius: 4px;
+}
+
+.folder-content-view__item--focused {
+  --clr-selection: var(--clr-accent-muted);
 }
 
 .folder-content-view__item > img {
@@ -37,8 +43,9 @@
 }
 
 .folder-content-view__item--selected {
-  background-color: var(--clr-bg-lighter);
+  background-color: var(--clr-selection);
 }
+
 .folder-content-view__item--selected > .folder-content-view__item-label {
   opacity: 1;
 }

@@ -4,6 +4,8 @@
  * 
  */
 .tree-view {
+  --clr-selection: var(--clr-bg-lightest);
+
   background-color: var(--clr-bg-lighter);
   height: 100%;
   border-radius: 4px 0px 0px 4px;
@@ -15,6 +17,10 @@
 
   overflow-y: scroll;
   overflow-x: scroll;
+}
+
+.tree-view--focused {
+  --clr-selection: var(--clr-accent-muted);
 }
 
 .tree-view__item {
@@ -29,7 +35,7 @@
 }
 
 .tree-view__item--selected {
-  background-color: var(--clr-bg-lightest);
+  background-color: var(--clr-selection);
 }
 
 .tree-view__item-label {
