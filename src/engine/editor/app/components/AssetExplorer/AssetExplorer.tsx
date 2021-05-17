@@ -11,7 +11,7 @@ import {
   isFolder,
   withRoot,
 } from "./AssetExplorerUtils";
-import { DirectoryLevel, FolderTreeView } from "./TreeView";
+import { FolderTreeView } from "./TreeView";
 import { FolderContentView } from "./FolderContentView";
 
 import { Col, ColsWrapper, HOR_SEPERATOR, Row, RowsWrapper } from "../react-grid-resizable";
@@ -145,6 +145,13 @@ export const AssetExplorer = ({ onChange }: Props) => {
         </Col>
         <Col>
           <div className="asset-explorer-main">
+            <div className="asset-explorer__bottom-bar">
+              <Breadcrumbs
+                dir={localDirMap}
+                currentDir={currentDir}
+                setCurrentDir={setCurrentDir}
+              />
+            </div>
             <div className="asset-explorer__main-content">
               <h2 className="asset-explorer-header">{path.parse(currentDir).name}</h2>
               <FolderContentView
@@ -156,45 +163,9 @@ export const AssetExplorer = ({ onChange }: Props) => {
                 noFileInDirectory={noFileInDirectory}
               ></FolderContentView>
             </div>
-            <div className="asset-explorer__bottom-bar">
-              <Breadcrumbs
-                dir={localDirMap}
-                currentDir={currentDir}
-                setCurrentDir={setCurrentDir}
-              />
-            </div>
           </div>
         </Col>
       </ColsWrapper>
     </div>
   );
-
-  // return (
-  //   <div className="asset-explorer">
-  //     <div className="asset-explorer__side-bar">
-  //       <FolderTreeView
-  //         localDirMap={localDirMap}
-  //         currentDir={currentDir}
-  //         setCurrentDir={setCurrentDir}
-  //         selectedItemPath={selectedItemPath}
-  //         setSelectedItemPath={setSelectedItemPath}
-  //         handleDirToggle={handleDirToggle}
-  //       ></FolderTreeView>
-  //     </div>
-  //     <div className="folder-content-view-container asset-explorer__main-content">
-  //       <h2 className="asset-explorer-header">{path.parse(currentDir).name}</h2>
-  //       <FolderContentView
-  //         currentDir={currentDir}
-  //         selectedItemPath={selectedItemPath}
-  //         setSelectedItemPath={setSelectedItemPath}
-  //         handleItemDoubleClick={handleItemDoubleClick}
-  //         currentDirContent={currentDirContent}
-  //         noFileInDirectory={noFileInDirectory}
-  //       ></FolderContentView>
-  //     </div>
-  //     <div className="asset-explorer__bottom-bar">
-  //       <Breadcrumbs dir={localDirMap} currentDir={currentDir} setCurrentDir={setCurrentDir} />
-  //     </div>
-  //   </div>
-  // );
 };

@@ -37,6 +37,24 @@ export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoa
     return ref;
   }
 
+  /**
+   * Check if the assset loader has loaded from a given path.
+   * @param path
+   * @returns
+   */
+  public hasAsset(path: string): boolean {
+    return Object.values(this.assetsDict).some((asset) => asset.path === path);
+  }
+
+  /**
+   * Get a resource base on a given path
+   * @param path
+   * @returns
+   */
+  public getAssetByPath(path: string) {
+    return Object.values(this.assetsDict).find((asset) => asset.path === path);
+  }
+
   public getAssetDictionary(): { [name: string]: T } {
     return this.assetsDict;
   }

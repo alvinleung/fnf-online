@@ -96,7 +96,6 @@ export const doUntilDir = (
   pathArr.reduce((map, currentDir, index) => {
     handler && handler(map, currentDir);
     return map.children.find(({ name }) => {
-      console.log(currentDir);
       return name === currentDir;
     });
   }, localDirMap);
