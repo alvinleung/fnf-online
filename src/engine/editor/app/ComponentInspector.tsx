@@ -72,7 +72,7 @@ export const ComponentInspector = () => {
   };
 
   const handleComponentSelection = (component: string) => {
-    componentContext.setSelectedComponent("New Component");
+    componentContext.setSelectedComponent(component);
   };
 
   const inspectorContainerRef = useRef();
