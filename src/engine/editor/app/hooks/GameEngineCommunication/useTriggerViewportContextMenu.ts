@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
 
+/**
+ * Hacky way to allow context menu click on game viewport.
+ * This is created for the purpose of entity manipulation by
+ * right click in viewport
+ * @returns
+ */
 export default function useTriggerViewportContextMenu() {
-  /**
-   * Hacky way to allow context menu click in the game viewport
-   */
   const entityContextMenuTriggerRef = useRef();
   useEffect(() => {
     const gameViewportContainer = document.querySelector("#game");

@@ -48,6 +48,11 @@ interface Props {
   setSelectedComponent: (val: any) => void;
 }
 
+/**
+ * Context providers of global editor states.
+ * @param param0
+ * @returns
+ */
 export const EditorContextWrapper = ({
   children,
   entities,

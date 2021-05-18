@@ -6,6 +6,12 @@ import { useEditHistory, useUndoRedo } from "../EditHistory";
 import { HotkeyConfig } from "../Hotkeys";
 import { useEntityEditing } from "./useEntityEditing";
 
+/**
+ * Set up editor hot keys
+ * @param game
+ * @param selectedEntity
+ * @param setSelectedEntity
+ */
 export default function useEditorHotkeys(
   game: Game,
   selectedEntity: Entity,

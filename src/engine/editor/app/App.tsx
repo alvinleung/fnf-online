@@ -18,6 +18,7 @@ import useEagerUpdate from "./hooks/GameEngineCommunication/useEagerUpdate";
 import useEditorHotkeys from "./hooks/useEditorHotkeys";
 import { EntityListView } from "./components/EntityListView";
 import useEntityListUpdate from "./hooks/GameEngineCommunication/useEntityListUpdate";
+import useTriggerViewportContextMenu from "./hooks/GameEngineCommunication/useTriggerViewportContextMenu";
 
 interface Props {
   game: Game;
@@ -28,6 +29,7 @@ const EAGER_ENGINE_REFRESH = false;
 const App = ({ game }: Props): JSX.Element => {
   // entities
   const [entities, setEntities] = useState<Entity[]>([]);
+
   // selection states
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
   const [selectedComponent, setSelectedComponent] = useState("");
@@ -42,6 +44,8 @@ const App = ({ game }: Props): JSX.Element => {
   useEagerUpdate(game, selectedEntity, EAGER_ENGINE_REFRESH);
   useEntityListUpdate(game, setSelectedEntity, setEntities);
 
+  const entityContextMenuTriggerRef = useTriggerViewportContextMenu();
+
   return (
     <EditorContextWrapper
       game={game}
@@ -53,7 +57,9 @@ const App = ({ game }: Props): JSX.Element => {
     >
       <PanelGroup>
         <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
-          <EntityListView />
+          <ContextMenuTrigger id="item-menu-trigger" ref={entityContextMenuTriggerRef}>
+            <EntityListView />
+          </ContextMenuTrigger>
         </Panel>
         <Panel dockingSide="right" initialState="expanded" minSize={250}>
           <ContextMenuTrigger id="entity-component-inspector">

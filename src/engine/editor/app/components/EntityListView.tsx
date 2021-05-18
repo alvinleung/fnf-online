@@ -8,6 +8,10 @@ import { List } from "./List";
 import { ListItem } from "./List/ListItem";
 import { Modal } from "./Modal";
 
+/**
+ * UI for scene entity list manipulation
+ * @returns
+ */
 export const EntityListView = () => {
   const game = useGameContext();
 
@@ -47,25 +51,21 @@ export const EntityListView = () => {
     }
   }, [isCreatingEntity]);
 
-  const entityContextMenuTriggerRef = useTriggerViewportContextMenu();
-
   return (
     <>
-      <ContextMenuTrigger id="item-menu-trigger" ref={entityContextMenuTriggerRef}>
-        <List
-          onSelect={handleEntityListSelect}
-          onItemRemove={handleItemRemove}
-          value={selectedEntity && (selectedEntity.id as string)}
-        >
-          {entities.map((entity, index) => {
-            return (
-              <ListItem value={entity.id as string} key={index}>
-                {entity.id as string}
-              </ListItem>
-            );
-          })}
-        </List>
-      </ContextMenuTrigger>
+      <List
+        onSelect={handleEntityListSelect}
+        onItemRemove={handleItemRemove}
+        value={selectedEntity && (selectedEntity.id as string)}
+      >
+        {entities.map((entity, index) => {
+          return (
+            <ListItem value={entity.id as string} key={index}>
+              {entity.id as string}
+            </ListItem>
+          );
+        })}
+      </List>
       <ContextMenu id="item-menu-trigger">
         <MenuItem
           data={{ action: "add-entity" }}

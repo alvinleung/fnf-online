@@ -1,6 +1,10 @@
 import React, { useEffect } from "react";
 import { Game } from "../../../../Game";
 
+/**
+ * Enable scene import functions
+ * @param game
+ */
 export const useFileDrop = (game: Game) => {
   // for scene file drop
   useEffect(() => {

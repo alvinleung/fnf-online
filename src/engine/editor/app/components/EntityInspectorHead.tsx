@@ -4,6 +4,10 @@ import { config } from "../AnimationConfig";
 import { useSelectedEntity } from "../EditorContextWrapper";
 import "./EntityInspectorHead.css";
 
+/**
+ * To display selected entity in the inspector panel
+ * @returns
+ */
 export const EntityInspectorHead = () => {
   const [selectedEntity, setSelectedEntity] = useSelectedEntity();
 

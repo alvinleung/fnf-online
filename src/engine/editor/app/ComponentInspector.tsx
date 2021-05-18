@@ -13,6 +13,10 @@ import useForceUpdate from "./hooks/useForceUpdate";
 import { useEntityEditing } from "./hooks/useEntityEditing";
 import { ContextMenu, MenuItem } from "react-contextmenu";
 
+/**
+ * View, add, change, remove components from entity
+ * @returns
+ */
 export const ComponentInspector = () => {
   const [editHistory, pushEditHistory] = useEditHistory();
   const game = useGameContext();
