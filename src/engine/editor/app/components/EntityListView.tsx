@@ -24,16 +24,28 @@ export const EntityListView = () => {
   const { createEntity, deleteEntity, duplicateEntity, changeEntityId } = useEntityEditing(game);
 
   const [isCreatingEntity, setIsCreatingEntity] = useState(false);
-  const [entityCreationName, setEntityCreationName] = useState("");
+  const entityCreationName = "New Entity";
 
   const [entityNameEditIndex, setEntityNameEditIndex] = useState<number>(null);
 
-  const handleEntityCreation = (name: string) => {
-    if (!name) return;
+  const handleEntityCreation = (id: string) => {
+    if (!id) return;
 
-    const newEntity = createEntity(name);
+    // check if entity have the same name in the system
+    if (game.getEntityById(id)) {
+      alert(`Entity with ID "${id}" already exist, please provide another ID.`);
+      return;
+    }
+
+    const newEntity = createEntity(id);
+
+    //close editor
     setIsCreatingEntity(false);
     setSelectedEntity(newEntity);
+  };
+
+  const handleEntityCreationAbort = () => {
+    setIsCreatingEntity(false);
   };
 
   const handleEntityListSelect = (val: string) => {
@@ -48,15 +60,6 @@ export const EntityListView = () => {
     // syncEditorEntityList(game);
     setSelectedEntity(null);
   };
-
-  const entityNameInputRef = useRef<HTMLInputElement>();
-
-  useEffect(() => {
-    if (isCreatingEntity && entityNameInputRef.current) {
-      setEntityCreationName("");
-      entityNameInputRef.current.focus();
-    }
-  }, [isCreatingEntity]);
 
   const handleEntityNameAbort = () => {
     setEntityNameEditIndex(null);
@@ -78,9 +81,40 @@ export const EntityListView = () => {
     // commit the change here
     const changedEntity = changeEntityId(selectedEntity, commitValue);
 
+    // close editor
     setEntityNameEditIndex(null);
     setSelectedEntity(changedEntity);
   };
+
+  const entityList = entities.map((entity, index) => {
+    const isEditing = entityNameEditIndex === index;
+
+    return (
+      <ListItem
+        value={entity.id as string}
+        onDoubleClick={() => setEntityNameEditIndex(index)}
+        key={index}
+      >
+        <DraftEditField
+          onCommit={handleEntityNameCommit}
+          onAbort={handleEntityNameAbort}
+          value={entity.id as string}
+          editing={isEditing}
+        />
+      </ListItem>
+    );
+  });
+
+  const entityCreationField = isCreatingEntity && (
+    <ListItem value={entityCreationName} key={entities.length}>
+      <DraftEditField
+        onCommit={handleEntityCreation}
+        onAbort={handleEntityCreationAbort}
+        value={entityCreationName}
+        editing={isCreatingEntity}
+      />
+    </ListItem>
+  );
 
   return (
     <>
@@ -90,24 +124,7 @@ export const EntityListView = () => {
         onItemRemove={handleItemRemove}
         value={selectedEntity && (selectedEntity.id as string)}
       >
-        {entities.map((entity, index) => {
-          const isEditing = entityNameEditIndex === index;
-
-          return (
-            <ListItem
-              value={entity.id as string}
-              onDoubleClick={() => setEntityNameEditIndex(index)}
-              key={index}
-            >
-              <DraftEditField
-                onCommit={handleEntityNameCommit}
-                onAbort={handleEntityNameAbort}
-                value={entity.id as string}
-                editing={isEditing}
-              />
-            </ListItem>
-          );
-        })}
+        {isCreatingEntity ? entityList.concat(entityCreationField) : entityList}
       </List>
       <ContextMenu id="item-menu-trigger">
         <MenuItem
@@ -138,50 +155,6 @@ export const EntityListView = () => {
           </>
         )}
       </ContextMenu>
-      <Modal
-        isVisible={isCreatingEntity}
-        onHide={() => {
-          setIsCreatingEntity(false);
-        }}
-        width="10rem"
-      >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleEntityCreation(entityCreationName);
-          }}
-        >
-          <h2>Create Entity</h2>
-          <div className="field">
-            <label>
-              Entity Name
-              <input
-                ref={entityNameInputRef}
-                type="text"
-                value={entityCreationName}
-                onChange={(e) =>
-                  setEntityCreationName(
-                    e.target.value
-                      .match(/^[A-Za-z0-9 -]*$/)
-                      .join("")
-                      .replace(" ", "-")
-                  )
-                }
-              />
-            </label>
-          </div>
-          <div className="field">
-            <button type="submit">Create</button>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={(e) => setIsCreatingEntity(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </Modal>
     </>
   );
 };

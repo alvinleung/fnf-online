@@ -41,16 +41,16 @@ export const DraftEditField = ({ onCommit, onAbort, value, editing = false }: Pr
   };
 
   useClickOutside(textfieldRef, () => {
-    setIsEditing(false);
     onAbort && onAbort(textfieldDraft);
+    setIsEditing(false);
   });
 
   // abort editing
   useHotkeys(
     HotkeyConfig.ESCAPE,
     () => {
-      setIsEditing(false);
       onAbort && onAbort(textfieldDraft);
+      setIsEditing(false);
     },
     {
       enableOnTags: ["INPUT", "TEXTAREA"],
