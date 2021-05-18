@@ -11,7 +11,7 @@ import { EntityInspectorHead } from "./components/EntityInspectorHead";
 import { Game, GameEvent } from "../../Game";
 import { Engine, Entity } from "../../ecs";
 import { ComponentInspector } from "./ComponentInspector";
-import { PanelGroup } from "./components/PanelGroup";
+import { PanelGroup } from "./components/Panel/PanelGroup";
 import { Modal } from "./components/Modal";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { EditorContextWrapper } from "./EditorContextWrapper";
