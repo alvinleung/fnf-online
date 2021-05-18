@@ -36,37 +36,12 @@ interface Props {
 const EAGER_ENGINE_REFRESH = false;
 
 const App = ({ game }: Props): JSX.Element => {
-  const [editHistory, pushEditHistory] = useEditHistory();
-  const [undo, redo] = useUndoRedo();
-
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
 
   useFileDrop(game);
   useFileSave(game);
-
-  useHotkeys(HotkeyConfig.REDO, redo, {}, [editHistory]);
-  useHotkeys(HotkeyConfig.UNDO, undo, {}, [editHistory]);
-
-  /**
-   * copy and pasting entities
-   */
-  const [copyingEntity, setCopyingEntity] = useState<Entity>();
-  useHotkeys(
-    HotkeyConfig.COPY,
-    () => {
-      setCopyingEntity(selectedEntity);
-    },
-    [selectedEntity]
-  );
-  useHotkeys(
-    HotkeyConfig.PASTE,
-    () => {
-      const duplicatedInstance = duplicateEntity(copyingEntity && (copyingEntity.id as string));
-      setSelectedEntity(duplicatedInstance);
-    },
-    [copyingEntity]
-  );
+  useEditorHotkeys(game, selectedEntity, setSelectedEntity);
 
   // sync the in game entities list with the Editor entities list
   const syncEditorEntityList = (game: Game) => {
