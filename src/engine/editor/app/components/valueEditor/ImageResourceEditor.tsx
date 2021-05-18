@@ -114,9 +114,6 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
 
   const isSelectionValid = (selection: string) => {
     const isImage = getFileType(selection) === FileTypes.IMAGE;
-
-    console.log(selection);
-    console.log(isImage);
     return isImage;
   };
 

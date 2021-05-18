@@ -90,9 +90,13 @@ app.get("/listAllFolders", async (req, res) => {
   const files = await getFiles(combinedPath);
 
   // trim the base path
-  const relPaths = files.map((file) => {
+  let relPaths = files.map((file) => {
     return path.relative(__dirname, file);
   });
+
+  // FOR WINDOWS - replace the windows seperator "\"
+  if(path.sep === "\\") 
+    relPaths = relPaths.map((path)=> path.replaceAll("\\","/"))
 
   res.json(relPaths);
 });
