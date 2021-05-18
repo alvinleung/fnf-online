@@ -71,7 +71,6 @@ export const AssetExplorer = ({ onChange }: Props) => {
   const forceUpdate = useForceUpdate();
   const expandUntilFolder = (localDirMap: DirItem, path: string) => {
     doUntilDir(localDirMap, path, (dir: DirItem, currentDir: string) => {
-      console.log(dir);
       dir.expanded = true;
     });
 
