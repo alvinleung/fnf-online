@@ -1,5 +1,6 @@
+import { ComponentRegistry } from "../..";
 import { TransformComponent } from "../../../core/TransformComponent";
-import { Entity } from "../../../ecs";
+import { Component, ComponentClass, Entity } from "../../../ecs";
 import { Game } from "../../../Game";
 import { useEditHistory } from "../EditHistory";
 
@@ -79,9 +80,35 @@ export const useEntityEditing = (game: Game) => {
     return newEntity;
   };
 
+  const removeComponent = (selectedEntity: Entity, componentName: string) => {
+    const componentClass = ComponentRegistry.getComponentClass(componentName);
+    // remove the current component in the
+    selectedEntity.removeComponent(componentClass);
+
+    pushEditHistory({
+      type: "componentRemove",
+      entity: selectedEntity,
+      component: componentClass,
+    });
+  };
+
+  const addComponent = (selectedEntity: Entity, componentName: string) => {
+    // create component and select the component
+    const componentClass = ComponentRegistry.getComponentClass(componentName);
+    selectedEntity.useComponent(componentClass);
+
+    pushEditHistory({
+      type: "componentAdd",
+      entity: selectedEntity,
+      component: componentClass,
+    });
+  };
+
   return {
     createEntity,
     deleteEntity,
     duplicateEntity,
+    removeComponent,
+    addComponent,
   };
 };

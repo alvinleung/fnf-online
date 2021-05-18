@@ -77,7 +77,7 @@ const App = ({ game }: Props): JSX.Element => {
     });
   }, []);
 
-  const { duplicateEntity, createEntity, deleteEntity } = useEntityEditing(game);
+  const { duplicateEntity, createEntity, deleteEntity, removeComponent } = useEntityEditing(game);
 
   const handleItemRemove = (entityId: string) => {
     deleteEntity(entityId);
@@ -120,17 +120,8 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedComponent("New Component");
   };
 
-  const [editHistory, pushEditHistory] = useEditHistory();
   const handleComponentRemove = useCallback(() => {
-    const componentClass = ComponentRegistry.getComponentClass(selectedComponent);
-    // remove the current component in the
-    selectedEntity.removeComponent(componentClass);
-
-    pushEditHistory({
-      type: "componentRemove",
-      entity: selectedEntity,
-      component: componentClass,
-    });
+    removeComponent(selectedEntity, selectedComponent);
   }, [selectedEntity, selectedComponent]);
 
   const entityContextMenuTriggerRef = useTriggerViewportContextMenu();

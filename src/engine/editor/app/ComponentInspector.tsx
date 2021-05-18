@@ -15,6 +15,7 @@ import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
 import { Modal } from "./components/Modal";
 import useForceUpdate from "./hooks/useForceUpdate";
 import hasPropChanged from "./hooks/hasPropChanged";
+import { useEntityEditing } from "./hooks/useEntityEditing";
 
 interface Props {
   selectedEntity?: Entity;
@@ -85,22 +86,14 @@ export const ComponentInspector = React.memo(
      * For creating new component
      */
     const componentContext = useComponentContext();
-    const entityContext = useEntityContext();
     const [isCreatingComponent, setIsCreatingComponent] = useState(false);
     useEffect(() => {
       if (componentContext.selectedComponent === "New Component") setIsCreatingComponent(true);
     }, [componentContext, isCreatingComponent]);
 
+    const { addComponent } = useEntityEditing(game);
     const handleComponentCreation = (componentName: string) => {
-      // create component and select the component
-      const componentClass = ComponentRegistry.getComponentClass(componentName);
-      entityContext.selectedEntity.useComponent(componentClass);
-
-      pushEditHistory({
-        type: "componentAdd",
-        entity: selectedEntity,
-        component: componentClass,
-      });
+      addComponent(selectedEntity, componentName);
 
       // select the newly created entity
       componentContext.setSelectedComponent(componentName);
