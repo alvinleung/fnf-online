@@ -1,6 +1,7 @@
 import React, { Children } from "react";
 import { Entity } from "../../ecs";
 import { Game } from "../../Game";
+import { AssetExplorerContextProvider } from "./components/AssetExplorer/AssetExplorerContext";
 
 const GameContext = React.createContext<Game>(null);
 export const useGameContext = () => React.useContext(GameContext);
@@ -40,14 +41,16 @@ export const EditorContextWrapper = ({
   return (
     <GameContext.Provider value={game}>
       <EntityContext.Provider value={{ selectedEntity: selectedEntity }}>
-        <ComponentContext.Provider
-          value={{
-            selectedComponent: selectedComponent,
-            setSelectedComponent: setSelectedComponent,
-          }}
-        >
-          {children}
-        </ComponentContext.Provider>
+        <AssetExplorerContextProvider>
+          <ComponentContext.Provider
+            value={{
+              selectedComponent: selectedComponent,
+              setSelectedComponent: setSelectedComponent,
+            }}
+          >
+            {children}
+          </ComponentContext.Provider>
+        </AssetExplorerContextProvider>
       </EntityContext.Provider>
     </GameContext.Provider>
   );

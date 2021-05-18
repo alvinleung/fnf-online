@@ -15,6 +15,7 @@ import { FolderTreeView } from "./TreeView";
 import { FolderContentView } from "./FolderContentView";
 
 import { Col, ColsWrapper, HOR_SEPERATOR, Row, RowsWrapper } from "../react-grid-resizable";
+import { useAssetExplorerContext } from "./AssetExplorerContext";
 
 interface Props {
   onChange?: (resourcePath: string) => void;
@@ -30,6 +31,9 @@ export interface DirItem {
 const editorServerIO = EditorServerIO.getInstance();
 
 export const AssetExplorer = ({ onChange }: Props) => {
+  // check if there is global context
+  const { setDefaultPath, defaultPath } = useAssetExplorerContext();
+
   // a copy of the file paths in the editor server
   const [localDirList, setLocalDirList] = useState<string[]>([]);
 
@@ -37,7 +41,7 @@ export const AssetExplorer = ({ onChange }: Props) => {
   const [localDirMap, setLocalDirMap] = useState<DirItem>();
 
   // for navigation
-  const [currentDir, setCurrentDir] = useState(withRoot("/"));
+  const [currentDir, setCurrentDir] = useState(withRoot(defaultPath));
 
   // for selection
   const [selectedItemPath, setSelectedItemPath] = useState("");
@@ -73,6 +77,14 @@ export const AssetExplorer = ({ onChange }: Props) => {
     },
     [localDirMap]
   );
+
+  // update the global default path when the user change
+  useEffect(() => {
+    setDefaultPath(currentDir);
+  }, [currentDir]);
+
+  //TODO: expand the tree view to the default folder when the list ready
+  useEffect(() => {}, [currentDir, localDirList]);
 
   // trigger onChange when selection changes
   useEffect(() => {
