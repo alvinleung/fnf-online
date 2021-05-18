@@ -30,6 +30,7 @@ import { useFileSave } from "./components/FileDrop/useFileSave";
 import { useEntityEditing } from "./hooks/useEntityEditing";
 import useEagerUpdate from "./hooks/GameEngineCommunication/useEagerUpdate";
 import useEditorHotkeys from "./hooks/useEditorHotkeys";
+import useTriggerViewportContextMenu from "./hooks/GameEngineCommunication/useTriggerViewportContextMenu";
 
 interface Props {
   game: Game;
@@ -132,21 +133,7 @@ const App = ({ game }: Props): JSX.Element => {
     });
   }, [selectedEntity, selectedComponent]);
 
-  /**
-   * Hacky way to allow context menu click in the game viewport
-   */
-  const entityContextMenuTriggerRef = useRef();
-  useEffect(() => {
-    const gameViewportContainer = document.querySelector("#game");
-    const handleMenu = (e) => {
-      //@ts-ignore
-      entityContextMenuTriggerRef.current.handleContextClick(e);
-    };
-    gameViewportContainer.addEventListener("contextmenu", handleMenu);
-    return () => {
-      gameViewportContainer.removeEventListener("contextmenu", handleMenu);
-    };
-  }, []);
+  const entityContextMenuTriggerRef = useTriggerViewportContextMenu();
 
   return (
     <EditorContextWrapper
