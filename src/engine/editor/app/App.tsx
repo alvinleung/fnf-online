@@ -53,21 +53,10 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedEntity(selectedEntity);
   };
 
-  const forceUpdate = useForceUpdate();
-  useEffect(() => {
-    if (!selectedEntity) return;
-
-    // when selected entity, it forces the editor to keep up with the game state
-    const handleEngineUpdate = (game: Game, _delta: number) => {
-      // force update the ui if we are inspecting a particular entiy
-      EAGER_ENGINE_REFRESH && forceUpdate();
-    };
-
-    game.addEventListener(GameEvent.UPDATE, handleEngineUpdate);
-    return () => {
-      game.removeEventListener(GameEvent.UPDATE, handleEngineUpdate);
-    };
-  }, [selectedEntity]);
+  /**
+   * Engine communication functionalities
+   */
+  useEagerUpdate(game, selectedEntity, EAGER_ENGINE_REFRESH);
 
   // add and remove entity in the list when notified
   useEffect(() => {
