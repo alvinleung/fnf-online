@@ -7,18 +7,6 @@ export function useDraft(onCommit: (value: string) => void) {
   const [isEditing, setIsEditing] = useState(false);
   const textfieldRef = useRef<HTMLInputElement>(null);
 
-  // abort editing
-  useHotkeys(
-    HotkeyConfig.ESCAPE,
-    () => {
-      setIsEditing(false);
-    },
-    {
-      enableOnTags: ["INPUT", "TEXTAREA"],
-    },
-    []
-  );
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       // commit

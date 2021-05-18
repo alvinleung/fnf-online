@@ -1,0 +1,26 @@
+input.draft-edit-field,
+div.draft-edit-field {
+  display: flex;
+
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+  padding-left: var(--spacing-s);
+  padding-right: var(--spacing-s);
+
+  margin: 0rem;
+
+  border: 1px solid transparent;
+
+  font-size: 12px;
+  line-height: 12px;
+
+  box-sizing: border-box;
+}
+
+div.draft-edit-field {
+  line-height: 15px;
+}
+
+input.draft-edit-field:focus {
+  border: 1px solid var(--clr-accent);
+}

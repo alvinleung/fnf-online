@@ -1,13 +1,19 @@
 import React, { useEffect } from "react";
 import { useDraft } from "./useDraft";
 
+import "./DraftEditField.css";
+import useClickOutside from "../../hooks/useClickOutside";
+import { useHotkeys } from "react-hotkeys-hook";
+import { HotkeyConfig } from "../../Hotkeys";
+
 interface Props {
   onCommit: (val: string) => void;
+  onAbort: (val: string) => void;
   value: string;
   editing: boolean;
 }
 
-export const DraftEditField = ({ onCommit, value, editing = false }: Props) => {
+export const DraftEditField = ({ onCommit, onAbort, value, editing = false }: Props) => {
   const {
     textfieldRef,
     handleKeyDown,
@@ -34,11 +40,30 @@ export const DraftEditField = ({ onCommit, value, editing = false }: Props) => {
     textfieldRef.current.select();
   };
 
+  useClickOutside(textfieldRef, () => {
+    setIsEditing(false);
+    onAbort && onAbort(textfieldDraft);
+  });
+
+  // abort editing
+  useHotkeys(
+    HotkeyConfig.ESCAPE,
+    () => {
+      setIsEditing(false);
+      onAbort && onAbort(textfieldDraft);
+    },
+    {
+      enableOnTags: ["INPUT", "TEXTAREA"],
+    },
+    []
+  );
+
   return (
     <>
-      {!isEditing && <div>{value}</div>}
+      {!isEditing && <div className="draft-edit-field">{value}</div>}
       {isEditing && (
         <input
+          className="draft-edit-field"
           ref={textfieldRef}
           type="text"
           value={textfieldDraft}

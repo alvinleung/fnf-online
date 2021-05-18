@@ -58,6 +58,10 @@ export const EntityListView = () => {
     }
   }, [isCreatingEntity]);
 
+  const handleEntityNameAbort = () => {
+    setEntityNameEditIndex(null);
+  };
+
   const handleEntityNameCommit = (commitValue: string) => {
     // no change
     if (commitValue === selectedEntity.id) {
@@ -97,6 +101,7 @@ export const EntityListView = () => {
             >
               <DraftEditField
                 onCommit={handleEntityNameCommit}
+                onAbort={handleEntityNameAbort}
                 value={entity.id as string}
                 editing={isEditing}
               />
