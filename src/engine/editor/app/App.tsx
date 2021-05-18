@@ -28,6 +28,8 @@ import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
 import { useFileDrop } from "./components/FileDrop/useFileDrop";
 import { useFileSave } from "./components/FileDrop/useFileSave";
 import { useEntityEditing } from "./hooks/useEntityEditing";
+import useEagerUpdate from "./hooks/GameEngineCommunication/useEagerUpdate";
+import useEditorHotkeys from "./hooks/useEditorHotkeys";
 
 interface Props {
   game: Game;
