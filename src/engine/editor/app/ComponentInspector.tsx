@@ -13,6 +13,8 @@ import { useEditHistory } from "./EditHistory";
 import lodashCloneDeep from "lodash.clonedeep";
 import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
 import { Modal } from "./components/Modal";
+import useForceUpdate from "./hooks/useForceUpdate";
+import hasPropChanged from "./hooks/hasPropChanged";
 
 interface Props {
   selectedEntity?: Entity;
@@ -20,157 +22,164 @@ interface Props {
   onSelectComponent?: (component: string) => void;
 }
 
-export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: Props) => {
-  const [editHistory, pushEditHistory] = useEditHistory();
-  // get the informaiton of component whne component changed
-  const selectedEntityComponent = useMemo(() => {
-    if (!selectedEntity || !game.getEntityById(selectedEntity.id as string)) return;
+export const ComponentInspector = React.memo(
+  ({ selectedEntity, game, onSelectComponent }: Props) => {
+    const [editHistory, pushEditHistory] = useEditHistory();
+    // get the informaiton of component whne component changed
+    const selectedEntityComponent = useMemo(() => {
+      if (!selectedEntity || !game.getEntityById(selectedEntity.id as string)) return;
 
-    const componentList = game.getEntityById(selectedEntity.id as string).listComponents();
-    const editableComponentList = componentList.filter((c) => {
-      if (ComponentRegistry.isComponentEditable(c)) {
-        return true;
-      }
-    });
+      const componentList = game.getEntityById(selectedEntity.id as string).listComponents();
+      const editableComponentList = componentList.filter((c) => {
+        if (ComponentRegistry.isComponentEditable(c)) {
+          return true;
+        }
+      });
 
-    return editableComponentList;
-  }, [selectedEntity, editHistory]); // use edit history to trigger the component change update
+      return editableComponentList;
+    }, [selectedEntity, editHistory]); // use edit history to trigger the component change update
 
-  const onEntityValueUpdate = (
-    liveComponentInstance: ComponentClass<any>,
-    field: any,
-    val: any
-  ) => {
-    if (liveComponentInstance[field] === val) return;
+    const forceUpdate = useForceUpdate();
 
-    const beforeValue = liveComponentInstance[field];
+    const onEntityValueUpdate = (
+      liveComponentInstance: ComponentClass<any>,
+      field: any,
+      val: any
+    ) => {
+      if (liveComponentInstance[field] === val) return;
 
-    // write change to the in game component field value
-    liveComponentInstance[field] = val;
+      const beforeValue = liveComponentInstance[field];
 
-    pushEditHistory(
-      {
-        type: "componentFieldChange",
-        component: liveComponentInstance,
-        field: field,
-        beforeValue: beforeValue,
-        value: val,
+      // write change to the in game component field value
+      liveComponentInstance[field] = val;
+
+      pushEditHistory(
+        {
+          type: "componentFieldChange",
+          component: liveComponentInstance,
+          field: field,
+          beforeValue: beforeValue,
+          value: val,
+        },
+        200 // push change every 200 milisec
+      );
+
+      // force reflect the change when field change
+      forceUpdate();
+    };
+
+    const handleComponentSelection = (component: string) => {
+      onSelectComponent && onSelectComponent(component);
+    };
+
+    const inspectorContainerRef = useRef();
+    useClickOutside(
+      inspectorContainerRef,
+      () => {
+        onSelectComponent("");
       },
-      200 // push change every 200 milisec
+      true
     );
-  };
 
-  const handleComponentSelection = (component: string) => {
-    onSelectComponent && onSelectComponent(component);
-  };
+    /**
+     * For creating new component
+     */
+    const componentContext = useComponentContext();
+    const entityContext = useEntityContext();
+    const [isCreatingComponent, setIsCreatingComponent] = useState(false);
+    useEffect(() => {
+      if (componentContext.selectedComponent === "New Component") setIsCreatingComponent(true);
+    }, [componentContext, isCreatingComponent]);
 
-  const inspectorContainerRef = useRef();
-  useClickOutside(
-    inspectorContainerRef,
-    () => {
-      onSelectComponent("");
-    },
-    true
-  );
+    const handleComponentCreation = (componentName: string) => {
+      // create component and select the component
+      const componentClass = ComponentRegistry.getComponentClass(componentName);
+      entityContext.selectedEntity.useComponent(componentClass);
 
-  /**
-   * For creating new component
-   */
-  const componentContext = useComponentContext();
-  const entityContext = useEntityContext();
-  const [isCreatingComponent, setIsCreatingComponent] = useState(false);
-  useEffect(() => {
-    if (componentContext.selectedComponent === "New Component") setIsCreatingComponent(true);
-  }, [componentContext, isCreatingComponent]);
+      pushEditHistory({
+        type: "componentAdd",
+        entity: selectedEntity,
+        component: componentClass,
+      });
 
-  const handleComponentCreation = (componentName: string) => {
-    // create component and select the component
-    const componentClass = ComponentRegistry.getComponentClass(componentName);
-    entityContext.selectedEntity.useComponent(componentClass);
+      // select the newly created entity
+      componentContext.setSelectedComponent(componentName);
+      setIsCreatingComponent(false);
+    };
+    const handleDismissComponentCreation = () => {
+      // handle dismiss component creation
+      componentContext.setSelectedComponent("");
+      setIsCreatingComponent(false);
+    };
 
-    pushEditHistory({
-      type: "componentAdd",
-      entity: selectedEntity,
-      component: componentClass,
-    });
+    return (
+      <div ref={inspectorContainerRef}>
+        {selectedEntityComponent &&
+          selectedEntityComponent.map((componentInstance, index) => {
+            if (!componentInstance) return <div>No editable fields in this component</div>;
 
-    // select the newly created entity
-    componentContext.setSelectedComponent(componentName);
-    setIsCreatingComponent(false);
-  };
-  const handleDismissComponentCreation = () => {
-    // handle dismiss component creation
-    componentContext.setSelectedComponent("");
-    setIsCreatingComponent(false);
-  };
+            const fields = ComponentRegistry.getComponentEditableFields(componentInstance);
+            const componentName = componentInstance.constructor.name;
+            const fieldNames = Object.keys(fields);
 
-  return (
-    <div ref={inspectorContainerRef}>
-      {selectedEntityComponent &&
-        selectedEntityComponent.map((componentInstance, index) => {
-          if (!componentInstance) return <div>No editable fields in this component</div>;
+            const handleUseInteractWithComponent = () => {
+              handleComponentSelection(componentName);
+            };
 
-          const fields = ComponentRegistry.getComponentEditableFields(componentInstance);
-          const componentName = componentInstance.constructor.name;
-          const fieldNames = Object.keys(fields);
-
-          const handleUseInteractWithComponent = () => {
-            handleComponentSelection(componentName);
-          };
-
-          return (
-            <div
-              key={index}
-              onContextMenu={handleUseInteractWithComponent}
-              onMouseDown={handleUseInteractWithComponent}
-            >
-              <CollapsableSection header={camelCaseToSentenceCase(componentName)}>
-                {fieldNames.map((fieldName, index) => {
-                  const field = ComponentRegistry.getComponentFieldEditor(
-                    componentInstance,
-                    fieldName
-                  );
-                  const currentComponent = selectedEntity.getComponent(
-                    ComponentRegistry.getComponentClass(componentName)
-                  );
-                  const currentComponentVal = currentComponent[fieldName];
-                  const handleEditorValueChange = (val) => {
-                    onEntityValueUpdate(componentInstance as ComponentClass<any>, fieldName, val);
-                  };
-                  return (
-                    <ValueEditor
-                      fieldName={fieldName}
-                      fieldType={field.editor}
-                      value={currentComponentVal}
-                      key={`${index}-${selectedEntity.id}`}
-                      onChange={handleEditorValueChange}
-                      config={field.config}
-                    />
-                  );
-                })}
-              </CollapsableSection>
-            </div>
-          );
-        })}
-      {/* <Modal isVisible={false}>
-        <AssetExplorer />
-      </Modal> */}
-      {isCreatingComponent && (
-        <DropDownSelect
-          selected={""}
-          onSelect={(val) => handleComponentCreation(val)}
-          focus={true}
-          onBlur={handleDismissComponentCreation}
-        >
-          {Object.keys(ComponentRegistry.getEditableComponentMap()).map((componentName, index) => {
             return (
-              <DropDownItem value={componentName} key={index}>
-                {componentName}
-              </DropDownItem>
+              <div
+                key={index}
+                onContextMenu={handleUseInteractWithComponent}
+                onMouseDown={handleUseInteractWithComponent}
+              >
+                <CollapsableSection header={camelCaseToSentenceCase(componentName)}>
+                  {fieldNames.map((fieldName, index) => {
+                    const field = ComponentRegistry.getComponentFieldEditor(
+                      componentInstance,
+                      fieldName
+                    );
+                    const currentComponent = selectedEntity.getComponent(
+                      ComponentRegistry.getComponentClass(componentName)
+                    );
+                    const currentComponentVal = currentComponent[fieldName];
+                    const handleEditorValueChange = (val) => {
+                      onEntityValueUpdate(componentInstance as ComponentClass<any>, fieldName, val);
+                    };
+                    return (
+                      <ValueEditor
+                        fieldName={fieldName}
+                        fieldType={field.editor}
+                        value={currentComponentVal}
+                        key={`${index}-${selectedEntity.id}`}
+                        onChange={handleEditorValueChange}
+                        config={field.config}
+                      />
+                    );
+                  })}
+                </CollapsableSection>
+              </div>
             );
           })}
-        </DropDownSelect>
-      )}
-    </div>
-  );
-};
+
+        {isCreatingComponent && (
+          <DropDownSelect
+            selected={""}
+            onSelect={(val) => handleComponentCreation(val)}
+            focus={true}
+            onBlur={handleDismissComponentCreation}
+          >
+            {Object.keys(ComponentRegistry.getEditableComponentMap()).map(
+              (componentName, index) => {
+                return (
+                  <DropDownItem value={componentName} key={index}>
+                    {componentName}
+                  </DropDownItem>
+                );
+              }
+            )}
+          </DropDownSelect>
+        )}
+      </div>
+    );
+  }
+);

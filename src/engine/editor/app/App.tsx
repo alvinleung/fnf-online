@@ -30,6 +30,8 @@ interface Props {
   game: Game;
 }
 
+const EAGER_ENGINE_REFRESH = false;
+
 const App = ({ game }: Props): JSX.Element => {
   const [editHistory, pushEditHistory] = useEditHistory();
   const [undo, redo] = useUndoRedo();
@@ -119,14 +121,16 @@ const App = ({ game }: Props): JSX.Element => {
   };
 
   const forceUpdate = useForceUpdate();
-  const handleEngineUpdate = useCallback(
-    (game: Game, _delta: number) => {
-      // force update the ui if we are inspecting a particular entity
-      if (selectedEntity) forceUpdate();
-    },
-    [selectedEntity]
-  );
+
   useEffect(() => {
+    if (!selectedEntity) return;
+
+    // when selected entity, it forces the editor to keep up with the game state
+    const handleEngineUpdate = (game: Game, _delta: number) => {
+      // force update the ui if we are inspecting a particular entiy
+      EAGER_ENGINE_REFRESH && forceUpdate();
+    };
+
     game.addEventListener(GameEvent.UPDATE, handleEngineUpdate);
     return () => {
       game.removeEventListener(GameEvent.UPDATE, handleEngineUpdate);
@@ -204,9 +208,10 @@ const App = ({ game }: Props): JSX.Element => {
    * For component selection
    */
   const [selectedComponent, setSelectedComponent] = useState("");
-  const handleComponentSelection = (component: string) => {
+  const handleComponentSelection = useCallback((component: string) => {
     setSelectedComponent(component);
-  };
+  }, []);
+
   const handleComponentAdd = () => {
     setSelectedComponent("New Component");
   };
