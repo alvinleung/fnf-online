@@ -69,11 +69,10 @@ export const EntityListView = () => {
   };
 
   const handleItemRemove = (entityId: string) => {
+    const entityRemoveIndex = game.getEntityIndex(game.getEntityById(entityId));
     deleteEntity(entityId);
 
-    // sync the entity list with game
-    // syncEditorEntityList(game);
-    setSelectedEntity(null);
+    setSelectedEntity(game.entities[entityRemoveIndex - 1]);
   };
 
   const handleEntityNameAbort = () => {
@@ -145,7 +144,10 @@ export const EntityListView = () => {
       </List>
       <ContextMenu id="item-menu-trigger">
         <MenuItem
-          onClick={() => {
+          onClick={(e) => {
+            // prevent it conflicting with clickoutside in editor
+            e.preventDefault();
+            e.stopPropagation();
             setIsCreatingEntity(true);
           }}
         >
@@ -155,14 +157,22 @@ export const EntityListView = () => {
           <>
             <MenuItem divider={true} />
             <MenuItem
-              onClick={() => {
+              onClick={(e) => {
+                // prevent it conflicting with clickoutside in editor
+                e.preventDefault();
+                e.stopPropagation();
                 const targetEntity = entities.findIndex(({ id }) => id === selectedEntity.id);
                 setEntityNameEditIndex(targetEntity);
               }}
             >
               Rename "{selectedEntity.id}"
             </MenuItem>
-            <MenuItem onClick={() => duplicateEntity(selectedEntity.id as string)}>
+            <MenuItem
+              onClick={() => {
+                const entity = duplicateEntity(selectedEntity.id as string);
+                setSelectedEntity(entity);
+              }}
+            >
               Duplicate "{selectedEntity.id}"
             </MenuItem>
             <MenuItem

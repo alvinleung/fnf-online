@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import hasPropChanged from "../../hooks/hasPropChanged";
 
 interface Props {
   children: string | React.ReactNode;
@@ -19,9 +20,19 @@ export const ListItem = ({
   onContextMenu,
   onDoubleClick,
 }: Props) => {
+  const [isItemSelected, setIsItemSelected] = useState(false);
+
   const handleClick = () => {
+    setIsItemSelected(true);
     onSelect && onSelect(value, index);
   };
+
+  useEffect(() => {
+    if (isSelected && isSelected !== isItemSelected) {
+      onSelect && onSelect(value, index);
+    }
+    setIsItemSelected(isSelected);
+  }, [isSelected]);
 
   const handleContextualMenu = (e) => {
     handleClick();

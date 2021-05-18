@@ -1,6 +1,6 @@
 import React from "react";
 
-const useClickOutside = (ref, callback, mouseDown = false) => {
+const useClickOutside = (ref, callback, mouseDown = false, deps = []) => {
   const handleClick = (e) => {
     if (ref && ref instanceof Array) {
       const isClickingInsideAnyRef = ref.some((elm) => {
@@ -22,7 +22,7 @@ const useClickOutside = (ref, callback, mouseDown = false) => {
       document.removeEventListener(mouseDown ? "mousedown" : "click", handleClick);
       document.removeEventListener("contextmenu", handleClick, { capture: true });
     };
-  }, [callback]);
+  }, [callback, ...deps]);
 };
 
 export default useClickOutside;

@@ -43,7 +43,8 @@ export const DraftEditField = ({ onCommit, onAbort, value, editing }: Props) => 
   };
 
   useClickOutside(textfieldRef, (e) => {
-    onCommit(textfieldDraft);
+    // prevent premature return of the de-focus
+    onCommit && onCommit(textfieldDraft);
     setIsEditing(false);
   });
 
