@@ -8,6 +8,7 @@ import useTriggerViewportContextMenu from "../hooks/GameEngineCommunication/useT
 import useClickOutside from "../hooks/useClickOutside";
 import { useEntityEditing } from "../hooks/useEntityEditing";
 import { HotkeyConfig } from "../Hotkeys";
+import { DraftEditField } from "./DraftEditing/DraftEditField";
 import { List } from "./List";
 import { ListItem } from "./List/ListItem";
 import { Modal } from "./Modal";
@@ -25,9 +26,7 @@ export const EntityListView = () => {
   const [isCreatingEntity, setIsCreatingEntity] = useState(false);
   const [entityCreationName, setEntityCreationName] = useState("");
 
-  const [entityNameDraft, setEntityNameDraft] = useState("");
   const [entityNameEditIndex, setEntityNameEditIndex] = useState<number>(null);
-  const entityNameDrafRef = useRef<HTMLInputElement>(null);
 
   const handleEntityCreation = (name: string) => {
     if (!name) return;
@@ -59,70 +58,24 @@ export const EntityListView = () => {
     }
   }, [isCreatingEntity]);
 
-  /**
-   * For editing entity name draft
-   */
-  useClickOutside(entityNameDrafRef, () => {
+  const handleEntityNameCommit = (commitValue: string) => {
+    // no change
+    if (commitValue === selectedEntity.id) {
+      setEntityNameEditIndex(null);
+      return;
+    }
+
+    // id conflict
+    if (game.getEntityById(commitValue)) {
+      alert(`Entity with ID "${commitValue}" already exist, please provide another ID.`);
+      return;
+    }
+
+    // commit the change here
+    const changedEntity = changeEntityId(selectedEntity, commitValue);
+
     setEntityNameEditIndex(null);
-  });
-  useEffect(() => {
-    if (!entityNameEditIndex || !selectedEntity) return;
-    // focus on ref when edit
-    if (entityNameDrafRef.current !== undefined) {
-      setEntityNameDraft(selectedEntity.id as string);
-      entityNameDrafRef.current.focus();
-    }
-  }, [entityNameEditIndex, selectedEntity]);
-
-  const nameEditFieldFocus = () => {
-    entityNameDrafRef.current.select();
-  };
-
-  // abort editing
-  useHotkeys(
-    HotkeyConfig.ESCAPE,
-    () => {
-      setEntityNameEditIndex(null);
-    },
-    {
-      enableOnTags: ["INPUT", "TEXTAREA"],
-    },
-    []
-  );
-
-  const nameEditFieldKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      // no change
-      if (entityNameDraft === selectedEntity.id) {
-        setEntityNameEditIndex(null);
-        return;
-      }
-
-      // id conflict
-      if (game.getEntityById(entityNameDraft)) {
-        alert(`Entity with ID "${entityNameDraft}" already exist, please provide another ID.`);
-        return;
-      }
-
-      // commit the change here
-      const changedEntity = changeEntityId(selectedEntity, entityNameDraft);
-
-      setEntityNameEditIndex(null);
-      setSelectedEntity(changedEntity);
-    }
-  };
-
-  const getNameEditField = () => {
-    return (
-      <input
-        ref={entityNameDrafRef}
-        type="text"
-        value={entityNameDraft}
-        onChange={(val) => setEntityNameDraft(val.target.value)}
-        onFocus={nameEditFieldFocus}
-        onKeyDown={nameEditFieldKeyDown}
-      />
-    );
+    setSelectedEntity(changedEntity);
   };
 
   return (
@@ -134,7 +87,7 @@ export const EntityListView = () => {
         value={selectedEntity && (selectedEntity.id as string)}
       >
         {entities.map((entity, index) => {
-          const editField = entityNameEditIndex === index && getNameEditField();
+          const isEditing = entityNameEditIndex === index;
 
           return (
             <ListItem
@@ -142,12 +95,11 @@ export const EntityListView = () => {
               onDoubleClick={() => setEntityNameEditIndex(index)}
               key={index}
             >
-              {(() => {
-                if (editField) {
-                  return editField;
-                }
-                return entity.id as string;
-              })()}
+              <DraftEditField
+                onCommit={handleEntityNameCommit}
+                value={entity.id as string}
+                editing={isEditing}
+              />
             </ListItem>
           );
         })}
