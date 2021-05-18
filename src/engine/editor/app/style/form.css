@@ -9,12 +9,12 @@ input[type="password"] {
 
   padding-left: var(--spacing-s);
   padding-right: var(--spacing-s);
-  padding-top: var(--spacing-s);
-  padding-bottom: var(--spacing-s);
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
 
   background-color: var(--clr-bg);
   border: 1px solid var(--clr-bg-lighter);
-  font-size: 14px;
+  font-size: 12px;
 
   border-radius: 4px;
 

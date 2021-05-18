@@ -187,8 +187,33 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   /**
    * Override addEntity to add mapping functionality
    */
-  public getEntityById(name: string): Entity {
-    return this._entitiesRefMap[name];
+  public getEntityById(id: string): Entity {
+    return this._entitiesRefMap[id];
+  }
+
+  /**
+   * Change the entity id in the system, returns the entity with id changed
+   * @param id
+   * @param entity
+   * @returns
+   */
+  public changeEntityId(id: string, entity: Entity) {
+    if (this._entitiesRefMap[id]) {
+      console.warn(`Abort ID change: entity with ID "${id}" already exist in the system`);
+      return;
+    }
+
+    const target = this.getEntityById(entity.id as string);
+    // remove old reference in the ref map
+    delete this._entitiesRefMap[entity.id];
+    // change the entity id
+    target.id = id;
+    // put the reference in a new id entry
+    this._entitiesRefMap[id] = target;
+    // notify change
+    this.fireEvent(GameEvent.ENTITY_LIST_CHANGE, this.entities);
+
+    return target;
   }
 
   private tick() {

@@ -1,12 +1,13 @@
 import React from "react";
 
 interface Props {
-  children: string;
+  children: string | React.ReactNode;
   onSelect?: (value: string, index?: string) => void;
   value: string;
   isSelected?: boolean;
   index?: string;
   onContextMenu?: (e) => void;
+  onDoubleClick?: (e) => void;
 }
 
 export const ListItem = ({
@@ -16,6 +17,7 @@ export const ListItem = ({
   value,
   index,
   onContextMenu,
+  onDoubleClick,
 }: Props) => {
   const handleClick = () => {
     onSelect && onSelect(value, index);
@@ -30,6 +32,7 @@ export const ListItem = ({
     <div
       onClick={handleClick}
       onContextMenu={handleContextualMenu}
+      onDoubleClick={onDoubleClick}
       className={!isSelected ? "list-item" : "list-item list-item--selected"}
     >
       {children}
