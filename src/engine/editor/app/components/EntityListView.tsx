@@ -1,17 +1,10 @@
-import { m } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
-import { useHotkeys } from "react-hotkeys-hook";
-import { Game, GameEvent } from "../../../Game";
 import { useEntityContext, useGameContext, useSelectedEntity } from "../EditorContextWrapper";
-import useTriggerViewportContextMenu from "../hooks/GameEngineCommunication/useTriggerViewportContextMenu";
-import useClickOutside from "../hooks/useClickOutside";
 import { useEntityEditing } from "../hooks/useEntityEditing";
-import { HotkeyConfig } from "../Hotkeys";
 import { DraftEditField } from "./DraftEditing/DraftEditField";
 import { List } from "./List";
 import { ListItem } from "./List/ListItem";
-import { Modal } from "./Modal";
 
 /**
  * UI for scene entity list manipulation
