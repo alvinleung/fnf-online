@@ -8,11 +8,7 @@ import { List } from "./List";
 import { ListItem } from "./List/ListItem";
 import { Modal } from "./Modal";
 
-interface Props {
-  syncEditorEntityList: (game: Game) => void;
-}
-
-export const EntityListView = ({ syncEditorEntityList }: Props) => {
+export const EntityListView = () => {
   const game = useGameContext();
 
   const { entities, selectedEntity, setSelectedEntity } = useEntityContext();
@@ -38,7 +34,7 @@ export const EntityListView = ({ syncEditorEntityList }: Props) => {
     deleteEntity(entityId);
 
     // sync the entity list with game
-    syncEditorEntityList(game);
+    // syncEditorEntityList(game);
     setSelectedEntity(null);
   };
 

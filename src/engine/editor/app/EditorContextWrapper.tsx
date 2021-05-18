@@ -3,9 +3,15 @@ import { Entity } from "../../ecs";
 import { Game } from "../../Game";
 import { AssetExplorerContextProvider } from "./components/AssetExplorer/AssetExplorerContext";
 
+/**
+ * Game Context
+ */
 const GameContext = React.createContext<Game>(null);
 export const useGameContext = () => React.useContext(GameContext);
 
+/**
+ * Entity Context
+ */
 const ComponentContext = React.createContext({
   selectedComponent: "",
   setSelectedComponent: (val: any) => {},

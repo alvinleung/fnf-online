@@ -72,9 +72,6 @@ const App = ({ game }: Props): JSX.Element => {
    * For component selection
    */
   const [selectedComponent, setSelectedComponent] = useState("");
-  const handleComponentSelection = useCallback((component: string) => {
-    setSelectedComponent(component);
-  }, []);
 
   return (
     <EditorContextWrapper
@@ -87,19 +84,13 @@ const App = ({ game }: Props): JSX.Element => {
     >
       <PanelGroup>
         <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
-          <EntityListView syncEditorEntityList={syncEditorEntityList} />
+          <EntityListView />
         </Panel>
         <Panel dockingSide="right" initialState="expanded" minSize={250}>
           <ContextMenuTrigger id="entity-component-inspector">
             <div className="inspector-container">
-              <EntityInspectorHead
-                selectedEntity={selectedEntity && (selectedEntity.id as string)}
-              />
-              <ComponentInspector
-                game={game}
-                selectedEntity={selectedEntity}
-                onSelectComponent={handleComponentSelection}
-              />
+              <EntityInspectorHead />
+              <ComponentInspector />
             </div>
           </ContextMenuTrigger>
         </Panel>
