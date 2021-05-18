@@ -226,20 +226,6 @@ const App = ({ game }: Props): JSX.Element => {
                 selectedEntity={selectedEntity}
                 onSelectComponent={handleComponentSelection}
               />
-              {selectedEntity && (
-                <ContextMenu id="entity-component-inspector">
-                  <MenuItem onClick={handleComponentAdd}>Add Component</MenuItem>
-
-                  {selectedComponent !== "" && (
-                    <>
-                      <MenuItem divider={true} />
-                      <MenuItem onClick={handleComponentRemove}>
-                        Remove "{selectedComponent}"
-                      </MenuItem>
-                    </>
-                  )}
-                </ContextMenu>
-              )}
             </div>
           </ContextMenuTrigger>
         </Panel>

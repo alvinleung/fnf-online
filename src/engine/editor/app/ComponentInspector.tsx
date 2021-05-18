@@ -16,6 +16,7 @@ import { Modal } from "./components/Modal";
 import useForceUpdate from "./hooks/useForceUpdate";
 import hasPropChanged from "./hooks/hasPropChanged";
 import { useEntityEditing } from "./hooks/useEntityEditing";
+import { ContextMenu, MenuItem } from "react-contextmenu";
 
 interface Props {
   selectedEntity?: Entity;
@@ -91,8 +92,8 @@ export const ComponentInspector = React.memo(
       if (componentContext.selectedComponent === "New Component") setIsCreatingComponent(true);
     }, [componentContext, isCreatingComponent]);
 
-    const { addComponent } = useEntityEditing(game);
-    const handleComponentCreation = (componentName: string) => {
+    const { addComponent, removeComponent } = useEntityEditing(game);
+    const handleComponentAdd = (componentName: string) => {
       addComponent(selectedEntity, componentName);
 
       // select the newly created entity
@@ -103,6 +104,10 @@ export const ComponentInspector = React.memo(
       // handle dismiss component creation
       componentContext.setSelectedComponent("");
       setIsCreatingComponent(false);
+    };
+
+    const handleComponentRemove = () => {
+      removeComponent(selectedEntity, componentContext.selectedComponent);
     };
 
     return (
@@ -157,7 +162,7 @@ export const ComponentInspector = React.memo(
         {isCreatingComponent && (
           <DropDownSelect
             selected={""}
-            onSelect={(val) => handleComponentCreation(val)}
+            onSelect={(val) => handleComponentAdd(val)}
             focus={true}
             onBlur={handleDismissComponentCreation}
           >
@@ -171,6 +176,23 @@ export const ComponentInspector = React.memo(
               }
             )}
           </DropDownSelect>
+        )}
+
+        {selectedEntity && (
+          <ContextMenu id="entity-component-inspector">
+            <MenuItem onClick={() => componentContext.setSelectedComponent("New Component")}>
+              Add Component
+            </MenuItem>
+
+            {componentContext.selectedComponent !== "" && (
+              <>
+                <MenuItem divider={true} />
+                <MenuItem onClick={handleComponentRemove}>
+                  Remove "{componentContext.selectedComponent}"
+                </MenuItem>
+              </>
+            )}
+          </ContextMenu>
         )}
       </div>
     );
