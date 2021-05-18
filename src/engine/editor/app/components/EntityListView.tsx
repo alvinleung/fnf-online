@@ -24,9 +24,24 @@ export const EntityListView = () => {
   const { createEntity, deleteEntity, duplicateEntity, changeEntityId } = useEntityEditing(game);
 
   const [isCreatingEntity, setIsCreatingEntity] = useState(false);
-  const entityCreationName = "New Entity";
+  const [entityCreationName, setEntityCreationName] = useState("new-entity");
 
   const [entityNameEditIndex, setEntityNameEditIndex] = useState<number>(null);
+
+  useEffect(() => {
+    if (isCreatingEntity) {
+      let entityNameInitial = "new-entity";
+      let entityName = entityNameInitial;
+      let count = 1;
+
+      while (game.getEntityById(entityName)) {
+        entityName = entityNameInitial + "-" + count;
+        count++;
+      }
+
+      setEntityCreationName(entityName);
+    }
+  }, [isCreatingEntity]);
 
   const handleEntityCreation = (id: string) => {
     if (!id) return;
@@ -63,6 +78,7 @@ export const EntityListView = () => {
 
   const handleEntityNameAbort = () => {
     setEntityNameEditIndex(null);
+    // setIsCreatingEntity(false);
   };
 
   const handleEntityNameCommit = (commitValue: string) => {
@@ -105,13 +121,14 @@ export const EntityListView = () => {
     );
   });
 
-  const entityCreationField = isCreatingEntity && (
-    <ListItem value={entityCreationName} key={entities.length}>
+  const entityCreationField = (
+    <ListItem value={entityCreationName} key={"creation"}>
       <DraftEditField
         onCommit={handleEntityCreation}
         onAbort={handleEntityCreationAbort}
         value={entityCreationName}
         editing={isCreatingEntity}
+        key={"creation"}
       />
     </ListItem>
   );
@@ -128,7 +145,6 @@ export const EntityListView = () => {
       </List>
       <ContextMenu id="item-menu-trigger">
         <MenuItem
-          data={{ action: "add-entity" }}
           onClick={() => {
             setIsCreatingEntity(true);
           }}
@@ -139,13 +155,17 @@ export const EntityListView = () => {
           <>
             <MenuItem divider={true} />
             <MenuItem
-              data={{ action: "add-entity" }}
-              onClick={() => duplicateEntity(selectedEntity.id as string)}
+              onClick={() => {
+                const targetEntity = entities.findIndex(({ id }) => id === selectedEntity.id);
+                setEntityNameEditIndex(targetEntity);
+              }}
             >
+              Rename "{selectedEntity.id}"
+            </MenuItem>
+            <MenuItem onClick={() => duplicateEntity(selectedEntity.id as string)}>
               Duplicate "{selectedEntity.id}"
             </MenuItem>
             <MenuItem
-              data={{ action: "remove-entity" }}
               onClick={() => {
                 handleItemRemove(selectedEntity.id as string);
               }}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDraft } from "./useDraft";
 
 import "./DraftEditField.css";
@@ -13,15 +13,17 @@ interface Props {
   editing: boolean;
 }
 
-export const DraftEditField = ({ onCommit, onAbort, value, editing = false }: Props) => {
-  const {
-    textfieldRef,
-    handleKeyDown,
-    textfieldDraft,
-    setTextfieldDraft,
-    isEditing,
-    setIsEditing,
-  } = useDraft(onCommit);
+export const DraftEditField = ({ onCommit, onAbort, value, editing }: Props) => {
+  const [textfieldDraft, setTextfieldDraft] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const textfieldRef = useRef<HTMLInputElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      // commit
+      onCommit && onCommit(textfieldDraft);
+    }
+  };
 
   // when start editing
   useEffect(() => {
@@ -40,8 +42,8 @@ export const DraftEditField = ({ onCommit, onAbort, value, editing = false }: Pr
     textfieldRef.current.select();
   };
 
-  useClickOutside(textfieldRef, () => {
-    onAbort && onAbort(textfieldDraft);
+  useClickOutside(textfieldRef, (e) => {
+    onCommit(textfieldDraft);
     setIsEditing(false);
   });
 

@@ -11,16 +11,18 @@ const useClickOutside = (ref, callback, mouseDown = false) => {
       if (!isClickingInsideAnyRef) callback();
     }
     if (ref.current && !ref.current.contains(e.target)) {
-      callback();
+      callback(e);
     }
   };
 
   React.useEffect(() => {
     document.addEventListener(mouseDown ? "mousedown" : "click", handleClick);
+    document.addEventListener("contextmenu", handleClick, { capture: true });
     return () => {
       document.removeEventListener(mouseDown ? "mousedown" : "click", handleClick);
+      document.removeEventListener("contextmenu", handleClick, { capture: true });
     };
-  });
+  }, [callback]);
 };
 
 export default useClickOutside;
