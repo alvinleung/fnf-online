@@ -4,7 +4,14 @@ import { Component, ComponentClass, Entity } from "../../ecs";
 import { Game } from "../../Game";
 
 interface EntityStateEdit {
-  type: "update" | "add" | "remove" | "componentFieldChange" | "componentAdd" | "componentRemove";
+  type:
+    | "update"
+    | "add"
+    | "remove"
+    | "componentFieldChange"
+    | "componentAdd"
+    | "componentRemove"
+    | "idChange";
   entity: Entity;
   component?: ComponentClass<any>;
   value?: any;
@@ -74,6 +81,11 @@ export const EditHistoryContextWrapper = ({
       if (change.type === "componentRemove") {
         change.entity.useComponent(change.component);
       }
+
+      if (change.type === "idChange") {
+        // revert id change
+        game.changeEntityId(change.entity.id as string, game.getEntityById(change.value));
+      }
     }
 
     // if the user is redo-ing
@@ -99,6 +111,11 @@ export const EditHistoryContextWrapper = ({
 
       if (redoChange.type === "componentRemove") {
         redoChange.entity.removeComponent(redoChange.component);
+      }
+
+      if (redoChange.type === "idChange") {
+        // revert id change
+        game.changeEntityId(redoChange.value, game.getEntityById(redoChange.entity.id as string));
       }
     }
 

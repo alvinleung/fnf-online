@@ -104,11 +104,26 @@ export const useEntityEditing = (game: Game) => {
     });
   };
 
+  const changeEntityId = (selectedEntity: Entity, newId: string) => {
+    const entity = game.getEntityById(selectedEntity.id as string);
+    const oldEntity = entity.clone();
+    const changedEntity = game.changeEntityId(newId, entity);
+
+    pushEditHistory({
+      type: "idChange",
+      entity: oldEntity,
+      value: newId,
+    });
+
+    return changedEntity;
+  };
+
   return {
     createEntity,
     deleteEntity,
     duplicateEntity,
     removeComponent,
     addComponent,
+    changeEntityId,
   };
 };

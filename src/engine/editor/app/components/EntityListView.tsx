@@ -20,7 +20,7 @@ export const EntityListView = () => {
   const game = useGameContext();
 
   const { entities, selectedEntity, setSelectedEntity } = useEntityContext();
-  const { createEntity, deleteEntity, duplicateEntity } = useEntityEditing(game);
+  const { createEntity, deleteEntity, duplicateEntity, changeEntityId } = useEntityEditing(game);
 
   const [isCreatingEntity, setIsCreatingEntity] = useState(false);
   const [entityCreationName, setEntityCreationName] = useState("");
@@ -105,9 +105,7 @@ export const EntityListView = () => {
       }
 
       // commit the change here
-      const entity = game.getEntityById(selectedEntity.id as string);
-      const newId = entityNameDraft;
-      const changedEntity = game.changeEntityId(newId, entity);
+      const changedEntity = changeEntityId(selectedEntity, entityNameDraft);
 
       setEntityNameEditIndex(null);
       setSelectedEntity(changedEntity);
