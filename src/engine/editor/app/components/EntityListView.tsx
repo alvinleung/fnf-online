@@ -62,10 +62,9 @@ export const EntityListView = () => {
   };
 
   const handleItemRemove = (entityId: string) => {
-    const entityRemoveIndex = game.getEntityIndex(game.getEntityById(entityId));
     deleteEntity(entityId);
 
-    setSelectedEntity(game.entities[entityRemoveIndex - 1]);
+    setSelectedEntity(null);
   };
 
   const handleEntityNameAbort = () => {
