@@ -25,6 +25,8 @@ import { downloadFile } from "../../utils/DownloadFile";
 import { TransformComponent } from "../../core/TransformComponent";
 import { EditorServerIO } from "../EditorServerIO";
 import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
+import { useFileDrop } from "./components/FileDrop/useFileDrop";
+import { useFileSave } from "./components/FileDrop/useFileSave";
 
 interface Props {
   game: Game;
@@ -39,56 +41,11 @@ const App = ({ game }: Props): JSX.Element => {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
 
+  useFileDrop(game);
+  useFileSave(game);
+
   useHotkeys(HotkeyConfig.REDO, redo, {}, [editHistory]);
   useHotkeys(HotkeyConfig.UNDO, undo, {}, [editHistory]);
-
-  useHotkeys(HotkeyConfig.SAVE, (e) => {
-    e.preventDefault();
-    const serializedScene = game.saveScene();
-    downloadFile(serializedScene, "Scene.json", "application/json");
-  });
-
-  // for scene file drop
-  useEffect(() => {
-    const dropArea = document.querySelector("body");
-
-    const handleDragOver = (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      // Style the drag-and-drop as a "copy file" operation.
-      event.dataTransfer.dropEffect = "copy";
-    };
-
-    const handleDrop = (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      const fileList = event.dataTransfer.files;
-      const sceneFile = fileList[0];
-
-      // yet it is working
-      // EditorServerIO.getInstance().writeFile(`./sceneData/${sceneFile.name}`, sceneFile);
-
-      // typecheck the scene file
-      if (sceneFile.type && !sceneFile.type.startsWith("application/json")) {
-        console.log("File is not a text/json file.", sceneFile.type, sceneFile);
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = () => game.loadScene(reader.result as string);
-      reader.onerror = () => console.log(reader.error);
-
-      reader.readAsText(sceneFile);
-    };
-
-    dropArea.addEventListener("dragover", handleDragOver);
-    dropArea.addEventListener("drop", handleDrop);
-
-    return () => {
-      dropArea.removeEventListener("dragover", handleDragOver);
-      dropArea.removeEventListener("drop", handleDrop);
-    };
-  }, []);
 
   /**
    * copy and pasting entities
@@ -121,7 +78,6 @@ const App = ({ game }: Props): JSX.Element => {
   };
 
   const forceUpdate = useForceUpdate();
-
   useEffect(() => {
     if (!selectedEntity) return;
 
