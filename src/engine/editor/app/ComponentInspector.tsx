@@ -1,25 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Component, ComponentClass, Entity } from "../../ecs";
-import { Game } from "../../Game";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ComponentClass } from "../../ecs";
 import { CollapsableSection } from "./components/CollapsableSection";
 import { ValueEditor } from "./components/valueEditor/ValueEditor";
 import { ComponentRegistry } from "../EditorDecorators";
 import { camelCaseToSentenceCase } from "../../utils/StringUtils";
 import useClickOutside from "./hooks/useClickOutside";
-import {
-  useComponentContext,
-  useEntityContext,
-  useGameContext,
-  useSelectedEntity,
-} from "./EditorContextWrapper";
+import { useComponentContext, useGameContext, useSelectedEntity } from "./EditorContextWrapper";
 import { DropDownSelect } from "./components/DropDownSelect/DropDownSelect";
 import { DropDownItem } from "./components/DropDownSelect/DropDownItem";
 import { useEditHistory } from "./EditHistory";
-import lodashCloneDeep from "lodash.clonedeep";
-import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
-import { Modal } from "./components/Modal";
 import useForceUpdate from "./hooks/useForceUpdate";
-import hasPropChanged from "./hooks/hasPropChanged";
 import { useEntityEditing } from "./hooks/useEntityEditing";
 import { ContextMenu, MenuItem } from "react-contextmenu";
 
