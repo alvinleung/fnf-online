@@ -27,6 +27,7 @@ import { EditorServerIO } from "../EditorServerIO";
 import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
 import { useFileDrop } from "./components/FileDrop/useFileDrop";
 import { useFileSave } from "./components/FileDrop/useFileSave";
+import { useEntityEditing } from "./hooks/useEntityEditing";
 
 interface Props {
   game: Game;
@@ -105,26 +106,18 @@ const App = ({ game }: Props): JSX.Element => {
 
     // listen to game entity changes
     game.addEventListener(GameEvent.ENTITY_LIST_CHANGE, (entitiesList: Entity[]) => {
-      // console.log(entitiesList);
       syncEditorEntityList(game);
     });
   }, []);
 
+  const { duplicateEntity, createEntity, deleteEntity } = useEntityEditing(game);
+
   const handleItemRemove = (entityId: string) => {
-    const entityToBeRemoved = game.getEntityById(entityId);
-
-    setSelectedEntity(null);
-    const removeIndex = game.removeEntity(entityToBeRemoved);
-
-    // add remove action to history
-    pushEditHistory({
-      type: "remove",
-      entity: entityToBeRemoved.clone(),
-      index: removeIndex,
-    });
+    deleteEntity(entityId);
 
     // sync the entity list with game
     syncEditorEntityList(game);
+    setSelectedEntity(null);
   };
 
   /**
@@ -132,26 +125,14 @@ const App = ({ game }: Props): JSX.Element => {
    */
   const [isCreatingEntity, setIsCreatingEntity] = useState(false);
   const [entityCreationName, setEntityCreationName] = useState("");
-  const createEntity = (name: string) => {
+  const handleEntityCreation = (name: string) => {
     if (!name) return;
 
-    const newEntity = Entity.create(name);
-
-    // add transform component
-    newEntity.useComponent(TransformComponent);
-
-    // when the entity create
-    game.addEntity(newEntity);
-
-    pushEditHistory({
-      type: "add",
-      entity: newEntity.clone(),
-      index: game.getEntityIndex(newEntity),
-    });
-
+    const newEntity = createEntity(name);
     setIsCreatingEntity(false);
     setSelectedEntity(newEntity);
   };
+
   const entityNameInputRef = useRef<HTMLInputElement>();
   useEffect(() => {
     if (isCreatingEntity && entityNameInputRef.current) {
@@ -182,47 +163,6 @@ const App = ({ game }: Props): JSX.Element => {
       component: componentClass,
     });
   }, [selectedEntity, selectedComponent]);
-
-  const duplicateEntity = (entityId: string) => {
-    const newEntity = game.getEntityById(entityId).clone();
-
-    const trailingNumberRegex = /\d+$/;
-    const originalEntityId = newEntity.id as string;
-
-    // check how many entity in the scene
-    let finalId = originalEntityId;
-    let loopCount = 1;
-
-    // try increment the entity id until no entity occupies that name
-    while (game.getEntityById(finalId)) {
-      const originalEntityCountArr = originalEntityId.match(trailingNumberRegex);
-      const entityCount = originalEntityCountArr && originalEntityCountArr[0];
-      // if entityCount is null means that the entity doesn not use a number
-      // incremental naming scheme, it is save to set nubmer 1
-      const newEntityTrailingNumber = !entityCount
-        ? `${loopCount}`
-        : `${Number(entityCount) + loopCount}`;
-
-      finalId = !entityCount
-        ? originalEntityId + newEntityTrailingNumber
-        : originalEntityId.replace(trailingNumberRegex, newEntityTrailingNumber);
-
-      loopCount++;
-    }
-
-    console.log(game.getEntityById(finalId));
-
-    newEntity.id = finalId;
-    game.addEntity(newEntity);
-
-    pushEditHistory({
-      type: "add",
-      entity: newEntity.clone(),
-      index: game.getEntityIndex(newEntity),
-    });
-
-    return newEntity;
-  };
 
   /**
    * Hacky way to allow context menu click in the game viewport
@@ -303,7 +243,7 @@ const App = ({ game }: Props): JSX.Element => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                createEntity(entityCreationName);
+                handleEntityCreation(entityCreationName);
               }}
             >
               <h2>Create Entity</h2>
