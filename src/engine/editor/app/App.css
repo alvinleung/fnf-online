@@ -108,3 +108,9 @@
 .inspector-container {
   height: 100vh;
 }
+
+.entity-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}

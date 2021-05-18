@@ -56,9 +56,11 @@ const App = ({ game }: Props): JSX.Element => {
       setSelectedComponent={setSelectedComponent}
     >
       <PanelGroup>
-        <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
+        <Panel dockingSide="left" initialState="expanded">
           <ContextMenuTrigger id="item-menu-trigger" ref={entityContextMenuTriggerRef}>
-            <EntityListView />
+            <div className="entity-list-container">
+              <EntityListView />
+            </div>
           </ContextMenuTrigger>
         </Panel>
         <Panel dockingSide="right" initialState="expanded" minSize={250}>

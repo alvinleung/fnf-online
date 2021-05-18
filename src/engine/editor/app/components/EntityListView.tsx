@@ -53,6 +53,7 @@ export const EntityListView = () => {
 
   return (
     <>
+      <div className="header-label panel__header panel-hor-spacing">Entity List</div>
       <List
         onSelect={handleEntityListSelect}
         onItemRemove={handleItemRemove}
