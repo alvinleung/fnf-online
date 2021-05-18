@@ -1,13 +1,10 @@
-import React, { useRef, useState, useCallback, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { ListItem } from "./ListItem";
 
 import "./List.css";
-import useClickOutside from "../hooks/useClickOutside";
+import useClickOutside from "../../hooks/useClickOutside";
 import { useHotkeys } from "react-hotkeys-hook";
-import { HotkeyConfig } from "../Hotkeys";
-
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
-import { Modal } from "./Modal";
+import { HotkeyConfig } from "../../Hotkeys";
 
 interface Props {
   onSelect?: (value: string, index?: number) => void;

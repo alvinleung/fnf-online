@@ -9,7 +9,7 @@ import useClickOutside from "../../hooks/useClickOutside";
 import { AssetExplorer } from "../AssetExplorer/AssetExplorer";
 import { FileTypes, getFileType } from "../AssetExplorer/AssetExplorerUtils";
 import { List } from "../List";
-import { ListItem } from "../ListItem";
+import { ListItem } from "../List/ListItem";
 import { Modal } from "../Modal";
 import useModal from "../Modal/useModal";
 
