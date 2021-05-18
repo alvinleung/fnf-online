@@ -118,6 +118,8 @@ const App = ({ game }: Props): JSX.Element => {
   const handleComponentAdd = () => {
     setSelectedComponent("New Component");
   };
+
+  const [editHistory, pushEditHistory] = useEditHistory();
   const handleComponentRemove = useCallback(() => {
     const componentClass = ComponentRegistry.getComponentClass(selectedComponent);
     // remove the current component in the
@@ -149,6 +151,7 @@ const App = ({ game }: Props): JSX.Element => {
   return (
     <EditorContextWrapper
       game={game}
+      setSelectedEntity={setSelectedEntity}
       selectedEntity={selectedEntity}
       selectedComponent={selectedComponent}
       setSelectedComponent={setSelectedComponent}
