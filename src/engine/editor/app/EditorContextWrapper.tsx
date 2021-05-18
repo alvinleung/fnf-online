@@ -18,20 +18,24 @@ export const useComponentContext = () => React.useContext(ComponentContext);
 interface EntityContextInterface {
   selectedEntity: Entity;
   setSelectedEntity: React.Dispatch<React.SetStateAction<Entity>>;
+  entities: Entity[];
 }
 const EntityContext = React.createContext<EntityContextInterface>({
   selectedEntity: null,
   setSelectedEntity: null,
+  entities: null,
 });
 export const useEntityContext = () => React.useContext(EntityContext);
-export const useSelectedEntity = () => [
-  React.useContext(EntityContext).selectedEntity,
-  React.useContext(EntityContext).setSelectedEntity,
-];
+export const useSelectedEntity = () =>
+  [
+    React.useContext(EntityContext).selectedEntity,
+    React.useContext(EntityContext).setSelectedEntity,
+  ] as [Entity, React.Dispatch<React.SetStateAction<Entity>>];
 
 interface Props {
   children: React.ReactNode;
   game: Game;
+  entities: Entity[];
   selectedEntity: Entity;
   setSelectedEntity: React.Dispatch<React.SetStateAction<Entity>>;
   selectedComponent: string;
@@ -40,6 +44,7 @@ interface Props {
 
 export const EditorContextWrapper = ({
   children,
+  entities,
   selectedEntity,
   setSelectedEntity,
   selectedComponent,
@@ -49,7 +54,7 @@ export const EditorContextWrapper = ({
   return (
     <GameContext.Provider value={game}>
       <EntityContext.Provider
-        value={{ selectedEntity: selectedEntity, setSelectedEntity: setSelectedEntity }}
+        value={{ selectedEntity: selectedEntity, setSelectedEntity: setSelectedEntity, entities }}
       >
         <AssetExplorerContextProvider>
           <ComponentContext.Provider

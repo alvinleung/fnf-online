@@ -21,6 +21,7 @@ import { useEntityEditing } from "./hooks/useEntityEditing";
 import useEagerUpdate from "./hooks/GameEngineCommunication/useEagerUpdate";
 import useEditorHotkeys from "./hooks/useEditorHotkeys";
 import useTriggerViewportContextMenu from "./hooks/GameEngineCommunication/useTriggerViewportContextMenu";
+import { EntityListView } from "./components/EntityListView";
 
 interface Props {
   game: Game;
@@ -106,19 +107,12 @@ const App = ({ game }: Props): JSX.Element => {
     setSelectedComponent(component);
   }, []);
 
-  const handleComponentAdd = () => {
-    setSelectedComponent("New Component");
-  };
-
-  const handleComponentRemove = useCallback(() => {
-    removeComponent(selectedEntity, selectedComponent);
-  }, [selectedEntity, selectedComponent]);
-
   const entityContextMenuTriggerRef = useTriggerViewportContextMenu();
 
   return (
     <EditorContextWrapper
       game={game}
+      entities={entities}
       setSelectedEntity={setSelectedEntity}
       selectedEntity={selectedEntity}
       selectedComponent={selectedComponent}
@@ -126,94 +120,7 @@ const App = ({ game }: Props): JSX.Element => {
     >
       <PanelGroup>
         <Panel dockingSide="left" minSize={150} initialState="expanded" header="Entity List">
-          <ContextMenuTrigger id="item-menu-trigger" ref={entityContextMenuTriggerRef}>
-            <List
-              onSelect={handleEntityListSelect}
-              onItemRemove={handleItemRemove}
-              value={selectedEntity && (selectedEntity.id as string)}
-            >
-              {entities.map((entity, index) => {
-                return (
-                  <ListItem value={entity.id as string} key={index}>
-                    {entity.id as string}
-                  </ListItem>
-                );
-              })}
-            </List>
-          </ContextMenuTrigger>
-          <ContextMenu id="item-menu-trigger">
-            <MenuItem
-              data={{ action: "add-entity" }}
-              onClick={() => {
-                setIsCreatingEntity(true);
-              }}
-            >
-              Add Entity
-            </MenuItem>
-            {selectedEntity && (
-              <>
-                <MenuItem divider={true} />
-                <MenuItem
-                  data={{ action: "add-entity" }}
-                  onClick={() => duplicateEntity(selectedEntity.id as string)}
-                >
-                  Duplicate "{selectedEntity.id}"
-                </MenuItem>
-                <MenuItem
-                  data={{ action: "remove-entity" }}
-                  onClick={() => {
-                    handleItemRemove(selectedEntity.id as string);
-                  }}
-                >
-                  Remove "{selectedEntity.id}"
-                </MenuItem>
-              </>
-            )}
-          </ContextMenu>
-          <Modal
-            isVisible={isCreatingEntity}
-            onHide={() => {
-              setIsCreatingEntity(false);
-            }}
-            width="10rem"
-          >
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleEntityCreation(entityCreationName);
-              }}
-            >
-              <h2>Create Entity</h2>
-              <div className="field">
-                <label>
-                  Entity Name
-                  <input
-                    ref={entityNameInputRef}
-                    type="text"
-                    value={entityCreationName}
-                    onChange={(e) =>
-                      setEntityCreationName(
-                        e.target.value
-                          .match(/^[A-Za-z0-9 -]*$/)
-                          .join("")
-                          .replace(" ", "-")
-                      )
-                    }
-                  />
-                </label>
-              </div>
-              <div className="field">
-                <button type="submit">Create</button>
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={(e) => setIsCreatingEntity(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </Modal>
+          <EntityListView syncEditorEntityList={syncEditorEntityList} />
         </Panel>
         <Panel dockingSide="right" initialState="expanded" minSize={250}>
           <ContextMenuTrigger id="entity-component-inspector">
