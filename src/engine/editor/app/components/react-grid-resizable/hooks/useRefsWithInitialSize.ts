@@ -3,6 +3,7 @@ import React, { Children, ReactElement, Ref, useRef } from "react";
 interface RefWithInitialSize<T extends HTMLElement> {
   element: T;
   initialSize: number;
+  dragging: boolean;
 }
 
 export interface ForwardRefProps<T> {
@@ -12,6 +13,7 @@ export interface ForwardRefProps<T> {
 interface RefsWithInitialSizeHook<T extends HTMLElement> {
   getRef: (index: number) => RefWithInitialSize<T>;
   setRef: (index: number, element: T) => void;
+  setRefDraggingState: (index: number, isDragging: boolean) => void;
   /**
    * Update the initial size of the element
    */
@@ -31,15 +33,18 @@ const createRefWithInitialSize = <T extends HTMLElement>(
   element: T
 ): RefWithInitialSize<T> => {
   const boundingClientRect = element.getBoundingClientRect();
+
   if (direction == "horizontal") {
     return {
       element,
       initialSize: boundingClientRect.width,
+      dragging: false,
     };
   } else {
     return {
       element,
       initialSize: boundingClientRect.height,
+      dragging: false,
     };
   }
 };
@@ -62,7 +67,15 @@ export const useRefsWithInitialSize = <T extends HTMLElement>(
 
     const current = refs.current;
     refs.current = current ? [...current] : [];
+
+    // hack: don't update the dragging refs
+    if (refs.current[index] && refs.current[index].dragging) return;
+
     refs.current[index] = createRefWithInitialSize<T>(direction, element);
+  };
+
+  const setRefDraggingState = (index: number, isDragging: boolean) => {
+    refs.current[index].dragging = isDragging;
   };
 
   const resetRef = (index: number) => {
@@ -86,6 +99,7 @@ export const useRefsWithInitialSize = <T extends HTMLElement>(
     getRef,
     setRef,
     resetRef,
+    setRefDraggingState,
     childrenWithRef,
   };
 };
