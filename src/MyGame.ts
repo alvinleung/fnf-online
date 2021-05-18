@@ -138,8 +138,8 @@ class MyGame extends Game {
     this.addEntity(light);
   }
 
-  public loadScene(serializedScene: string) {
-    super.loadScene(serializedScene);
+  public async loadScene(serializedScene: string) {
+    await super.loadScene(serializedScene);
 
     // inject the camera component
     this.entities.forEach((e) => {
@@ -202,7 +202,9 @@ class MyGame extends Game {
 
   // @override
   protected setupAssets(assets: AssetManager) {
-    assets.loadFromAssetSheet("/asset-sheet");
+    assets.fetchAssetSheet("/asset-sheet").then((assetSheet) => {
+      assets.loadFromAssetSheet(assetSheet);
+    });
   }
 
   protected setupSystems() {

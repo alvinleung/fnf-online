@@ -5,13 +5,19 @@ import InputSystem from "./input";
 import { AssetLoader, AssetManager } from "./assets";
 import { RenderingSystem } from "./graphics/RenderingSystem";
 import { EventEmitter, IEventEmitter } from "./events/EventEmitter";
-import { GameStateParser } from "./utils/GameStateParser";
+import { GameStateObect, GameStateParser } from "./utils/GameStateParser";
 import { AssetLoaderEvent } from "./assets/AssetLoader";
+import { AssetSheet } from "./assets/AssetManager";
 
 export enum GameEvent {
   UPDATE = "update",
   ENTITY_SELECT = "select-entity",
   ENTITY_LIST_CHANGE = "entity-list-change",
+}
+
+export interface SceneFile {
+  scene: GameStateObect;
+  assets: AssetSheet;
 }
 
 export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
@@ -119,16 +125,32 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   }
 
   public saveScene() {
-    const serializedScene = GameStateParser.fromGame(this).getString();
-    console.log(serializedScene);
-    return serializedScene;
+    const gameState = JSON.parse(GameStateParser.fromGame(this).getString());
+    const assetSheet = this.assets.saveAssetSheet();
+
+    const sceneFile: SceneFile = {
+      scene: gameState,
+      assets: assetSheet,
+    };
+    return JSON.stringify(sceneFile);
   }
 
-  public loadScene(sceneData: string) {
+  public async loadScene(sceneFile: string) {
     // clean up all the entities in the scene first
     this.removeEntities(...this.entities);
 
-    const newSceneEntities = GameStateParser.fromString(sceneData, this.assets.image).getEntities();
+    const deserializedScene: SceneFile = JSON.parse(sceneFile);
+
+    // wait and load the asset files from asset sheet
+    await this.assets.loadFromAssetSheet(deserializedScene.assets);
+
+    // configure the game scene after having all the assets loaded
+    const gameStateData = GameStateParser.fromString(
+      JSON.stringify(deserializedScene.scene), // feed it back to the parser
+      this.assets.image
+    );
+
+    const newSceneEntities = gameStateData.getEntities();
     this.addEntities(...newSceneEntities);
   }
 

@@ -25,6 +25,8 @@ interface ComponentFieldEntry {
   value: string | [] | Object;
 }
 
+export type GameStateObect = EntityEntry[];
+
 export class GameStateParser {
   private _entities: Entity[] = [];
   private _string: string;
