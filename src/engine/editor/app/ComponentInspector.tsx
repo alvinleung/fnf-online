@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Component, ComponentClass, Entity } from "../../ecs";
 import { Game } from "../../Game";
 import { CollapsableSection } from "./components/CollapsableSection";
@@ -11,6 +11,8 @@ import { DropDownSelect } from "./components/DropDownSelect/DropDownSelect";
 import { DropDownItem } from "./components/DropDownSelect/DropDownItem";
 import { useEditHistory } from "./EditHistory";
 import lodashCloneDeep from "lodash.clonedeep";
+import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
+import { Modal } from "./components/Modal";
 
 interface Props {
   selectedEntity?: Entity;
@@ -19,8 +21,9 @@ interface Props {
 }
 
 export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: Props) => {
+  const [editHistory, pushEditHistory] = useEditHistory();
   // get the informaiton of component whne component changed
-  const getEntityComponent = useCallback(() => {
+  const selectedEntityComponent = useMemo(() => {
     if (!selectedEntity || !game.getEntityById(selectedEntity.id as string)) return;
 
     const componentList = game.getEntityById(selectedEntity.id as string).listComponents();
@@ -31,9 +34,7 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
     });
 
     return editableComponentList;
-  }, [selectedEntity]);
-
-  const [editHistory, pushEditHistory] = useEditHistory();
+  }, [selectedEntity, editHistory]); // use edit history to trigger the component change update
 
   const onEntityValueUpdate = (
     liveComponentInstance: ComponentClass<any>,
@@ -105,8 +106,8 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
 
   return (
     <div ref={inspectorContainerRef}>
-      {getEntityComponent() &&
-        getEntityComponent().map((componentInstance, index) => {
+      {selectedEntityComponent &&
+        selectedEntityComponent.map((componentInstance, index) => {
           if (!componentInstance) return <div>No editable fields in this component</div>;
 
           const fields = ComponentRegistry.getComponentEditableFields(componentInstance);
@@ -151,6 +152,9 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
             </div>
           );
         })}
+      {/* <Modal isVisible={false}>
+        <AssetExplorer />
+      </Modal> */}
       {isCreatingComponent && (
         <DropDownSelect
           selected={""}
