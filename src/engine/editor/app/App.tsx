@@ -68,37 +68,6 @@ const App = ({ game }: Props): JSX.Element => {
     });
   }, []);
 
-  const { duplicateEntity, createEntity, deleteEntity, removeComponent } = useEntityEditing(game);
-
-  const handleItemRemove = (entityId: string) => {
-    deleteEntity(entityId);
-
-    // sync the entity list with game
-    syncEditorEntityList(game);
-    setSelectedEntity(null);
-  };
-
-  /**
-   * Logic for creating an entity
-   */
-  const [isCreatingEntity, setIsCreatingEntity] = useState(false);
-  const [entityCreationName, setEntityCreationName] = useState("");
-  const handleEntityCreation = (name: string) => {
-    if (!name) return;
-
-    const newEntity = createEntity(name);
-    setIsCreatingEntity(false);
-    setSelectedEntity(newEntity);
-  };
-
-  const entityNameInputRef = useRef<HTMLInputElement>();
-  useEffect(() => {
-    if (isCreatingEntity && entityNameInputRef.current) {
-      setEntityCreationName("");
-      entityNameInputRef.current.focus();
-    }
-  }, [isCreatingEntity]);
-
   /**
    * For component selection
    */
@@ -106,8 +75,6 @@ const App = ({ game }: Props): JSX.Element => {
   const handleComponentSelection = useCallback((component: string) => {
     setSelectedComponent(component);
   }, []);
-
-  const entityContextMenuTriggerRef = useTriggerViewportContextMenu();
 
   return (
     <EditorContextWrapper
