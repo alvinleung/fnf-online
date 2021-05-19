@@ -70,12 +70,12 @@ interface RenamableFileNameProps extends HTMLProps<HTMLInputElement> {
   isFocused: boolean;
 }
 
-export function RenamableFileName(props: RenamableFileNameProps) {
+export function RenamableFileName({ isFocused, onRename, file, ...props }: RenamableFileNameProps) {
   const [isRenaming, setIsRenaming] = useState(false);
 
   const commitNameChangeHandler = (val: string) => {
     // send rename request
-    props.onRename && props.onRename(props.file.fullPath, val);
+    onRename && onRename(file.fullPath, val);
     setIsRenaming(false);
   };
   const abortNameChangeHandler = () => {
@@ -84,19 +84,19 @@ export function RenamableFileName(props: RenamableFileNameProps) {
 
   useEffect(() => {
     const rename = (e: KeyboardEvent) =>
-      e.key === "Enter" && props.isFocused && !isRenaming && setIsRenaming(true);
+      e.key === "Enter" && isFocused && !isRenaming && setIsRenaming(true);
     window.addEventListener("keydown", rename);
     return () => {
       window.removeEventListener("keydown", rename);
     };
-  }, [props.isFocused, isRenaming]);
+  }, [isFocused, isRenaming]);
 
   return (
     <DraftEditField
       onCommit={commitNameChangeHandler}
       onDiscard={abortNameChangeHandler}
       //@ts-ignore
-      value={props.file.name}
+      value={file.name}
       editing={isRenaming}
       onDoubleClickCapture={(e) => {
         e.preventDefault();

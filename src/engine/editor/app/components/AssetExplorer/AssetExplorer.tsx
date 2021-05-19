@@ -103,7 +103,10 @@ export const AssetExplorer = ({ onChange }: Props) => {
 
   // list out all the directories
   const fetchServerDirs = () => {
-    editorServerIO.listAllFolders().then((val) => setLocalDirList(val));
+    editorServerIO.listAllFolders().then((val) => {
+      setLocalDirList(val);
+      setSelectedItemPath(null);
+    });
   };
   useEffect(() => {
     fetchServerDirs(); // init all directories
