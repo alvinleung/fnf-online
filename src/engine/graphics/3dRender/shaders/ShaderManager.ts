@@ -1,6 +1,7 @@
 import { string } from "prop-types";
 import { v3 } from "twgl.js";
-import { MaterialProperties } from "../../Renderable";
+import { MaterialProperties } from "../../Materials/Material";
+
 
 export namespace Shader{
   // variable storage qualifier -> variable type
@@ -41,9 +42,7 @@ export function shaderVariable(type:number,nameInShader?:string): any{
 export class ShaderManager {
 
   public shaderMaterialVariableNameMap:{[shaderName:string]:{[materialName:string]:any}} = {};
-  public geomatryNames: {[shaderName:string]:{
-    [variableName:string]: string
-  }};
+  public geomatryNames: {[shaderName:string]:{[variableName:string]: string}} = {};
 
   public getShaderFor(gl:WebGLRenderingContext, shaderSet:ShaderSet){
     
@@ -105,11 +104,11 @@ export class ShaderManager {
       case Shader.NAMES.TEXCOORDS:
         return this.geomatryNames[shaderSetName]["texCoords"];
       case Shader.NAMES.MODEL_MATRIX:
-        return "modelMatrix"
+        return "modelMatrix";
       case Shader.NAMES.VIEW_MATRIX:
-        return "viewMatrix"
+        return "viewMatrix";
       case Shader.NAMES.PROJECTION_MATRIX:
-        return "projectionMatrix"
+        return "projectionMatrix";
       default:
         throw("no default variable name for enum["+shaderVariable+"] was found");
     }

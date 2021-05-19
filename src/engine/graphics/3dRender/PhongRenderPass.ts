@@ -4,7 +4,9 @@ import { Editor, Field, Instantiable } from "../../editor";
 import { spreadArrayRecusively } from "../../utils/ArrayUtils";
 import { AttribDataBuffer } from "../AttribDataBuffer";
 import { LightComponent } from "../Light";
-import { MaterialProperties, RenderableObject } from "../Renderable";
+import { MaterialProperties } from "../Materials/Material";
+import { RenderableObject } from "../Renderable";
+
 import { RenderingSystem } from "../RenderingSystem";
 import { ShaderProgram } from "../ShaderProgram";
 import { Renderer3D } from "./Renderer3D";

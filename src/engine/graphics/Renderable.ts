@@ -6,7 +6,9 @@ import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderPass";
 import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderPass";
 import { AttribDataBuffer } from "./AttribDataBuffer";
+import { Geomatry } from "./Geomatry/Geomatry";
 import { Image } from "./Image/Image";
+import { Materials } from "./Materials/Material";
 import { Texture } from "./Texture";
 
 const VERBOSE = false;
@@ -14,60 +16,6 @@ const VERBOSE = false;
 export class RenderableComponent implements Component {
   @EditableField(Editor.CLASS, { category: "RenderableObject" })
   renderableObject: RenderableObject;
-}
-
-export class MaterialProperties {}
-
-@Instantiable("Materials")
-export class Materials {
-  @Field(Editor.OBJECT, {
-    config: {
-      fieldsInEachEntry: [{ name: "Property", editor: Editor.CLASS }],
-    },
-  })
-  private properties = {};
-
-  public getProperty<T extends MaterialProperties>(name: string): T {
-    return this.properties[name];
-  }
-
-  public addProperty<T extends MaterialProperties>(name: string, val: T) {
-    if (!this.properties[name]) {
-      this.properties[name] = val;
-    }
-    return this;
-  }
-  public editProperty<T extends MaterialProperties>(name: string, val: T) {
-    this.properties[name] = val;
-    return this;
-  }
-  public hasProperty(name: string): boolean {
-    if (this.properties[name]) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
-
-
-export class Geomatry {
-  private _vertices:number[];
-  private _normals:number[];
-
-  public get vertices(){
-    return null //TODO:
-  }
-  public get normals(){
-    return null //TODO:
-  }
-  public get transform(){
-    return null //TODO:
-  }
-  public get(val:any):any{
-    return null;
-  }
-
 }
 
 /**

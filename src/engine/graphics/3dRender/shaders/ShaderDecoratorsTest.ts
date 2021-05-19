@@ -1,5 +1,6 @@
 import { v3 } from "twgl.js";
-import { MaterialProperties } from "../../Renderable";
+import { MaterialProperties } from "../../Materials/Material";
+
 import { Shader, shaderVariable } from "./ShaderManager";
 
 export class TestMaterial implements MaterialProperties {

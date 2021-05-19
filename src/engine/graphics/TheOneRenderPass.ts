@@ -1,5 +1,7 @@
 import { Shader, ShaderManager } from "./3dRender/shaders/ShaderManager";
-import { MaterialProperties, RenderableObject } from "./Renderable";
+import { MaterialProperties } from "./Materials/Material";
+import { RenderableObject } from "./Renderable";
+
 import { RenderingSystem } from "./RenderingSystem";
 import { RenderPass } from "./RenderPass";
 
@@ -16,6 +18,9 @@ export class ShaderPlan implements MaterialProperties {
 // Shader set
 
 export class DataBufferHandler {
+
+}
+export class DataBufferPair {
 
 }
 
