@@ -38,7 +38,7 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     return assetSheetContent;
   }
 
-  public async loadFromAssetSheet(assetSheetContent: AssetSheet) {
+  public addAssetsFromAssetSheet(assetSheetContent: AssetSheet) {
     assetSheetContent.image.forEach((item) => {
       this.image.add({ name: item.name, path: item.path });
     });
@@ -51,8 +51,14 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
       this.shader.add({ name: item.name, path: item.path });
     });
 
+  }
+
+
+
+  public async loadFromAssetSheet(assetSheetContent: AssetSheet) {
+    this.addAssetsFromAssetSheet(assetSheetContent);
     // load all item here
-    this.loadAll();
+    await this.loadAll();
   }
 
   public saveAssetSheet(): AssetSheet {
@@ -75,11 +81,22 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     };
   }
 
-  public loadAll() {
-    this.assetLoaders.forEach((loader) => loader.loadAll());
+  public loadAll(): Promise<boolean> {
+    return new Promise((resolvePromise, reject) => {
+      const handleLoadProgress = () => {
+        if (!this.haveAllAssetLoaded()) return;
+        // loaded
+        resolvePromise(true);
+        this.removeEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
+      };
+
+      this.addEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
+      this.assetLoaders.forEach((loader) => loader.loadAll());
+    });
   }
+
   public haveAllAssetLoaded(): boolean {
-    return this.assetLoaders.some((assetLoader: AssetLoader<any>) => {
+    return !this.assetLoaders.some((assetLoader: AssetLoader<any>) => {
       return assetLoader.isLoaded() === false;
     });
   }

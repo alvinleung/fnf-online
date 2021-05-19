@@ -52,7 +52,7 @@ export const EntityListView = () => {
     setSelectedEntity(newEntity);
   };
 
-  const handleEntityCreationAbort = () => {
+  const handleEntityCreationDiscard = () => {
     setIsCreatingEntity(false);
   };
 
@@ -104,7 +104,7 @@ export const EntityListView = () => {
       >
         <DraftEditField
           onCommit={handleEntityNameCommit}
-          onAbort={handleEntityNameAbort}
+          onDiscard={handleEntityNameAbort}
           value={entity.id as string}
           editing={isEditing}
         />
@@ -116,7 +116,7 @@ export const EntityListView = () => {
     <ListItem value={entityCreationName} key={"creation"}>
       <DraftEditField
         onCommit={handleEntityCreation}
-        onAbort={handleEntityCreationAbort}
+        onDiscard={handleEntityCreationDiscard}
         value={entityCreationName}
         editing={isCreatingEntity}
         key={"creation"}

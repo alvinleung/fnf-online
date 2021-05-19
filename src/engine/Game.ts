@@ -45,11 +45,12 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
 
     // setup load all assets
     this.assets = AssetManager.getInstance();
-    this.setupAssets(this.assets);
 
-    const handleLoadProgress = () => {
-      if (!this.assets.haveAllAssetLoaded()) return;
-      // continue the rest of initialisation after all the assets loaded
+    // wait for the setup is finished, because the implementation
+    // might include fetching datasheet
+    this.setupAssets(this.assets).then(async () => {
+      // wait for assets fully loaded
+      await this.assets.loadAll();
 
       // setup the rendering system
       this._rendering = this.setupRendering();
@@ -62,13 +63,7 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
 
       // init the game
       this.tick();
-
-      // event listener clean up
-      this.assets.removeEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
-    };
-
-    this.assets.addEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
-    this.assets.loadAll();
+    });
   }
 
   addEventListener(eventType: GameEvent, callback: Function): void {
@@ -111,7 +106,7 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
 
   // facotry function for binding input controls
   protected abstract setupInput(): InputSystem;
-  protected abstract setupAssets(assetManager: AssetManager): void;
+  protected abstract setupAssets(assetManager: AssetManager): Promise<void>;
   protected abstract setupRendering(): RenderingSystem;
 
   protected gameDidInit() {

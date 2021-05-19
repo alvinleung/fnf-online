@@ -14,7 +14,7 @@ export enum AssetLoaderEvent {
 
 export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoaderEvent> {
   private assetsDict: { [name: string]: T } = {};
-  private assetConfigs: Array<AssetConfig> = [];
+  private assetLoadingList: Array<AssetConfig> = [];
 
   private loadedCount: number = 0;
   private totalCount: number = 0;
@@ -27,7 +27,7 @@ export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoa
       );
       return;
     }
-    this.assetConfigs.push(config);
+    this.assetLoadingList.push(config);
     this.totalCount++;
   }
 
@@ -60,7 +60,16 @@ export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoa
   }
 
   public loadAll() {
-    this.assetConfigs.forEach((config: AssetConfig) => {
+    // if nothing to load, trigger complete
+    if (this.assetLoadingList.length === 0) {
+      this.onComplete();
+      return;
+    }
+    // reset isloaded state
+    this.isDone = false;
+
+    // load each assets
+    this.assetLoadingList.forEach((config: AssetConfig) => {
       const onLoadCallback = () => {
         this.loadedCount++;
         this.onProgress();
@@ -68,15 +77,22 @@ export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoa
       };
       this.assetsDict[config.name] = this.loadItem(config, onLoadCallback);
     });
+
+    // reset the loadint list
+    this.assetLoadingList = [];
   }
 
   protected abstract loadItem(config: AssetConfig, onLoadCallback: Function): T;
 
   protected onProgress() {
     if (this.loadedCount === this.totalCount) {
-      this.isDone = true;
-      this.fireEvent(AssetLoaderEvent.COMPLETE, this);
+      this.onComplete();
     }
+  }
+
+  protected onComplete() {
+    this.isDone = true;
+    this.fireEvent(AssetLoaderEvent.COMPLETE, this);
   }
 
   public getProgress(): number {

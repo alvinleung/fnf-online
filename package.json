@@ -6,7 +6,7 @@
   "scripts": {
     "start": "parcel watch ./src/index.html | nodemon EditorServer.js --ignore 'assets/'",
     "serve": "parcel ./src/index.html | node EditorServer.js",
-    "build": "parcel build ./src/index.html --dist-dir ./dist --no-optimize"
+    "build": "parcel build ./src/index.html --dist-dir ./dist --no-optimize && cp ./src/AssetSheet.json ./dist/asset-sheet"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.13.0",
@@ -22,6 +22,7 @@
     "glslify-deps": "^1.3.2",
     "nodemon": "^2.0.7",
     "parcel": "^2.0.0-nightly.649",
+    "parcel-reporter-static-files-copy": "^1.3.0",
     "typescript": "^4.2.4"
   },
   "dependencies": {
@@ -48,5 +49,10 @@
   },
   "prettier": {
     "printWidth": 100
+  },
+  "staticFiles": {
+    "staticPath": "assets/",
+    "staticOutPath": "assets/",
+    "distDir": "dist/"
   }
 }

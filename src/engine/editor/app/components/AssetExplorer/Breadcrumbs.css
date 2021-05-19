@@ -10,6 +10,7 @@
   /* border-bottom: 1px solid var(--clr-bg-lightest); */
   background-color: rgba(99, 99, 99, 0.2);
   overflow: hidden;
+  overflow-y: scroll;
 }
 
 .breadcrumbs,

@@ -16,11 +16,11 @@ const useClickOutside = (ref, callback, mouseDown = false, deps = []) => {
   };
 
   React.useEffect(() => {
-    document.addEventListener(mouseDown ? "mousedown" : "click", handleClick);
-    document.addEventListener("contextmenu", handleClick, { capture: true });
+    document.body.addEventListener(mouseDown ? "mousedown" : "click", handleClick);
+    document.body.addEventListener("contextmenu", handleClick, { capture: true });
     return () => {
-      document.removeEventListener(mouseDown ? "mousedown" : "click", handleClick);
-      document.removeEventListener("contextmenu", handleClick, { capture: true });
+      document.body.removeEventListener(mouseDown ? "mousedown" : "click", handleClick);
+      document.body.removeEventListener("contextmenu", handleClick, { capture: true });
     };
   }, [callback, ...deps]);
 };
