@@ -62,6 +62,8 @@ export const AssetExplorer = ({ onChange }: Props) => {
         setCurrentDir(targetFolder);
         // expand the tree view to that folder
         expandUntilFolder(localDirMap, targetFolder);
+        //
+        setSelectedItemPath(null);
         break;
       case FileTypes.IMAGE:
         // TODO: preview image

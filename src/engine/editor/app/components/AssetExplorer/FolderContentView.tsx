@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { HTMLProps, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useFocus } from "../../hooks/useFocus";
 import { HotkeyConfig } from "../../Hotkeys";
@@ -32,25 +32,6 @@ export function FolderContentView(props) {
 
 function FolderItem(props) {
   const [focusRef, isFocused] = useFocus();
-  const [isRenaming, setIsRenaming] = useState(false);
-
-  const commitNameChangeHandler = (val: string) => {
-    // send rename request
-    props.onRename && props.onRename(props.file.fullPath, val);
-    setIsRenaming(false);
-  };
-  const abortNameChangeHandler = () => {
-    setIsRenaming(false);
-  };
-
-  useEffect(() => {
-    const rename = (e: KeyboardEvent) =>
-      e.key === "Enter" && isFocused && !isRenaming && setIsRenaming(true);
-    window.addEventListener("keydown", rename);
-    return () => {
-      window.removeEventListener("keydown", rename);
-    };
-  }, [isFocused, isRenaming]);
 
   const focusClass = isFocused ? " folder-content-view__item--focused" : "";
   return (
@@ -71,12 +52,19 @@ function FolderItem(props) {
         draggable="false"
         alt="folder"
       />
-      <RenamableFileName onRename={props.onRename} file={props.file} isFocused={isFocused} />
+      <RenamableFileName
+        onRename={props.onRename}
+        file={props.file}
+        isFocused={isFocused}
+        style={{
+          textAlign: "center",
+        }}
+      />
     </div>
   );
 }
 
-interface RenamableFileNameProps {
+interface RenamableFileNameProps extends HTMLProps<HTMLInputElement> {
   onRename?: (path: string, newName: string) => void;
   file: DirItem;
   isFocused: boolean;
@@ -107,6 +95,7 @@ export function RenamableFileName(props: RenamableFileNameProps) {
     <DraftEditField
       onCommit={commitNameChangeHandler}
       onDiscard={abortNameChangeHandler}
+      //@ts-ignore
       value={props.file.name}
       editing={isRenaming}
       onDoubleClickCapture={(e) => {
@@ -116,6 +105,7 @@ export function RenamableFileName(props: RenamableFileNameProps) {
       }}
       draggable={false}
       discardWhenClickoutside
+      {...props}
     />
   );
 }
