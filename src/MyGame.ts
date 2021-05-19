@@ -28,16 +28,14 @@ import { GameStateParser } from "./engine/utils/GameStateParser";
 import { DebugSystem } from "./engine/core/DebugSystem";
 import EditorSystem from "./engine/core/EditorSystem";
 import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheetAnimator";
-import { PhongRenderPass } from "./engine/graphics/3dRender/PhongRenderPass";
+import { PhongRenderer } from "./engine/graphics/3dRender/PhongRenderer";
 import { LightComponent } from "./engine/graphics/Light";
 import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
 import {
   wireFrameMaterialProperties,
-  WireFrameRenderPass,
-} from "./engine/graphics/3dRender/WireframeRenderPass";
+  WireFrameRenderer,
+} from "./engine/graphics/3dRender/WireframeRenderer";
 import { TouchInput } from "./engine/input/TouchInput";
-import { GizmoPass } from "./engine/graphics/3dRender/GizmoPass";
-import { SelectableComponent } from "./engine/core/SelectionSystem";
 import { EditorServerIO } from "./engine/editor/EditorServerIO";
 import { ShaderManager } from "./engine/graphics/Materials/ShaderManager";
 import { TestMaterial } from "./engine/graphics/Materials/CustomMaterials";
@@ -62,7 +60,6 @@ class MyGame extends Game {
     const image = this.assets.image.get("test");
     squareEntity.useComponent(TransformComponent);
     squareEntity.useComponent(RenderableComponent).renderableObject = new Plane(image);
-
 
     const transform = squareEntity.getComponent(TransformComponent);
     transform.scale = [1, 1, 0];
@@ -123,14 +120,7 @@ class MyGame extends Game {
       .getMaterials()
       //.addProperty("WireFrame", new wireFrameMaterialProperties(debugRenderable.objectCoords));
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
-    debugEntity.useComponent(SelectableComponent);
     cameraEntity.useComponent(EditorControlComponent);
-
-    /* Selection test */
-    squareEntity.useComponent(SelectableComponent);
-    debugEntity.useComponent(SelectableComponent);
-
-
 
     this.addEntity(cameraEntity);
     this.addEntity(squareEntity);
@@ -160,8 +150,8 @@ class MyGame extends Game {
     this.addEntity(light);
   }
 
-  public loadScene(serializedScene: string) {
-    super.loadScene(serializedScene);
+  public async loadScene(serializedScene: string) {
+    await super.loadScene(serializedScene);
 
     // inject the camera component
     this.entities.forEach((e) => {
@@ -224,7 +214,9 @@ class MyGame extends Game {
 
   // @override
   protected setupAssets(assets: AssetManager) {
-    assets.loadFromAssetSheet("/asset-sheet");
+    assets.fetchAssetSheet("/asset-sheet").then((assetSheet) => {
+      assets.loadFromAssetSheet(assetSheet);
+    });
   }
 
   protected setupSystems() {
@@ -241,8 +233,8 @@ class MyGame extends Game {
       // new ImageRendererSetup(),
       // new SpriteSheetRendererSetup(),
       new SpriteSheetRenderPass(),
-      new PhongRenderPass(),
-      new WireFrameRenderPass(),
+      new PhongRenderer(),
+      new WireFrameRenderer(),
       new MetricsRenderPass(),
       //new GizmoPass(),
     ];

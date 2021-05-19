@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { InstantiableClassRegistry } from "../../../InstantiableClass";
+import useForceUpdate from "../../hooks/useForceUpdate";
 import { DropDownItem } from "../DropDownSelect/DropDownItem";
 import { DropDownSelect } from "../DropDownSelect/DropDownSelect";
 import { ValueEditor } from "./ValueEditor";
@@ -24,6 +25,8 @@ export const InstantiableClassEditor = ({ name, value, onChange, config }: Props
   const currentInstanceClassName = value && value.constructor && value.constructor.name;
   const [selectedClassName, setSelectedClassName] = useState(currentInstanceClassName);
 
+  const forceUpdate = useForceUpdate();
+
   const currentInstanceFields = useMemo(
     () => selectedClassName && InstantiableClassRegistry.getFields(currentInstanceClassName),
     [selectedClassName, value]
@@ -32,6 +35,9 @@ export const InstantiableClassEditor = ({ name, value, onChange, config }: Props
   const handleFieldChange = (fieldName: string, val: any) => {
     // handle the changes on the instance
     currentInstance[fieldName] = val;
+
+    // force update so that react could reflect engine changes
+    forceUpdate();
 
     onChange && onChange(currentInstance);
   };

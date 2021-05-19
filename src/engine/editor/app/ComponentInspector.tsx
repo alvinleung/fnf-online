@@ -1,26 +1,29 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Component, ComponentClass, Entity } from "../../ecs";
-import { Game } from "../../Game";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ComponentClass } from "../../ecs";
 import { CollapsableSection } from "./components/CollapsableSection";
 import { ValueEditor } from "./components/valueEditor/ValueEditor";
 import { ComponentRegistry } from "../EditorDecorators";
 import { camelCaseToSentenceCase } from "../../utils/StringUtils";
 import useClickOutside from "./hooks/useClickOutside";
-import { useComponentContext, useEntityContext, useGameContext } from "./EditorContextWrapper";
+import { useComponentContext, useGameContext, useSelectedEntity } from "./EditorContextWrapper";
 import { DropDownSelect } from "./components/DropDownSelect/DropDownSelect";
 import { DropDownItem } from "./components/DropDownSelect/DropDownItem";
 import { useEditHistory } from "./EditHistory";
-import lodashCloneDeep from "lodash.clonedeep";
+import useForceUpdate from "./hooks/useForceUpdate";
+import { useEntityEditing } from "./hooks/useEntityEditing";
+import { ContextMenu, MenuItem } from "react-contextmenu";
 
-interface Props {
-  selectedEntity?: Entity;
-  game: Game;
-  onSelectComponent?: (component: string) => void;
-}
+/**
+ * View, add, change, remove components from entity
+ * @returns
+ */
+export const ComponentInspector = () => {
+  const [editHistory, pushEditHistory] = useEditHistory();
+  const game = useGameContext();
+  const [selectedEntity, setSelectedEntity] = useSelectedEntity();
 
-export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: Props) => {
   // get the informaiton of component whne component changed
-  const getEntityComponent = useCallback(() => {
+  const selectedEntityComponent = useMemo(() => {
     if (!selectedEntity || !game.getEntityById(selectedEntity.id as string)) return;
 
     const componentList = game.getEntityById(selectedEntity.id as string).listComponents();
@@ -31,9 +34,9 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
     });
 
     return editableComponentList;
-  }, [selectedEntity]);
+  }, [selectedEntity, editHistory]); // use edit history to trigger the component change update
 
-  const [editHistory, pushEditHistory] = useEditHistory();
+  const forceUpdate = useForceUpdate();
 
   const onEntityValueUpdate = (
     liveComponentInstance: ComponentClass<any>,
@@ -57,17 +60,20 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
       },
       200 // push change every 200 milisec
     );
+
+    // force reflect the change when field change
+    forceUpdate();
   };
 
   const handleComponentSelection = (component: string) => {
-    onSelectComponent && onSelectComponent(component);
+    componentContext.setSelectedComponent(component);
   };
 
   const inspectorContainerRef = useRef();
   useClickOutside(
     inspectorContainerRef,
     () => {
-      onSelectComponent("");
+      componentContext.setSelectedComponent("");
     },
     true
   );
@@ -76,22 +82,14 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
    * For creating new component
    */
   const componentContext = useComponentContext();
-  const entityContext = useEntityContext();
   const [isCreatingComponent, setIsCreatingComponent] = useState(false);
   useEffect(() => {
     if (componentContext.selectedComponent === "New Component") setIsCreatingComponent(true);
   }, [componentContext, isCreatingComponent]);
 
-  const handleComponentCreation = (componentName: string) => {
-    // create component and select the component
-    const componentClass = ComponentRegistry.getComponentClass(componentName);
-    entityContext.selectedEntity.useComponent(componentClass);
-
-    pushEditHistory({
-      type: "componentAdd",
-      entity: selectedEntity,
-      component: componentClass,
-    });
+  const { addComponent, removeComponent } = useEntityEditing(game);
+  const handleComponentAdd = (componentName: string) => {
+    addComponent(selectedEntity, componentName);
 
     // select the newly created entity
     componentContext.setSelectedComponent(componentName);
@@ -103,10 +101,14 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
     setIsCreatingComponent(false);
   };
 
+  const handleComponentRemove = () => {
+    removeComponent(selectedEntity, componentContext.selectedComponent);
+  };
+
   return (
     <div ref={inspectorContainerRef}>
-      {getEntityComponent() &&
-        getEntityComponent().map((componentInstance, index) => {
+      {selectedEntityComponent &&
+        selectedEntityComponent.map((componentInstance, index) => {
           if (!componentInstance) return <div>No editable fields in this component</div>;
 
           const fields = ComponentRegistry.getComponentEditableFields(componentInstance);
@@ -151,10 +153,11 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
             </div>
           );
         })}
+
       {isCreatingComponent && (
         <DropDownSelect
           selected={""}
-          onSelect={(val) => handleComponentCreation(val)}
+          onSelect={(val) => handleComponentAdd(val)}
           focus={true}
           onBlur={handleDismissComponentCreation}
         >
@@ -166,6 +169,23 @@ export const ComponentInspector = ({ selectedEntity, game, onSelectComponent }: 
             );
           })}
         </DropDownSelect>
+      )}
+
+      {selectedEntity && (
+        <ContextMenu id="entity-component-inspector">
+          <MenuItem onClick={() => componentContext.setSelectedComponent("New Component")}>
+            Add Component
+          </MenuItem>
+
+          {componentContext.selectedComponent !== "" && (
+            <>
+              <MenuItem divider={true} />
+              <MenuItem onClick={handleComponentRemove}>
+                Remove "{componentContext.selectedComponent}"
+              </MenuItem>
+            </>
+          )}
+        </ContextMenu>
       )}
     </div>
   );

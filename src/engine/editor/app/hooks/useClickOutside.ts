@@ -1,6 +1,6 @@
 import React from "react";
 
-const useClickOutside = (ref, callback, mouseDown = false) => {
+const useClickOutside = (ref, callback, mouseDown = false, deps = []) => {
   const handleClick = (e) => {
     if (ref && ref instanceof Array) {
       const isClickingInsideAnyRef = ref.some((elm) => {
@@ -11,16 +11,18 @@ const useClickOutside = (ref, callback, mouseDown = false) => {
       if (!isClickingInsideAnyRef) callback();
     }
     if (ref.current && !ref.current.contains(e.target)) {
-      callback();
+      callback(e);
     }
   };
 
   React.useEffect(() => {
     document.addEventListener(mouseDown ? "mousedown" : "click", handleClick);
+    document.addEventListener("contextmenu", handleClick, { capture: true });
     return () => {
       document.removeEventListener(mouseDown ? "mousedown" : "click", handleClick);
+      document.removeEventListener("contextmenu", handleClick, { capture: true });
     };
-  });
+  }, [callback, ...deps]);
 };
 
 export default useClickOutside;

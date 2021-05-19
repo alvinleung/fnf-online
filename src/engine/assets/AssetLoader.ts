@@ -23,7 +23,7 @@ export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoa
   public add(config: AssetConfig) {
     if (this.assetsDict[config.name]) {
       console.warn(
-        `Item "${config.name}" already exist in the AssetLoader, abort loading process.`
+        `Skipped asset loading: Item "${config.name}" already exist in the AssetLoader.`
       );
       return;
     }

@@ -2,6 +2,7 @@ import { SoundLoader } from "./SoundLoader";
 import { ImageLoader } from "./ImageLoader";
 import { EventEmitter, IEventEmitter } from "../events/EventEmitter";
 import { AssetLoader, AssetLoaderEvent } from "./AssetLoader";
+import { Asset } from ".";
 
 export interface AssetEntry {
   name: string;
@@ -16,8 +17,8 @@ export interface AssetSheet {
  * Singleton class to manage all the resources in game
  */
 export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
-  public image: ImageLoader;
-  public sound: SoundLoader;
+  public readonly image: ImageLoader;
+  public readonly sound: SoundLoader;
 
   private assetLoaders: AssetLoader<any>[] = [];
 
@@ -28,16 +29,13 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     this.assetLoaders = [this.image, this.sound];
   }
 
-  public async loadAssetSheet(url: string): Promise<AssetSheet> {
+  public async fetchAssetSheet(url: string): Promise<AssetSheet> {
     const response = await fetch(url);
     const assetSheetContent = (await response.json()) as AssetSheet;
     return assetSheetContent;
   }
 
-  public async loadFromAssetSheet(url: string) {
-    const response = await fetch(url);
-    const assetSheetContent = (await response.json()) as AssetSheet;
-
+  public async loadFromAssetSheet(assetSheetContent: AssetSheet) {
     assetSheetContent.image.forEach((item) => {
       this.image.add({ name: item.name, path: item.path });
     });
@@ -48,6 +46,25 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
 
     // load all item here
     this.loadAll();
+  }
+
+  public saveAssetSheet(): AssetSheet {
+    const loaders = this.assetLoaders.map((loader: AssetLoader<Asset>) => {
+      const assets = loader.getAssetDictionary();
+      const entries: AssetEntry[] = [];
+
+      Object.keys(assets).forEach((keys) => {
+        const asset = loader.get(keys);
+        entries.push({ path: asset.path, name: asset.name });
+      });
+
+      return entries;
+    });
+
+    return {
+      image: loaders[0],
+      sound: loaders[1],
+    };
   }
 
   public loadAll() {

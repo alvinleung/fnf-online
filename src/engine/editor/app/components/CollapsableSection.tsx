@@ -10,7 +10,7 @@ interface Props {
   children?: React.ReactElement[] | React.ReactElement | string;
 }
 
-export const CollapsableSection = ({ header, children }: Props) => {
+export const CollapsableSection = React.memo(({ header, children }: Props) => {
   const [collapsed, setCollapsed] = useState(false);
   const toggleCollapseState = () => {
     setCollapsed(!collapsed);
@@ -65,4 +65,4 @@ export const CollapsableSection = ({ header, children }: Props) => {
       </AnimatePresence>
     </div>
   );
-};
+});

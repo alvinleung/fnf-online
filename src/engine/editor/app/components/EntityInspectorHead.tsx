@@ -1,13 +1,16 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import { config } from "../AnimationConfig";
+import { useSelectedEntity } from "../EditorContextWrapper";
 import "./EntityInspectorHead.css";
 
-interface Props {
-  selectedEntity?: string;
-}
+/**
+ * To display selected entity in the inspector panel
+ * @returns
+ */
+export const EntityInspectorHead = () => {
+  const [selectedEntity, setSelectedEntity] = useSelectedEntity();
 
-export const EntityInspectorHead = ({ selectedEntity }: Props) => {
   return (
     // <div>
     <>
@@ -15,7 +18,7 @@ export const EntityInspectorHead = ({ selectedEntity }: Props) => {
         <div className="entity-inspector-head">
           <div className="panel-hor-spacing header-label">Inspecting</div>
           <div className="panel-hor-spacing entity-inspector-head__entity-name">
-            {selectedEntity}
+            {selectedEntity.id}
           </div>
         </div>
       )}

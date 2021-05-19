@@ -15,6 +15,8 @@ import { FolderTreeView } from "./TreeView";
 import { FolderContentView } from "./FolderContentView";
 
 import { Col, ColsWrapper, HOR_SEPERATOR, Row, RowsWrapper } from "../react-grid-resizable";
+import { useAssetExplorerContext } from "./AssetExplorerContext";
+import useForceUpdate from "../../hooks/useForceUpdate";
 
 interface Props {
   onChange?: (resourcePath: string) => void;
@@ -30,6 +32,9 @@ export interface DirItem {
 const editorServerIO = EditorServerIO.getInstance();
 
 export const AssetExplorer = ({ onChange }: Props) => {
+  // check if there is global context
+  const { setDefaultPath, defaultPath } = useAssetExplorerContext();
+
   // a copy of the file paths in the editor server
   const [localDirList, setLocalDirList] = useState<string[]>([]);
 
@@ -37,7 +42,7 @@ export const AssetExplorer = ({ onChange }: Props) => {
   const [localDirMap, setLocalDirMap] = useState<DirItem>();
 
   // for navigation
-  const [currentDir, setCurrentDir] = useState(withRoot("/"));
+  const [currentDir, setCurrentDir] = useState(withRoot(defaultPath));
 
   // for selection
   const [selectedItemPath, setSelectedItemPath] = useState("");
@@ -52,7 +57,7 @@ export const AssetExplorer = ({ onChange }: Props) => {
         // navigate to that folder
         setCurrentDir(targetFolder);
         // expand the tree view to that folder
-        expandUntilFolder(targetFolder);
+        expandUntilFolder(localDirMap, targetFolder);
         break;
       case FileTypes.IMAGE:
         // TODO: preview image
@@ -63,16 +68,27 @@ export const AssetExplorer = ({ onChange }: Props) => {
     }
   };
 
-  const expandUntilFolder = useCallback(
-    (path: string) => {
-      const newLocalDirMap = doUntilDir(localDirMap, path, (dir: DirItem, currentDir: string) => {
-        dir.expanded = true;
-      });
+  const forceUpdate = useForceUpdate();
+  const expandUntilFolder = (localDirMap: DirItem, path: string) => {
+    doUntilDir(localDirMap, path, (dir: DirItem, currentDir: string) => {
+      dir.expanded = true;
+    });
 
-      setLocalDirMap(newLocalDirMap);
-    },
-    [localDirMap]
-  );
+    // use force update to trigger
+    forceUpdate();
+  };
+
+  // update the global default path when the user change
+  useEffect(() => {
+    setDefaultPath(currentDir);
+  }, [currentDir]);
+
+  //TODO: expand the tree view to the default folder when the list ready
+  useEffect(() => {
+    if (!localDirMap) return;
+    // console.log(currentDir);
+    expandUntilFolder(localDirMap, currentDir);
+  }, [localDirMap]);
 
   // trigger onChange when selection changes
   useEffect(() => {

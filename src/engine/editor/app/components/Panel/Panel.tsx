@@ -1,12 +1,12 @@
 import { motion, useAnimation } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import { config } from "../AnimationConfig";
+import { config } from "../../AnimationConfig";
 import "./Panel.css";
 
-const ARROW_RIGHT = require("url:../images/arrow-right-nav.svg");
-const ARROW_DOWN = require("url:../images/arrow-down-nav.svg");
-const ARROW_LEFT = require("url:../images/arrow-left-nav.svg");
-const ARROW_UP = require("url:../images/arrow-up-nav.svg");
+const ARROW_RIGHT = require("url:../../images/arrow-right-nav.svg");
+const ARROW_DOWN = require("url:../../images/arrow-down-nav.svg");
+const ARROW_LEFT = require("url:../../images/arrow-left-nav.svg");
+const ARROW_UP = require("url:../../images/arrow-up-nav.svg");
 
 interface Props {
   children?: React.ReactElement | React.ReactElement[] | null;
@@ -18,10 +18,7 @@ interface Props {
   /**
    * @return Boolean - should panel collapse or not
    */
-  onCollapseStateChange?: (
-    isCollapsed: boolean,
-    dockingSide?: string
-  ) => boolean;
+  onCollapseStateChange?: (isCollapsed: boolean, dockingSide?: string) => boolean;
 }
 
 // for client use
@@ -39,9 +36,7 @@ export const PanelResizableContainer = ({
   onCollapseStateChange,
   shouldCollapse = true,
 }: Props) => {
-  const [interalCollapsedState, setInteralCollapsedState] = useState(
-    initialState === "collapsed"
-  );
+  const [interalCollapsedState, setInteralCollapsedState] = useState(initialState === "collapsed");
 
   const collapsed = shouldCollapse || interalCollapsedState;
   const setColapsed = (collapse: boolean) => {
@@ -49,8 +44,7 @@ export const PanelResizableContainer = ({
       setInteralCollapsedState(collapse);
     }
 
-    const _shouldCollapse =
-      onCollapseStateChange && onCollapseStateChange(collapse, dockingSide);
+    const _shouldCollapse = onCollapseStateChange && onCollapseStateChange(collapse, dockingSide);
 
     if (collapse === _shouldCollapse) return;
 
@@ -76,10 +70,8 @@ export const PanelResizableContainer = ({
     });
   }, []); // set initial panel animator state base on panel size
 
-  const resizableX =
-    dockingSide === "left" || dockingSide === "right" ? true : false;
-  const resizableY =
-    dockingSide === "bottom" || dockingSide === "top" ? true : false;
+  const resizableX = dockingSide === "left" || dockingSide === "right" ? true : false;
+  const resizableY = dockingSide === "bottom" || dockingSide === "top" ? true : false;
 
   function showHandle() {
     panelSizeAnimator.set(getHandleBorderStyle());
@@ -290,11 +282,7 @@ export const PanelResizableContainer = ({
         transition={config.DEFAULT_TRANSITION}
       >
         {/* panel content */}
-        {header && (
-          <div className="header-label panel__header panel-hor-spacing">
-            {header}
-          </div>
-        )}
+        {header && <div className="header-label panel__header panel-hor-spacing">{header}</div>}
         {children}
       </motion.div>
     </>

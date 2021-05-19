@@ -8,8 +8,9 @@ import { useGameContext } from "../../EditorContextWrapper";
 import useClickOutside from "../../hooks/useClickOutside";
 import { AssetExplorer } from "../AssetExplorer/AssetExplorer";
 import { FileTypes, getFileType } from "../AssetExplorer/AssetExplorerUtils";
+import { Button } from "../Form/Button";
 import { List } from "../List";
-import { ListItem } from "../ListItem";
+import { ListItem } from "../List/ListItem";
 import { Modal } from "../Modal";
 import useModal from "../Modal/useModal";
 
@@ -23,24 +24,6 @@ interface Props {
 
 // get the resource list here
 const assetList = require("../../../../../MyGameAssets").default;
-
-interface ButtonProps extends ButtonHTMLAttributes<any> {
-  primary?: boolean;
-  secondary?: boolean;
-  children: string;
-}
-function Button({ primary, secondary, ...props }: ButtonProps) {
-  const styling = useMemo(() => {
-    if (secondary) return "btn-secondary";
-    return "btn-primary";
-  }, [primary, secondary]);
-
-  return (
-    <button className={styling} {...props}>
-      {props.children}
-    </button>
-  );
-}
 
 export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
   const containerRef = useRef();

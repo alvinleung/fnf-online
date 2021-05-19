@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { HotkeyConfig } from "../Hotkeys";
-import { PanelResizableContainer } from "./Panel";
+import { HotkeyConfig } from "../../Hotkeys";
+import { PanelResizableContainer } from ".";
 
 interface Props {
   children: React.ReactElement[];
@@ -16,16 +16,12 @@ export const PanelGroup = ({ children }: Props) => {
   });
 
   const leftPanelInitialCollapse = leftPanel.props.initialState === "collapsed";
-  const rightPanelInitialCollapse =
-    rightPanel.props.initialState === "collapsed";
+  const rightPanelInitialCollapse = rightPanel.props.initialState === "collapsed";
 
   const [shouldAllPanelCollapse, setShouldAllPanelsCollapse] = useState(null);
-  const [shouldLeftPanelCollapse, setShouldLeftPanelCollapse] = useState(
-    leftPanelInitialCollapse
-  );
-  const [shouldRightPanelCollapse, setShouldRightPanelCollapse] = useState(
-    rightPanelInitialCollapse
-  );
+  const [shouldLeftPanelCollapse, setShouldLeftPanelCollapse] = useState(leftPanelInitialCollapse);
+  const [shouldRightPanelCollapse, setShouldRightPanelCollapse] =
+    useState(rightPanelInitialCollapse);
   const collapseStateChange = (collapse: boolean, side: string) => {
     if (side === "left") setShouldLeftPanelCollapse(collapse);
     if (side === "right") setShouldRightPanelCollapse(collapse);
