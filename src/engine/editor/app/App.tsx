@@ -12,7 +12,7 @@ import { ComponentInspector } from "./ComponentInspector";
 import { PanelGroup } from "./components/Panel/PanelGroup";
 import { ContextMenuTrigger } from "react-contextmenu";
 import { EditorContextWrapper } from "./EditorContextWrapper";
-import { useFileDrop } from "./components/FileDrop/useFileDrop";
+import { useSceneFileDrop } from "./components/FileDrop/useFileDrop";
 import { useFileSave } from "./components/FileDrop/useFileSave";
 import useEagerUpdate from "./hooks/GameEngineCommunication/useEagerUpdate";
 import useEditorHotkeys from "./hooks/useEditorHotkeys";
@@ -34,7 +34,7 @@ const App = ({ game }: Props): JSX.Element => {
   const [selectedEntity, setSelectedEntity] = useState<Entity>();
   const [selectedComponent, setSelectedComponent] = useState("");
 
-  useFileDrop(game);
+  useSceneFileDrop(game);
   useFileSave(game);
   useEditorHotkeys(game, selectedEntity, setSelectedEntity);
 

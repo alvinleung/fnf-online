@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { EditorServerIO } from "../../../EditorServerIO";
 import path from "path";
 import "./AssetExplorer.css";
@@ -17,6 +17,7 @@ import { FolderContentView } from "./FolderContentView";
 import { Col, ColsWrapper, HOR_SEPERATOR, Row, RowsWrapper } from "../react-grid-resizable";
 import { useAssetExplorerContext } from "./AssetExplorerContext";
 import useForceUpdate from "../../hooks/useForceUpdate";
+import { useFileDrop } from "../FileDrop/useFileDrop";
 
 interface Props {
   onChange?: (resourcePath: string) => void;
@@ -96,10 +97,13 @@ export const AssetExplorer = ({ onChange }: Props) => {
   }, [selectedItemPath]);
 
   // list out all the directories
-  useEffect(() => {
+  const fetchDirs = () => {
     editorServerIO.listAllFolders().then((val) => {
       setLocalDirList(val);
     });
+  };
+  useEffect(() => {
+    fetchDirs(); // init all directories
   }, []);
 
   // refresh the local dir map when we get and update
@@ -146,6 +150,20 @@ export const AssetExplorer = ({ onChange }: Props) => {
   const currentDirContent = getDirFromMap(localDirMap, currentDir);
   const noFileInDirectory = currentDirContent && currentDirContent.children.length === 0;
 
+  const fileDropHandler = useCallback(
+    (file: File) => {
+      // upload file here
+      editorServerIO.writeFile(currentDir, file).then(() => {
+        console.log("file written at " + currentDir);
+        // refresh the folder
+        fetchDirs();
+      });
+    },
+    [currentDir]
+  );
+
+  const dropAreaRef = useFileDrop(["image/png", "image/jpeg"], fileDropHandler);
+
   return (
     <div className="asset-explorer">
       <ColsWrapper separatorProps={HOR_SEPERATOR}>
@@ -168,7 +186,7 @@ export const AssetExplorer = ({ onChange }: Props) => {
                 setCurrentDir={setCurrentDir}
               />
             </div>
-            <div className="asset-explorer__main-content">
+            <div className="asset-explorer__main-content" ref={dropAreaRef}>
               <h2 className="asset-explorer-header">{path.parse(currentDir).name}</h2>
               <FolderContentView
                 currentDir={currentDir}

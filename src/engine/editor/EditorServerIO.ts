@@ -1,4 +1,5 @@
 import { splitPath } from "../utils/StringUtils";
+import { stripRoot } from "./app/components/AssetExplorer/AssetExplorerUtils";
 
 const EDITOR_ENV = true;
 
@@ -63,15 +64,15 @@ export class EditorServerIO {
     formData.append("fileUploadField", file);
 
     // infer the filename if there is no filename given
-    if (!splitPath(path).filename) {
-      path.concat(file.name);
+    if (!splitPath(path).extension) {
+      path = path.concat(file.name);
     }
 
     // write server file
     fetch("/writeFile", {
       method: "POST",
       headers: {
-        savepath: path,
+        savepath: stripRoot(path),
       },
       body: formData,
     });
