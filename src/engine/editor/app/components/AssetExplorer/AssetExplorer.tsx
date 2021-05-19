@@ -185,6 +185,7 @@ export const AssetExplorer = ({ onChange }: Props) => {
             selectedItemPath={selectedItemPath}
             setSelectedItemPath={setSelectedItemPath}
             handleDirToggle={handleDirToggle}
+            onRename={handleFolderRename}
           ></FolderTreeView>
         </Col>
         <Col>

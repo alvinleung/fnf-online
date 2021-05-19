@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useFocus } from "../../hooks/useFocus";
+import { HotkeyConfig } from "../../Hotkeys";
 import { DraftEditField } from "../DraftEditing/DraftEditField";
+import { DirItem } from "./AssetExplorer";
 import { resolveIcon } from "./AssetExplorerUtils";
 
 import "./FolderContentView.css";
@@ -40,6 +43,15 @@ function FolderItem(props) {
     setIsRenaming(false);
   };
 
+  useEffect(() => {
+    const rename = (e: KeyboardEvent) =>
+      e.key === "Enter" && isFocused && !isRenaming && setIsRenaming(true);
+    window.addEventListener("keydown", rename);
+    return () => {
+      window.removeEventListener("keydown", rename);
+    };
+  }, [isFocused, isRenaming]);
+
   const focusClass = isFocused ? " folder-content-view__item--focused" : "";
   return (
     <div
@@ -59,22 +71,51 @@ function FolderItem(props) {
         draggable="false"
         alt="folder"
       />
-      <DraftEditField
-        onCommit={commitNameChangeHandler}
-        onDiscard={abortNameChangeHandler}
-        value={props.file.name}
-        editing={isRenaming}
-        onDoubleClickCapture={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsRenaming(true);
-        }}
-        draggable={false}
-        discardWhenClickoutside
-      />
-      {/* <span className="folder-content-view__item-label" draggable="false">
-        {props.file.name}
-      </span> */}
+      <RenamableFileName onRename={props.onRename} file={props.file} isFocused={isFocused} />
     </div>
+  );
+}
+
+interface RenamableFileNameProps {
+  onRename?: (path: string, newName: string) => void;
+  file: DirItem;
+  isFocused: boolean;
+}
+
+export function RenamableFileName(props: RenamableFileNameProps) {
+  const [isRenaming, setIsRenaming] = useState(false);
+
+  const commitNameChangeHandler = (val: string) => {
+    // send rename request
+    props.onRename && props.onRename(props.file.fullPath, val);
+    setIsRenaming(false);
+  };
+  const abortNameChangeHandler = () => {
+    setIsRenaming(false);
+  };
+
+  useEffect(() => {
+    const rename = (e: KeyboardEvent) =>
+      e.key === "Enter" && props.isFocused && !isRenaming && setIsRenaming(true);
+    window.addEventListener("keydown", rename);
+    return () => {
+      window.removeEventListener("keydown", rename);
+    };
+  }, [props.isFocused, isRenaming]);
+
+  return (
+    <DraftEditField
+      onCommit={commitNameChangeHandler}
+      onDiscard={abortNameChangeHandler}
+      value={props.file.name}
+      editing={isRenaming}
+      onDoubleClickCapture={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsRenaming(true);
+      }}
+      draggable={false}
+      discardWhenClickoutside
+    />
   );
 }

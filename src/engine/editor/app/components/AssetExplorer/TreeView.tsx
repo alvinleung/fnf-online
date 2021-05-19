@@ -4,6 +4,7 @@ import useClickOutside from "../../hooks/useClickOutside";
 import { useFocus } from "../../hooks/useFocus";
 import { DirItem } from "./AssetExplorer";
 import { isFolder, resolveIcon } from "./AssetExplorerUtils";
+import { RenamableFileName } from "./FolderContentView";
 
 import "./TreeView.css";
 
@@ -24,6 +25,7 @@ export function FolderTreeView(props) {
         selectedItemPath={props.selectedItemPath}
         setSelectedItemPath={props.setSelectedItemPath}
         onToggleFolder={props.handleDirToggle}
+        onRename={props.onRename}
       />
     </div>
   );
@@ -36,6 +38,7 @@ export const DirectoryLevel = ({
   selectedItemPath,
   setSelectedItemPath,
   onToggleFolder,
+  onRename,
 }: {
   dir: DirItem;
   currentDir: string;
@@ -43,6 +46,7 @@ export const DirectoryLevel = ({
   selectedItemPath: string;
   setSelectedItemPath: Dispatch<SetStateAction<string>>;
   onToggleFolder: (path: string) => void;
+  onRename: (path: string, newFileName: string) => void;
 }) => {
   if (!dir) return <></>;
 
@@ -58,6 +62,8 @@ export const DirectoryLevel = ({
         onToggle={() => onToggleFolder(dir.fullPath)}
         onClick={() => handlItemSelect(dir.fullPath, isFolder(dir.name))}
         icon={dir.expanded ? ICON_FOLDER_OPEN : ICON_FOLDER}
+        onRename={onRename}
+        file={dir}
       >
         {dir.name}
       </DirectoryItem>
@@ -77,6 +83,7 @@ export const DirectoryLevel = ({
                   selectedItemPath={selectedItemPath}
                   onToggleFolder={onToggleFolder}
                   setCurrentDir={setCurrentDir}
+                  onRename={onRename}
                 />
               );
             }
@@ -90,6 +97,8 @@ export const DirectoryLevel = ({
                   handlItemSelect(item.fullPath, isFolder(item.name));
                 }}
                 icon={resolveIcon(item.name, currentDir, false)}
+                file={item}
+                onRename={onRename}
               >
                 {item.name}
               </DirectoryItem>
@@ -100,7 +109,7 @@ export const DirectoryLevel = ({
   );
 };
 
-const DirectoryItem = ({ isSelected, onClick, onToggle, icon, children }) => {
+const DirectoryItem = ({ isSelected, onClick, onToggle, icon, children, file, onRename }) => {
   return (
     <button
       className={isSelected ? "tree-view__item tree-view__item--selected" : "tree-view__item"}
@@ -108,7 +117,10 @@ const DirectoryItem = ({ isSelected, onClick, onToggle, icon, children }) => {
       onClick={onClick}
     >
       <img onClick={onToggle} src={icon} alt="folder" />
-      <span className="tree-view__item-label">{children}</span>
+      <span className="tree-view__item-label">
+        <RenamableFileName onRename={onRename} file={file} isFocused={isSelected} />
+        {/* {children} */}
+      </span>
     </button>
   );
 };
