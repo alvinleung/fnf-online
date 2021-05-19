@@ -2,7 +2,8 @@ import path from "path";
 import { splitPath } from "../utils/StringUtils";
 import { stripRoot } from "./app/components/AssetExplorer/AssetExplorerUtils";
 
-const EDITOR_ENV = true;
+// editor enviornmnet oknly available in localhost
+const EDITOR_ENV = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 
 /**
  * Singleton for handling editor server file read write
