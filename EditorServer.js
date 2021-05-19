@@ -61,7 +61,7 @@ app.post("/writeFile", (req, res) => {
   console.log(`Writing file: ${combinedPath}`);
 
   // move the file to the target directory
-  req.files.fileUploadField.mv(path.join(combinedPath)).catch((error) => {
+  req.files.fileUploadField.mv(combinedPath).catch((error) => {
     console.log("caught", error.message);
   });
 
@@ -116,6 +116,43 @@ app.post("/rename", (req, res) => {
   const pathAfterRename = path.join(path.parse(renamePath).dir, newFileName);
 
   fs.renameSync(renamePath, pathAfterRename);
+
+  res.status(200);
+  res.end();
+});
+
+app.post("/delete", (req, res) => {
+  // handle delete
+  const deletePath = path.join(
+    __dirname,
+    ASSET_FOLDER_PATH,
+    req.headers.deletepath
+  );
+
+  console.log(`Deleting "${deletePath}".`);
+
+  if (path.extname(deletePath)) {
+    fs.rmSync(deletePath);
+  } else {
+    fs.rmdirSync(deletePath);
+  }
+
+  res.status(200);
+  res.end();
+});
+
+app.post("/createFolder", (req, res) => {
+  // handle delete
+  const createPath = path.join(
+    __dirname,
+    ASSET_FOLDER_PATH,
+    req.headers.createpath
+  );
+  const folderName = req.headers.foldername;
+
+  console.log(`Creating Folder "${folderName}" at ${createPath}.`);
+
+  fs.mkdirSync(path.join(createPath, folderName));
 
   res.status(200);
   res.end();

@@ -18,6 +18,9 @@ import { Col, ColsWrapper, HOR_SEPERATOR, Row, RowsWrapper } from "../react-grid
 import { useAssetExplorerContext } from "./AssetExplorerContext";
 import useForceUpdate from "../../hooks/useForceUpdate";
 import { useFileDrop } from "../FileDrop/useFileDrop";
+import { useHotkeys } from "react-hotkeys-hook";
+import { HotkeyConfig } from "../../Hotkeys";
+import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 
 interface Props {
   onChange?: (resourcePath: string) => void;
@@ -98,9 +101,7 @@ export const AssetExplorer = ({ onChange }: Props) => {
 
   // list out all the directories
   const fetchServerDirs = () => {
-    editorServerIO.listAllFolders().then((val) => {
-      setLocalDirList(val);
-    });
+    editorServerIO.listAllFolders().then((val) => setLocalDirList(val));
   };
   useEffect(() => {
     fetchServerDirs(); // init all directories
@@ -162,6 +163,25 @@ export const AssetExplorer = ({ onChange }: Props) => {
     [currentDir]
   );
 
+  const handleFolderCreation = () => {
+    // create a dummy folder in the directory
+    const folder = getDirFromMap(localDirMap, currentDir);
+    // check if folder contain name
+    const fileName = "new-folder";
+    let count = 1;
+    let currentFileName = fileName;
+
+    const hasFileName = (fileName: string) =>
+      folder.children.findIndex((item) => item.name === fileName) !== -1;
+
+    while (hasFileName(currentFileName)) {
+      currentFileName = `${currentFileName}-${count}`;
+      count++;
+    }
+
+    editorServerIO.createFolder(currentDir, currentFileName).then(() => fetchServerDirs());
+  };
+
   const handleFolderRename = (filePath: string, newName: string) => {
     // send rename message here
     console.log(filePath);
@@ -171,6 +191,22 @@ export const AssetExplorer = ({ onChange }: Props) => {
       fetchServerDirs();
     });
   };
+
+  const handleDirItemDelete = (pathString: string) => {
+    if (confirm(`Delete "${path.basename(pathString)}"?`)) {
+      // delete file
+      console.log(`Deleting item "${path.basename(pathString)}".`);
+      editorServerIO.delete(pathString).then(() => fetchServerDirs());
+    }
+  };
+
+  useHotkeys(
+    HotkeyConfig.DELETE,
+    () => {
+      handleDirItemDelete(selectedItemPath);
+    },
+    [selectedItemPath]
+  );
 
   const dropAreaRef = useFileDrop(["image/png", "image/jpeg"], fileDropHandler);
 
@@ -199,15 +235,29 @@ export const AssetExplorer = ({ onChange }: Props) => {
             </div>
             <div className="asset-explorer__main-content" ref={dropAreaRef}>
               <h2 className="asset-explorer-header">{path.parse(currentDir).name}</h2>
-              <FolderContentView
-                currentDir={currentDir}
-                selectedItemPath={selectedItemPath}
-                setSelectedItemPath={setSelectedItemPath}
-                handleItemDoubleClick={handleItemDoubleClick}
-                currentDirContent={currentDirContent}
-                noFileInDirectory={noFileInDirectory}
-                onRename={handleFolderRename}
-              ></FolderContentView>
+              <ContextMenuTrigger id="asset-explorer-folder-content-view">
+                <FolderContentView
+                  currentDir={currentDir}
+                  selectedItemPath={selectedItemPath}
+                  setSelectedItemPath={setSelectedItemPath}
+                  handleItemDoubleClick={handleItemDoubleClick}
+                  currentDirContent={currentDirContent}
+                  noFileInDirectory={noFileInDirectory}
+                  onRename={handleFolderRename}
+                ></FolderContentView>
+              </ContextMenuTrigger>
+              <ContextMenu id="asset-explorer-folder-content-view">
+                <MenuItem onClick={handleFolderCreation}>New Folder</MenuItem>
+                {selectedItemPath && (
+                  <>
+                    <MenuItem divider />
+                    <MenuItem onClick={() => handleDirItemDelete(selectedItemPath)}>
+                      Delete "{path.basename(selectedItemPath)}"
+                    </MenuItem>
+                    <MenuItem>Rename "{path.basename(selectedItemPath)}"</MenuItem>
+                  </>
+                )}
+              </ContextMenu>
             </div>
           </div>
         </Col>

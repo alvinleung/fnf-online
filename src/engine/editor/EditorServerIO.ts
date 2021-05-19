@@ -1,3 +1,4 @@
+import path from "path";
 import { splitPath } from "../utils/StringUtils";
 import { stripRoot } from "./app/components/AssetExplorer/AssetExplorerUtils";
 
@@ -55,7 +56,7 @@ export class EditorServerIO {
    * @param file
    * @returns
    */
-  public async writeFile(path: string, file: File) {
+  public async writeFile(targetPath: string, file: File) {
     if (!EDITOR_ENV) {
       console.warn(`Aborting: Writing only available when running on editor server.`);
       return;
@@ -64,15 +65,15 @@ export class EditorServerIO {
     formData.append("fileUploadField", file);
 
     // infer the filename if there is no filename given
-    if (!splitPath(path).extension) {
-      path = path.concat(file.name);
+    if (!splitPath(targetPath).extension) {
+      targetPath = path.join(targetPath, file.name);
     }
 
     // write server file
     fetch("/writeFile", {
       method: "POST",
       headers: {
-        savepath: stripRoot(path),
+        savepath: stripRoot(targetPath),
       },
       body: formData,
     });
@@ -84,6 +85,29 @@ export class EditorServerIO {
       headers: {
         renamepath: stripRoot(pathToFolder),
         newfilename: newFileName,
+      },
+    });
+
+    return response;
+  }
+  public async delete(pathToFolder: string) {
+    // write server file
+    const response = await fetch("/delete", {
+      method: "POST",
+      headers: {
+        deletepath: stripRoot(pathToFolder),
+      },
+    });
+
+    return response;
+  }
+  public async createFolder(path: string, folder: string) {
+    // write server file
+    const response = await fetch("/createFolder", {
+      method: "POST",
+      headers: {
+        createpath: stripRoot(path),
+        foldername: folder,
       },
     });
 
