@@ -197,12 +197,14 @@ export class RenderingSystem extends System {
     // for each render pass
     this._renderPasses.forEach((renderPass) => {
       // render the scene
+      /*
       try {
         renderPass.render(gl, this);
       } catch (e) {
         // prevent error killing the whole program
         console.error("Error from Rendering System - " + e);
-      }
+      }*/
+      renderPass.render(gl, this);
     });
   }
 

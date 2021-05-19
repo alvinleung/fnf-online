@@ -6,8 +6,10 @@ import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderPass";
 import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderPass";
 import { AttribDataBuffer } from "./AttribDataBuffer";
+import { DataBufferPair, TextureBufferPair } from "./DataBufferPair";
 import { Geomatry } from "./Geomatry/Geomatry";
 import { Image } from "./Image/Image";
+import { BaseMaterial} from "./Materials/CustomMaterials";
 import { Material, Materials } from "./Materials/Material";
 import { Texture } from "./Texture";
 
@@ -28,9 +30,9 @@ export class RenderableComponent implements Component {
 export class RenderableObject {
 
   //private _objectCoords: number[];
-  private _textureImage: Image;
+  //private _textureImage: Image;
   //private _textureCoords: number[];
-  private _objectColors: number[];
+  //private _objectColors: number[];
   //public transform: m4.Mat4 = m4.translation(v3.create(0, 0, 0));
 
 
@@ -46,20 +48,29 @@ export class RenderableObject {
   ) {
     //this.objectCoords = objectCoords;
     //this.textureCoords = textureCoords;
-    this.textureImage = textureImage;
+    //this.textureImage = textureImage;
 
+    /*
     if (objectColors) {
       this.objectColors = objectColors;
     } else {
       //this.objectColors = COLORS_VEC4.randomColor(objectCoords.length / 3, 3);
       this.objectColors = COLORS_VEC4.grayColor(objectCoords.length / 3, 0.75);
-    }
+    }*/
 
     this._material = new Materials()
     .addProperty("Phong", new PhongMaterialProperties())
     .addProperty("Normals", new Normals(objectCoords, false))
-    .addProperty("material", new Material());
   //.addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
+    .addProperty("material", new BaseMaterial(objectCoords.length / 3,{
+      specularConstant: 0.4,
+      ambientConstant: 0.2,
+      diffuseConstant: 0.8,
+      shininess: 5,
+      color:objectColors? objectColors:null,
+      textureImage:textureImage,
+      }));
+ 
 
     this._geometry = new Geomatry({
       vertices: objectCoords,
@@ -69,6 +80,12 @@ export class RenderableObject {
     })
     
     return this;
+  }
+  public get transform(){
+    return this._geometry.transform;
+  }
+  public set transform(matrix:m4.Mat4){
+    this._geometry.transform = matrix;
   }
 
   @Field(Editor.ARRAY_NUMBER, { defaultValue: [] })
@@ -86,10 +103,13 @@ export class RenderableObject {
   @Field(Editor.RESOURCE_IMAGE)
   public set textureImage(val) {
     this._isLoadedIntoGPUMemory = false;
-    this._textureImage = val;
+    
+    const material = this._material.getProperty<BaseMaterial>("material");
+    let textureBuffer = material.get("_textureImage") as TextureBufferPair
+    textureBuffer.buffer = val
   }
   public get textureImage() {
-    return this._textureImage;
+    return ((this._material.getProperty<BaseMaterial>("material")).get("_textureImage") as TextureBufferPair).buffer
   }
 
   @Field(Editor.ARRAY_NUMBER)
@@ -106,10 +126,15 @@ export class RenderableObject {
   @Field(Editor.ARRAY_NUMBER)
   public set objectColors(val) {
     this._isLoadedIntoGPUMemory = false;
-    this._objectColors = val;
+    //this._objectColors = val;
+    const material = this._material.getProperty<BaseMaterial>("material");
+    material.get("_textureImage") 
   }
+  //TODO:remove
   public get objectColors() {
-    return this._objectColors;
+    const material = this._material.getProperty<BaseMaterial>("material");
+    //console.log(material.get("_colors"))
+    return (material.get("_colors") as DataBufferPair).data; // this._objectColors;
   }
 
   /**
@@ -120,8 +145,8 @@ export class RenderableObject {
 
   //private _coordsBuffer: AttribDataBuffer;
   //private _texCoordsBuffer: AttribDataBuffer;
-  private _colorBuffer: AttribDataBuffer;
-  private _texture: Texture;
+  //private _colorBuffer: AttribDataBuffer;
+  //private _texture: Texture;
 
 
   public loadIntoGPU(gl: WebGLRenderingContext) {
@@ -151,7 +176,9 @@ export class RenderableObject {
     //this._texCoordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.textureCoords), 2);
     this._geometry.prepareInGPU(gl);
     // colors defaulted to gray
-    this._colorBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectColors), 4);
+    //this._colorBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectColors), 4);
+    this._material.getProperty<BaseMaterial>("material").prepareInGPU(gl)
+
 
     // load image onto the gpu
     if (this.textureImage) {
@@ -163,7 +190,8 @@ export class RenderableObject {
   }
 
   private loadTextureIntoGPU(gl: WebGLRenderingContext) {
-    this._texture = new Texture(gl, { image: this.textureImage });
+    //this._texture = new Texture(gl, { image: this.textureImage });
+    this._material.getProperty<BaseMaterial>("material").prepareInGPU(gl);
     this._needTextureReload = false;
   }
 
@@ -175,13 +203,9 @@ export class RenderableObject {
   public getTextureCoordsBuffer() {
     return this._geometry.get("vTexCoord");
   }
-
+  //TODO:toremove
   public getColorBuffer() {
-    if (!this.isLoadedIntoGPUMemory()) {
-      console.warn("Cant get color buffer, this RenderableObject has not been loaded into gpu.");
-      return;
-    }
-    return this._colorBuffer;
+    return (this._material.getProperty<BaseMaterial>("material").get("_colors") as DataBufferPair).buffer
   }
   /**
    * Return if the data of this renderable object has complete it's webgl setups already.
@@ -196,7 +220,7 @@ export class RenderableObject {
    * @returns
    */
   public setRenderingTexture(texture: Texture) {
-    this._texture = texture;
+    (this._material.getProperty<BaseMaterial>("material").get("_textureImage") as TextureBufferPair).buffer = texture;
   }
 
   /**
@@ -204,11 +228,11 @@ export class RenderableObject {
    * @returns
    */
   public getRenderingTexture(): Texture {
-    return this._texture;
+    return (this._material.getProperty<BaseMaterial>("material").get("_textureImage") as TextureBufferPair).buffer;
   }
 
   public hasRenderingTexture(): boolean {
-    return this._texture ? true : false;
+    return this._material.getProperty<BaseMaterial>("material").hasTexture();
   }
 
   public getObjectVerticeSize() {

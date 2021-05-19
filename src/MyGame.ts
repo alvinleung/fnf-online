@@ -39,8 +39,10 @@ import { TouchInput } from "./engine/input/TouchInput";
 import { GizmoPass } from "./engine/graphics/3dRender/GizmoPass";
 import { SelectableComponent } from "./engine/core/SelectionSystem";
 import { EditorServerIO } from "./engine/editor/EditorServerIO";
-import { ShaderManager } from "./engine/graphics/3dRender/shaders/ShaderManager";
+import { ShaderManager } from "./engine/graphics/Materials/ShaderManager";
 import { TestMaterial } from "./engine/graphics/Materials/CustomMaterials";
+import { v3 } from "twgl.js";
+import { Material } from "./engine/graphics/Materials/Material";
 
 
 class MyGame extends Game {
@@ -48,8 +50,6 @@ class MyGame extends Game {
     let testmaterial = new TestMaterial();
     console.log( ShaderManager.getInstance().shaderMaterialVariableNameMap)
     let variableMapping = ShaderManager.getInstance().getMaterialMapping(testmaterial)
-    console.log(variableMapping)
-    //console.log(testmaterial)
     for(let [key,value] of Object.entries(variableMapping)){
       console.log(key,value)
     }

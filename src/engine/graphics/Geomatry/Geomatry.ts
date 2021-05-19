@@ -1,11 +1,6 @@
 import { m4 } from "twgl.js";
-import { Cube } from "../3dRender/objects/Cube";
-import { generateColoredCube } from "../3dRender/objects/Primitives";
-import { AttribDataBuffer } from "../AttribDataBuffer";
 
-
-
-
+import { DataBufferPair } from "../DataBufferPair";
 
 export interface GeomatryTemplate{
   vertices:number[];
@@ -74,42 +69,13 @@ export class Geomatry {
 
   prepareInGPU(gl: WebGLRenderingContext) {
     if(this._vertices.needUpdate){
-      this._vertices.writeBuffer(gl,3);
+      this._vertices.setBufferData(gl,3);
     }
     if(this._normals.needUpdate){
-      this._normals.writeBuffer(gl,3);
+      this._normals.setBufferData(gl,3);
     }
     if(this._texCoords.needUpdate){
-      this._texCoords.writeBuffer(gl,2);
+      this._texCoords.setBufferData(gl,2);
     }
-  }
-}
-export class DataBufferPair {
-  private _data:any[];
-  private _buffer: AttribDataBuffer;
-  public needUpdate: boolean;
-
-  constructor(data:any[],buffer?:AttribDataBuffer){
-    if(buffer){
-      this._data = data;
-      this._buffer = buffer;
-      this.needUpdate = false;
-    } else {
-      this._data = data;
-      this.needUpdate = true;
-    }
-  }
-
-  public get data(){
-    return this._data;
-  }
-  public get buffer(){
-    if(!this._buffer){
-      console.log("warning: buffer not initialized");
-    }
-    return this._buffer;
-  }
-  writeBuffer(gl: WebGLRenderingContext,elementSize:number) {
-    this._buffer = AttribDataBuffer.fromData(gl,new Float32Array(this._data),elementSize);
   }
 }

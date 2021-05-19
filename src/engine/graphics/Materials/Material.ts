@@ -34,11 +34,9 @@ export class Materials {
   }
 }
 
-export class Material implements MaterialProperties {
-  public get(propertyName):any{
-
+export abstract class Material implements MaterialProperties {
+  public get(variableName:string):any{
+    return this[variableName];
   }
-  public getSize():number{
-    return 0;
-  }
+  public abstract getSize():number;
 }

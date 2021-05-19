@@ -1,4 +1,4 @@
-import { Shader, ShaderManager } from "./3dRender/shaders/ShaderManager";
+import { Shader, ShaderManager } from "./Materials/ShaderManager";
 import { Material, MaterialProperties } from "./Materials/Material";
 import { RenderableObject } from "./Renderable";
 

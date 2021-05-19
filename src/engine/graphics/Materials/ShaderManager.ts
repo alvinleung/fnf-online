@@ -1,6 +1,6 @@
 import { string } from "prop-types";
 import { v3 } from "twgl.js";
-import { MaterialProperties } from "../../Materials/Material";
+import { MaterialProperties } from "./Material";
 
 
 export namespace Shader{
