@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFocus } from "../../hooks/useFocus";
+import { DraftEditField } from "../DraftEditing/DraftEditField";
 import { resolveIcon } from "./AssetExplorerUtils";
 
 import "./FolderContentView.css";
@@ -17,6 +18,7 @@ export function FolderContentView(props) {
               selectedItemPath={props.selectedItemPath}
               currentDir={props.currentDir}
               file={file}
+              onRename={props.onRename}
             ></FolderItem>
           );
         })}
@@ -27,10 +29,21 @@ export function FolderContentView(props) {
 
 function FolderItem(props) {
   const [focusRef, isFocused] = useFocus();
+  const [isRenaming, setIsRenaming] = useState(false);
+
+  const commitNameChangeHandler = (val: string) => {
+    // send rename request
+    props.onRename && props.onRename(props.file.fullPath, val);
+    setIsRenaming(false);
+  };
+  const abortNameChangeHandler = () => {
+    setIsRenaming(false);
+  };
 
   const focusClass = isFocused ? " folder-content-view__item--focused" : "";
   return (
-    <button
+    <div
+      tabIndex={0}
       ref={focusRef}
       draggable="true"
       onClick={() => props.setSelectedItemPath(props.file.fullPath)}
@@ -46,9 +59,22 @@ function FolderItem(props) {
         draggable="false"
         alt="folder"
       />
-      <span className="folder-content-view__item-label" draggable="false">
+      <DraftEditField
+        onCommit={commitNameChangeHandler}
+        onDiscard={abortNameChangeHandler}
+        value={props.file.name}
+        editing={isRenaming}
+        onDoubleClickCapture={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsRenaming(true);
+        }}
+        draggable={false}
+        discardWhenClickoutside
+      />
+      {/* <span className="folder-content-view__item-label" draggable="false">
         {props.file.name}
-      </span>
-    </button>
+      </span> */}
+    </div>
   );
 }

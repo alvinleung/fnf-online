@@ -77,4 +77,16 @@ export class EditorServerIO {
       body: formData,
     });
   }
+  public async rename(pathToFolder: string, newFileName: string) {
+    // write server file
+    const response = await fetch("/rename", {
+      method: "POST",
+      headers: {
+        renamepath: stripRoot(pathToFolder),
+        newfilename: newFileName,
+      },
+    });
+
+    return response;
+  }
 }

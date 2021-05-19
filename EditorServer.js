@@ -98,6 +98,29 @@ app.get("/listAllFolders", async (req, res) => {
   res.json(relPaths);
 });
 
+app.post("/rename", (req, res) => {
+  // handle rename
+  const renamePath = path.join(
+    __dirname,
+    ASSET_FOLDER_PATH,
+    req.headers.renamepath
+  );
+  const newFileName = req.headers.newfilename;
+
+  console.log(
+    `Renaming path "${path.basename(
+      renamePath
+    )}" to "${newFileName}" in ${path.dirname(renamePath)}`
+  );
+
+  const pathAfterRename = path.join(path.parse(renamePath).dir, newFileName);
+
+  fs.renameSync(renamePath, pathAfterRename);
+
+  res.status(200);
+  res.end();
+});
+
 const server = http.createServer(app);
 
 const serverListen = () => {

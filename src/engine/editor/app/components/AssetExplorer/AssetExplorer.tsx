@@ -97,13 +97,13 @@ export const AssetExplorer = ({ onChange }: Props) => {
   }, [selectedItemPath]);
 
   // list out all the directories
-  const fetchDirs = () => {
+  const fetchServerDirs = () => {
     editorServerIO.listAllFolders().then((val) => {
       setLocalDirList(val);
     });
   };
   useEffect(() => {
-    fetchDirs(); // init all directories
+    fetchServerDirs(); // init all directories
   }, []);
 
   // refresh the local dir map when we get and update
@@ -156,11 +156,21 @@ export const AssetExplorer = ({ onChange }: Props) => {
       editorServerIO.writeFile(currentDir, file).then(() => {
         console.log("file written at " + currentDir);
         // refresh the folder
-        fetchDirs();
+        fetchServerDirs();
       });
     },
     [currentDir]
   );
+
+  const handleFolderRename = (filePath: string, newName: string) => {
+    // send rename message here
+    console.log(filePath);
+    console.log(newName);
+
+    editorServerIO.rename(filePath, newName).then(() => {
+      fetchServerDirs();
+    });
+  };
 
   const dropAreaRef = useFileDrop(["image/png", "image/jpeg"], fileDropHandler);
 
@@ -195,6 +205,7 @@ export const AssetExplorer = ({ onChange }: Props) => {
                 handleItemDoubleClick={handleItemDoubleClick}
                 currentDirContent={currentDirContent}
                 noFileInDirectory={noFileInDirectory}
+                onRename={handleFolderRename}
               ></FolderContentView>
             </div>
           </div>
