@@ -45,30 +45,33 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
 
     // setup load all assets
     this.assets = AssetManager.getInstance();
-    this.setupAssets(this.assets);
 
-    const handleLoadProgress = () => {
-      if (!this.assets.haveAllAssetLoaded()) return;
-      // continue the rest of initialisation after all the assets loaded
+    // wait for the setup is finished, because the implementation
+    // might include fetching datasheet
+    this.setupAssets(this.assets).then(() => {
+      const handleLoadProgress = () => {
+        if (!this.assets.haveAllAssetLoaded()) return;
+        // continue the rest of initialisation after all the assets loaded
 
-      // setup the rendering system
-      this._rendering = this.setupRendering();
+        // setup the rendering system
+        this._rendering = this.setupRendering();
 
-      // setup other game systems
-      this.setupSystems();
+        // setup other game systems
+        this.setupSystems();
 
-      // finished setup
-      this.gameDidInit();
+        // finished setup
+        this.gameDidInit();
 
-      // init the game
-      this.tick();
+        // init the game
+        this.tick();
 
-      // event listener clean up
-      this.assets.removeEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
-    };
+        // event listener clean up
+        this.assets.removeEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
+      };
 
-    this.assets.addEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
-    this.assets.loadAll();
+      this.assets.addEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
+      this.assets.loadAll();
+    });
   }
 
   addEventListener(eventType: GameEvent, callback: Function): void {
@@ -111,7 +114,7 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
 
   // facotry function for binding input controls
   protected abstract setupInput(): InputSystem;
-  protected abstract setupAssets(assetManager: AssetManager): void;
+  protected abstract setupAssets(assetManager: AssetManager): Promise<void>;
   protected abstract setupRendering(): RenderingSystem;
 
   protected gameDidInit() {

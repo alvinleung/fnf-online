@@ -201,10 +201,9 @@ class MyGame extends Game {
   }
 
   // @override
-  protected setupAssets(assets: AssetManager) {
-    assets.fetchAssetSheet("/asset-sheet").then((assetSheet) => {
-      assets.loadFromAssetSheet(assetSheet);
-    });
+  protected async setupAssets(assets: AssetManager) {
+    const assetSheet = await assets.fetchAssetSheet("/asset-sheet");
+    assets.addAssetsFromAssetSheet(assetSheet);
   }
 
   protected setupSystems() {

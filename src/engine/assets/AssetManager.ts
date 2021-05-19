@@ -35,7 +35,7 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     return assetSheetContent;
   }
 
-  public async loadFromAssetSheet(assetSheetContent: AssetSheet) {
+  public addAssetsFromAssetSheet(assetSheetContent: AssetSheet) {
     assetSheetContent.image.forEach((item) => {
       this.image.add({ name: item.name, path: item.path });
     });
@@ -43,7 +43,10 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     assetSheetContent.sound.forEach((item) => {
       this.sound.add({ name: item.name, path: item.path });
     });
+  }
 
+  public loadFromAssetSheet(assetSheetContent: AssetSheet) {
+    this.addAssetsFromAssetSheet(assetSheetContent);
     // load all item here
     this.loadAll();
   }
@@ -71,7 +74,7 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     this.assetLoaders.forEach((loader) => loader.loadAll());
   }
   public haveAllAssetLoaded(): boolean {
-    return this.assetLoaders.some((assetLoader: AssetLoader<any>) => {
+    return !this.assetLoaders.some((assetLoader: AssetLoader<any>) => {
       return assetLoader.isLoaded() === false;
     });
   }
