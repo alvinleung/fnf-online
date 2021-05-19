@@ -12,7 +12,7 @@ import { FrameBuffer } from "./FrameBuffer";
 import { cameraMatrixFromTransform } from "../utils/MatrixUtils";
 import { LightComponent } from "./Light";
 import { SelectableComponent } from "../core/SelectionSystem";
-
+let halt = false;
 /**
  * RENDERING CONFIG
  */
@@ -140,6 +140,7 @@ export class RenderingSystem extends System {
    * @param game
    * @param delta
    */
+
   update(game: Game, delta: number): void {
     const gl = this.gl;
 
@@ -197,14 +198,18 @@ export class RenderingSystem extends System {
     // for each render pass
     this._renderPasses.forEach((renderPass) => {
       // render the scene
-      /*
+      
       try {
-        renderPass.render(gl, this);
+        if(!halt){
+          renderPass.render(gl, this);
+        }
       } catch (e) {
+        halt = true;
         // prevent error killing the whole program
-        console.error("Error from Rendering System - " + e);
-      }*/
-      renderPass.render(gl, this);
+        console.error("Error from Rendering System - ");
+        console.error(e);
+      }
+      //renderPass.render(gl, this);
     });
   }
 

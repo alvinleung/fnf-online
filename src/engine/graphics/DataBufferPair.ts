@@ -1,15 +1,18 @@
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Texture } from "./Texture";
 import { Image } from "./Image/Image";
+import { Shader, ShaderSet } from "./Materials/ShaderManager";
+import { ShaderProgram } from "./ShaderProgram";
+import { printProgramInfo } from "../utils/GLUtils";
 
 
-export interface IDataBufferPair<D,B>{
+export interface IBufferLoader<D,B>{
   needUpdate: boolean;
   data: D;
   buffer: B;
-  setBufferData(gl: WebGLRenderingContext,elementSize:number):any;
+  load(gl: WebGLRenderingContext,elementSize:number):any;
 }
-export class DataBufferPair implements IDataBufferPair<number[],AttribDataBuffer> {
+export class DataBufferLoader implements IBufferLoader<number[],AttribDataBuffer> {
   private _data:number[];
   private _buffer: AttribDataBuffer;
   public needUpdate: boolean;
@@ -34,13 +37,12 @@ export class DataBufferPair implements IDataBufferPair<number[],AttribDataBuffer
     }
     return this._buffer;
   }
-  setBufferData(gl: WebGLRenderingContext,elementSize:number) {
+  load(gl: WebGLRenderingContext,elementSize:number) {
     this._buffer = AttribDataBuffer.fromData(gl,new Float32Array(this._data),elementSize);
   }
 }
 
-
-export class TextureBufferPair implements IDataBufferPair<Image,Texture> {
+export class TextureBufferLoader implements IBufferLoader<Image,Texture> {
   private _data:Image;
   private _buffer: Texture;
   public needUpdate: boolean;
@@ -82,10 +84,50 @@ export class TextureBufferPair implements IDataBufferPair<Image,Texture> {
     this._data = null;
     this.hasTexture = true;
   }
-  public setBufferData(gl: WebGLRenderingContext) {
+  public load(gl: WebGLRenderingContext) {
     if(this.hasTexture && this.needUpdate){
       this._buffer = new Texture(gl, { image: this._data });
     }
   }
-
 }
+
+export class ShaderProgramLoader implements IBufferLoader<ShaderSet,ShaderProgram> {
+
+  private _shaderSet:ShaderSet;
+  private _program: ShaderProgram;
+  public needUpdate: boolean;
+  
+  constructor(shaderSet:ShaderSet,program?:ShaderProgram){
+    this._shaderSet = shaderSet;
+    this.needUpdate = true;
+    if(program){
+      this._program = program;
+      this.needUpdate = false;
+    }
+  }
+  public getShaderSet(): ShaderSet {
+    return this.data
+  }
+  public getProgram(gl:WebGLRenderingContext): ShaderProgram {
+    this.load(gl)
+    return this.buffer;
+  }
+
+  public get data(): ShaderSet{
+    return this._shaderSet;
+  };
+  public get buffer(): ShaderProgram{
+    return this._program;
+  }
+  public load(gl: WebGLRenderingContext) {
+    if(this.needUpdate || !this._program){
+      this._program = new ShaderProgram(gl,
+        this._shaderSet.vertexShader,
+        this._shaderSet.fragmentShader);
+      console.log("New Program created:")
+      printProgramInfo(gl,this._program.getShader())
+      this.needUpdate = false;
+    }
+  }
+}
+

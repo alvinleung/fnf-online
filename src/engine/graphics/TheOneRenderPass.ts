@@ -4,6 +4,7 @@ import { RenderableObject } from "./Renderable";
 
 import { RenderingSystem } from "./RenderingSystem";
 import { RenderPass } from "./RenderPass";
+import { printProgramInfo } from "../utils/GLUtils";
 
 
 export class ShaderPlan implements MaterialProperties {
@@ -18,24 +19,31 @@ export class TheOneRenderPass extends RenderPass {
 
   private strategy:{shaderId: string, renderableList: RenderableObject[] }[] = [];
   // store: object { shaderId, renderables }
+  private strategyNeedsUpdate:boolean = true;
+  private _frameRendered:number = 0;
 
-  public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
-
-    /*
-      resolve shader strategy
-    */
-
-    this.resolveStrategy(null);
-  }
+  public setup(gl: WebGLRenderingContext, system: RenderingSystem) { }
 
   // this will be called per frame
   public render(
     gl: WebGLRenderingContext,
     system: RenderingSystem,
   ) {
+    if(this.strategyNeedsUpdate){
+      this.resolveStrategy(system.getRenderables());
+      this.strategyNeedsUpdate = false;
+    }
+
     const shaderManager = ShaderManager.getInstance();
-    this.strategy.forEach(subPass => {
-      const shaderProgram = system.getShaderProgram(subPass.shaderId);
+    this.strategy.forEach( subPass=> {
+      //const shaderProgram = system.getShaderProgram(subPass.shaderId);
+      const shaderProgram =  shaderManager.getShaderFor(gl,subPass.shaderId);
+      if (!shaderProgram){
+        if(this._frameRendered % 30 == 0){
+          console.log("shader not found in cache, skipping:["+ subPass.shaderId +"]")
+        }
+        return;
+      }
       shaderProgram.useProgram();
       
       /** Get Naming scheme from shader manager */
@@ -92,13 +100,28 @@ export class TheOneRenderPass extends RenderPass {
         gl.drawArrays(gl.TRIANGLES,0,material.getSize())
       })
     });
-
+    this._frameRendered++;
   }
-
+  /*
+    resolve shader strategy
+  */
   public resolveStrategy(renderableObjects:RenderableObject[]){
+    let plans = [];
+    renderableObjects.forEach(renderableObject => {
+      plans.push( renderableObject.getRenderingPlan() );
+    });
 
+    let cache:string;
+    this.strategy = [];
+    for(let i = 0; i < plans.length; i++){
+      cache = plans[i];
+      let strategy = {
+        shaderId:cache,
+        renderableList: renderableObjects
+      };
+      this.strategy.push(strategy);
+    }
   }
-
 }
 
 

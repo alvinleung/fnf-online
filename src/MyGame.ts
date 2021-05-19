@@ -28,28 +28,26 @@ import { GameStateParser } from "./engine/utils/GameStateParser";
 import { DebugSystem } from "./engine/core/DebugSystem";
 import EditorSystem from "./engine/core/EditorSystem";
 import { SpriteSheetAnimator } from "./engine/graphics/SpriteSheet/SpriteSheetAnimator";
-import { PhongRenderer } from "./engine/graphics/3dRender/PhongRenderer";
 import { LightComponent } from "./engine/graphics/Light";
 import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
-import {
-  wireFrameMaterialProperties,
-  WireFrameRenderer,
-} from "./engine/graphics/3dRender/WireframeRenderer";
 import { TouchInput } from "./engine/input/TouchInput";
 import { EditorServerIO } from "./engine/editor/EditorServerIO";
 import { ShaderManager } from "./engine/graphics/Materials/ShaderManager";
 import { TestMaterial } from "./engine/graphics/Materials/CustomMaterials";
 import { v3 } from "twgl.js";
 import { Material } from "./engine/graphics/Materials/Material";
+import { PhongRenderPass } from "./engine/graphics/3dRender/PhongRenderPass";
+import { WireFrameRenderPass } from "./engine/graphics/3dRender/WireframeRenderPass";
+import { TheOneRenderPass } from "./engine/graphics/TheOneRenderPass";
 
 
 class MyGame extends Game {
   protected gameDidInit() {
     let testmaterial = new TestMaterial();
-    console.log( ShaderManager.getInstance().shaderMaterialVariableNameMap)
+    //console.log( ShaderManager.getInstance().shaderMaterialVariableNameMap)
     let variableMapping = ShaderManager.getInstance().getMaterialMapping(testmaterial)
     for(let [key,value] of Object.entries(variableMapping)){
-      console.log(key,value)
+      //console.log(key,value)
     }
 
     /**
@@ -233,9 +231,10 @@ class MyGame extends Game {
       // new ImageRendererSetup(),
       // new SpriteSheetRendererSetup(),
       new SpriteSheetRenderPass(),
-      new PhongRenderer(),
-      new WireFrameRenderer(),
+      new PhongRenderPass(),
+      new WireFrameRenderPass(),
       new MetricsRenderPass(),
+      new TheOneRenderPass()
       //new GizmoPass(),
     ];
     const renderingSystem = new RenderingSystem(renderers);

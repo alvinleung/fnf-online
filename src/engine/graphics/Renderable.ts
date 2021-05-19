@@ -6,11 +6,12 @@ import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderPass";
 import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderPass";
 import { AttribDataBuffer } from "./AttribDataBuffer";
-import { DataBufferPair, TextureBufferPair } from "./DataBufferPair";
+import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { Geomatry } from "./Geomatry/Geomatry";
 import { Image } from "./Image/Image";
 import { BaseMaterial} from "./Materials/CustomMaterials";
 import { Material, Materials } from "./Materials/Material";
+import { ShaderManager, ShaderSet } from "./Materials/ShaderManager";
 import { Texture } from "./Texture";
 
 const VERBOSE = false;
@@ -34,7 +35,8 @@ export class RenderableObject {
   //private _textureCoords: number[];
   //private _objectColors: number[];
   //public transform: m4.Mat4 = m4.translation(v3.create(0, 0, 0));
-
+  private _plan: any[] = [];
+  //public shaderSet: ShaderSet;
 
   @Field(Editor.CLASS)
   private _material: Materials;
@@ -79,6 +81,8 @@ export class RenderableObject {
       transform: m4.identity(),
     })
     
+    this._plan = ShaderManager.getInstance().getDefaultPlan();
+
     return this;
   }
   public get transform(){
@@ -105,11 +109,11 @@ export class RenderableObject {
     this._isLoadedIntoGPUMemory = false;
     
     const material = this._material.getProperty<BaseMaterial>("material");
-    let textureBuffer = material.get("_textureImage") as TextureBufferPair
+    let textureBuffer = material.get("_textureImage") as TextureBufferLoader
     textureBuffer.buffer = val
   }
   public get textureImage() {
-    return ((this._material.getProperty<BaseMaterial>("material")).get("_textureImage") as TextureBufferPair).buffer
+    return ((this._material.getProperty<BaseMaterial>("material")).get("_textureImage") as TextureBufferLoader).buffer
   }
 
   @Field(Editor.ARRAY_NUMBER)
@@ -134,7 +138,7 @@ export class RenderableObject {
   public get objectColors() {
     const material = this._material.getProperty<BaseMaterial>("material");
     //console.log(material.get("_colors"))
-    return (material.get("_colors") as DataBufferPair).data; // this._objectColors;
+    return (material.get("_colors") as DataBufferLoader).data; // this._objectColors;
   }
 
   /**
@@ -205,7 +209,7 @@ export class RenderableObject {
   }
   //TODO:toremove
   public getColorBuffer() {
-    return (this._material.getProperty<BaseMaterial>("material").get("_colors") as DataBufferPair).buffer
+    return (this._material.getProperty<BaseMaterial>("material").get("_colors") as DataBufferLoader).buffer
   }
   /**
    * Return if the data of this renderable object has complete it's webgl setups already.
@@ -220,7 +224,7 @@ export class RenderableObject {
    * @returns
    */
   public setRenderingTexture(texture: Texture) {
-    (this._material.getProperty<BaseMaterial>("material").get("_textureImage") as TextureBufferPair).buffer = texture;
+    (this._material.getProperty<BaseMaterial>("material").get("_textureImage") as TextureBufferLoader).buffer = texture;
   }
 
   /**
@@ -228,7 +232,7 @@ export class RenderableObject {
    * @returns
    */
   public getRenderingTexture(): Texture {
-    return (this._material.getProperty<BaseMaterial>("material").get("_textureImage") as TextureBufferPair).buffer;
+    return (this._material.getProperty<BaseMaterial>("material").get("_textureImage") as TextureBufferLoader).buffer;
   }
 
   public hasRenderingTexture(): boolean {
@@ -244,5 +248,8 @@ export class RenderableObject {
   }
   public getGeometry(): Geomatry {
     return this._geometry;
+  }
+  public getRenderingPlan(): string[]{
+    return this._plan;
   }
 }

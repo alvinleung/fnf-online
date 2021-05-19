@@ -13,6 +13,14 @@ export class ShaderProgram {
 
   private attribBuffers = {};
 
+  public readonly variableNameMap:{
+    // name:type where type is webglenum 
+    attributeMap:{[attributeName:string]:number}
+    unfiromMap:{[unifromName:string]:number}
+  }
+
+
+
   /**
    * Init and compile a shader program, wrapper of the shader API in webgl
    *

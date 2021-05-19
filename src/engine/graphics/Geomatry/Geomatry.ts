@@ -1,6 +1,6 @@
 import { m4 } from "twgl.js";
 
-import { DataBufferPair } from "../DataBufferPair";
+import { DataBufferLoader } from "../DataBufferPair";
 
 export interface GeomatryTemplate{
   vertices:number[];
@@ -9,21 +9,21 @@ export interface GeomatryTemplate{
   transform:m4.Mat4;
 }
 export class Geomatry {
-  private _vertices:DataBufferPair;
-  private _normals:DataBufferPair;
-  private _texCoords:DataBufferPair;
+  private _vertices:DataBufferLoader;
+  private _normals:DataBufferLoader;
+  private _texCoords:DataBufferLoader;
   private _transform:m4.Mat4;
 
   constructor(template?:GeomatryTemplate){
     if(template){
-      this._vertices = new DataBufferPair(template.vertices);
-      this._normals = new DataBufferPair(template.normals);
-      this._texCoords = new DataBufferPair(template.texCoords);
+      this._vertices = new DataBufferLoader(template.vertices);
+      this._normals = new DataBufferLoader(template.normals);
+      this._texCoords = new DataBufferLoader(template.texCoords);
       this._transform = template.transform;
     } else {
-      this._vertices = new DataBufferPair([]);
-      this._normals = new DataBufferPair([]);
-      this._texCoords = new DataBufferPair([]);
+      this._vertices = new DataBufferLoader([]);
+      this._normals = new DataBufferLoader([]);
+      this._texCoords = new DataBufferLoader([]);
       this._transform = m4.identity();
     }
   }
@@ -38,13 +38,13 @@ export class Geomatry {
     return this._texCoords.data;
   }
   public set vertices(data:number[]){
-    this._vertices = new DataBufferPair(data);
+    this._vertices = new DataBufferLoader(data);
   }
   public set normals(data:number[]){
-    this._normals = new DataBufferPair(data);
+    this._normals = new DataBufferLoader(data);
   }
   public set texCoords(data:number[]){
-    this._texCoords = new DataBufferPair(data);
+    this._texCoords = new DataBufferLoader(data);
   }
   public get transform():m4.Mat4{
     return this._transform;
@@ -69,13 +69,13 @@ export class Geomatry {
 
   prepareInGPU(gl: WebGLRenderingContext) {
     if(this._vertices.needUpdate){
-      this._vertices.setBufferData(gl,3);
+      this._vertices.load(gl,3);
     }
     if(this._normals.needUpdate){
-      this._normals.setBufferData(gl,3);
+      this._normals.load(gl,3);
     }
     if(this._texCoords.needUpdate){
-      this._texCoords.setBufferData(gl,2);
+      this._texCoords.load(gl,2);
     }
   }
 }

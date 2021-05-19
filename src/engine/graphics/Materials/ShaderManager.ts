@@ -1,13 +1,20 @@
 import { string } from "prop-types";
 import { v3 } from "twgl.js";
+import { Asset, AssetManager } from "../../assets";
+import { AssetLoaderEvent } from "../../assets/AssetLoader";
+import { ShaderSetLoader } from "../../assets/ShaderSetLoader";
+import { ShaderProgramLoader } from "../DataBufferPair";
+import { ShaderProgram } from "../ShaderProgram";
 import { MaterialProperties } from "./Material";
 
 
 export namespace Shader{
   // variable storage qualifier -> variable type
+  // ATTRIBUTE and UNIFORM **Not same value as webgl enums https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
+  // TODO: maybe make the enum consistent with webgl enums
   export enum ATTRIBUTE {
-    VEC3 = 100,
-    VEC4 = 101,
+    FLOAT_VEC3 = 100,
+    FLOAT_VEC4 = 101,
   };
   export enum UNIFORM {
     VEC3,
@@ -25,7 +32,7 @@ export namespace Shader{
     PROJECTION_MATRIX,
   }
 }
-export interface ShaderSet {
+export interface ShaderSet extends Asset {
   fragmentShader:string;
   vertexShader:string;
 }
@@ -41,30 +48,22 @@ export function shaderVariable(type:number,nameInShader?:string): any{
 }
 export class ShaderManager {
 
-  public shaderMaterialVariableNameMap:{[shaderName:string]:{[materialName:string]:any}} = {};
-  public geomatryNames: {[shaderName:string]:{[variableName:string]: string}} = {};
+  private shaderMaterialVariableNameMap:{[shaderName:string]:{[materialName:string]:any}} = {};
+  private geomatryNames: {[shaderName:string]:{[variableName:string]: string}} = {};
+  //private shaderSets:{[name:string]:ShaderSet} = {};
+  private shaders:{[name:string]:ShaderProgramLoader} = {};
 
-  public getShaderFor(gl:WebGLRenderingContext, shaderSet:ShaderSet){
-    
+  public getShaderFor(gl:WebGLRenderingContext, shaderName:string):ShaderProgram{
+    if( !this.shaders[shaderName] ){
+      return null;
+    }
+    return this.shaders[shaderName].getProgram(gl);
   }
-  public getDefaultPlan(): string[]{
+  public getDefaultPlan(): any[]{
     //TODO: return a default plan for rendering object
     return [
-      "SpriteSheet",
-      "Phong",
-      "WireFrame",
-      //"Metrics",
+      "Phong"
     ];
-
-    /**
-      // new ImageRendererSetup(),
-      // new SpriteSheetRendererSetup(),
-      new SpriteSheetRenderPass(),
-      new PhongRenderPass(),
-      new WireFrameRenderPass(),
-      new MetricsRenderPass(),
-      // new GizmoPass(),
-    */
   }
   /**
    * add and store relation between a materialClass, a shader, and a variable that exist in both places
@@ -113,6 +112,24 @@ export class ShaderManager {
         throw("no default variable name for enum["+shaderVariable+"] was found");
     }
   }
+  public callUpdateShaderSets(){
+    const shaderLoader = AssetManager.getInstance().shader;
+    shaderLoader.addEventListener(AssetLoaderEvent.COMPLETE, (loader:ShaderSetLoader) => {
+      const shaderDict = loader.getAssetDictionary();
+      for(const shaderName in shaderDict){
+        ShaderManager.getInstance().addShader(shaderDict[shaderName])
+      }
+    })
+  }
+
+  public addShader(shaderSet: ShaderSet, program?:ShaderProgram): boolean{
+    const name = shaderSet.name;
+    if(this.shaders[name]){
+      return false;
+    }
+    this.shaders[name] = new ShaderProgramLoader(shaderSet,program);
+    return true;
+  }
 
   /* Singleton */
   private constructor(){}
@@ -131,6 +148,7 @@ export class ShaderManager {
       normals: "vNormal",
       texCoords:"vTexCoord",
     }
+    this.callUpdateShaderSets();
   }
 }
 

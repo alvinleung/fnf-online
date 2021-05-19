@@ -22,5 +22,15 @@
       "name": "action-theme",
       "path": "assets/sounds/soundtrack/actionFull.mp3"
     }
+  ],
+  "shader": [
+    {
+      "name": "Phong",
+      "path": "assets/shaders/PhongShader"
+    },
+    {
+      "name": "Wireframe",
+      "path": "assets/shaders/WireframeShader"
+    }
   ]
 }

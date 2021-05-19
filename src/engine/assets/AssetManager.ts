@@ -3,6 +3,7 @@ import { ImageLoader } from "./ImageLoader";
 import { EventEmitter, IEventEmitter } from "../events/EventEmitter";
 import { AssetLoader, AssetLoaderEvent } from "./AssetLoader";
 import { Asset } from ".";
+import { ShaderSetLoader } from "./ShaderSetLoader";
 
 export interface AssetEntry {
   name: string;
@@ -19,14 +20,16 @@ export interface AssetSheet {
 export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
   public readonly image: ImageLoader;
   public readonly sound: SoundLoader;
+  public readonly shader: ShaderSetLoader;
 
   private assetLoaders: AssetLoader<any>[] = [];
 
   private constructor() {
     this.image = new ImageLoader();
     this.sound = new SoundLoader();
+    this.shader = new ShaderSetLoader();
 
-    this.assetLoaders = [this.image, this.sound];
+    this.assetLoaders = [this.image, this.sound, this.shader];
   }
 
   public async fetchAssetSheet(url: string): Promise<AssetSheet> {
@@ -42,6 +45,10 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
 
     assetSheetContent.sound.forEach((item) => {
       this.sound.add({ name: item.name, path: item.path });
+    });
+
+    assetSheetContent.shader.forEach((item) => {
+      this.shader.add({ name: item.name, path: item.path });
     });
 
     // load all item here
@@ -64,6 +71,7 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     return {
       image: loaders[0],
       sound: loaders[1],
+      shader: loaders[2],
     };
   }
 

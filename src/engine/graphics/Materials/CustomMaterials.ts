@@ -3,13 +3,13 @@ import { COLORS_VEC4 } from "../3dRender/objects/Primitives";
 import { Material, MaterialProperties } from "./Material";
 import { Image } from "../Image/Image";
 import { Shader, shaderVariable } from "./ShaderManager";
-import { DataBufferPair, TextureBufferPair } from "../DataBufferPair";
+import { DataBufferLoader, TextureBufferLoader } from "../DataBufferPair";
 
 export class TestMaterial extends Material {
   //public shaders: ShaderSet = ShaderManager.getShader(shader3d);
-  @shaderVariable(Shader.ATTRIBUTE.VEC3)
+  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC3)
   public testFieldOne:v3.Vec3;
-  @shaderVariable(Shader.ATTRIBUTE.VEC4)
+  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4)
   public testFieldTwo:v3.Vec3;
 
   public getSize(): number {
@@ -34,10 +34,10 @@ export class BaseMaterial extends Material {
   private _diffuseConstant: number;
   @shaderVariable(Shader.UNIFORM.FLOAT)
   private _shininess: number;
-  @shaderVariable(Shader.ATTRIBUTE.VEC4)
-  private _colors:DataBufferPair;
+  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4)
+  private _colors:DataBufferLoader;
 
-  private _textureImage: TextureBufferPair;
+  private _textureImage: TextureBufferLoader;
   private size:number;
 
   constructor(size:number,template?:BaseMaterialTemplate){
@@ -56,15 +56,15 @@ export class BaseMaterial extends Material {
     }
 
     if(template.color){
-      this._colors = new DataBufferPair( template.color );
+      this._colors = new DataBufferLoader( template.color );
     } else {
-      this._colors = new DataBufferPair( COLORS_VEC4.grayColor(size, 0.75) );
+      this._colors = new DataBufferLoader( COLORS_VEC4.grayColor(size, 0.75) );
     }
 
     if(template.textureImage){
-      this._textureImage = new TextureBufferPair(template.textureImage);
+      this._textureImage = new TextureBufferLoader(template.textureImage);
     } else {
-      this._textureImage = new TextureBufferPair(null);
+      this._textureImage = new TextureBufferLoader(null);
     }
   }
   public hasTexture():boolean{
@@ -72,10 +72,10 @@ export class BaseMaterial extends Material {
   }
   public prepareInGPU(gl: WebGLRenderingContext) {
     if(this._colors.needUpdate){
-      this._colors.setBufferData(gl,4);
+      this._colors.load(gl,4);
     }
     if(this._textureImage.needUpdate){
-      this._textureImage.setBufferData(gl);
+      this._textureImage.load(gl);
     }
   }
 
@@ -100,8 +100,8 @@ export class PhongMaterialTwo extends Material {
   private _diffuseConstant: number;
   @shaderVariable(Shader.UNIFORM.FLOAT)
   private _shininess: number;
-  @shaderVariable(Shader.ATTRIBUTE.VEC4)
-  private _colors:DataBufferPair;
+  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4)
+  private _colors:DataBufferLoader;
 
   private size:number;
   constructor(size:number,template?:PhongMaterialTwoTemplate){
@@ -119,11 +119,11 @@ export class PhongMaterialTwo extends Material {
       this._shininess = 5;
     }
     
-    this._colors = new DataBufferPair( COLORS_VEC4.grayColor(size, 0.75) );
+    this._colors = new DataBufferLoader( COLORS_VEC4.grayColor(size, 0.75) );
   }
   prepareInGPU(gl: WebGLRenderingContext) {
     if(this._colors.needUpdate){
-      this._colors.setBufferData(gl,4);
+      this._colors.load(gl,4);
     }
   }
 

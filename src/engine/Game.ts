@@ -127,7 +127,7 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
   public saveScene() {
     const gameState = JSON.parse(GameStateParser.fromGame(this).getString());
     const assetSheet = this.assets.saveAssetSheet();
-
+    
     const sceneFile: SceneFile = {
       scene: gameState,
       assets: assetSheet,
