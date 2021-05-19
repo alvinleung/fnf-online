@@ -15,6 +15,14 @@ export namespace Shader{
     FLOAT,
     BOOLEAN,
   };
+  export enum NAMES{
+    VERTICES,
+    NORMALS,
+    TEXCOORDS,
+    MODEL_MATRIX,
+    VIEW_MATRIX,
+    PROJECTION_MATRIX,
+  }
 }
 export interface ShaderSet {
   fragmentShader:string;
@@ -33,6 +41,9 @@ export function shaderVariable(type:number,nameInShader?:string): any{
 export class ShaderManager {
 
   public shaderMaterialVariableNameMap:{[shaderName:string]:{[materialName:string]:any}} = {};
+  public geomatryNames: {[shaderName:string]:{
+    [variableName:string]: string
+  }};
 
   public getShaderFor(gl:WebGLRenderingContext, shaderSet:ShaderSet){
     
@@ -82,6 +93,27 @@ export class ShaderManager {
     const materialName = materialClass.name?materialClass.name:materialClass.constructor.name;
     return this.shaderMaterialVariableNameMap[shaderSetName][materialName];
   }
+  public getVariableName(shaderVariable:Shader.NAMES,shaderSetName?:string): string{
+    if(!shaderSetName){
+      shaderSetName = "any";
+    }
+    switch(shaderVariable){
+      case Shader.NAMES.VERTICES:
+        return this.geomatryNames[shaderSetName]["vertices"];
+      case Shader.NAMES.NORMALS:
+        return this.geomatryNames[shaderSetName]["normals"];
+      case Shader.NAMES.TEXCOORDS:
+        return this.geomatryNames[shaderSetName]["texCoords"];
+      case Shader.NAMES.MODEL_MATRIX:
+        return "modelMatrix"
+      case Shader.NAMES.VIEW_MATRIX:
+        return "viewMatrix"
+      case Shader.NAMES.PROJECTION_MATRIX:
+        return "projectionMatrix"
+      default:
+        throw("no default variable name for enum["+shaderVariable+"] was found");
+    }
+  }
 
   /* Singleton */
   private constructor(){}
@@ -89,8 +121,17 @@ export class ShaderManager {
   public static getInstance(){
     if(!ShaderManager._instance){
       ShaderManager._instance = new ShaderManager();
+      ShaderManager._instance.init();
     }
     return ShaderManager._instance;
+  }
+
+  private init(){
+    this.geomatryNames['any'] = {
+      vertices: "vPosition",
+      normals: "vNormal",
+      texCoords:"vTexCoord",
+    }
   }
 }
 

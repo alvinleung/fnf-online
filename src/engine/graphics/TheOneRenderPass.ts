@@ -52,13 +52,29 @@ export class TheOneRenderPass extends RenderPass {
       const shaderProgram = system.getShaderProgram(subPass.shaderId);
       shaderProgram.useProgram();
       
+      /** Get Naming scheme from shader manager */
+      const verticeName = shaderManager.getVariableName(Shader.NAMES.VERTICES);
+      const normalsName = shaderManager.getVariableName(Shader.NAMES.NORMALS);
+      const texCoordsName = shaderManager.getVariableName(Shader.NAMES.TEXCOORDS);
+      const modelMatrixName = shaderManager.getVariableName(Shader.NAMES.MODEL_MATRIX);
+      const viewMatrixName = shaderManager.getVariableName(Shader.NAMES.VIEW_MATRIX);
+      const projectionMatrixName = shaderManager.getVariableName(Shader.NAMES.PROJECTION_MATRIX);
+
       subPass.renderableList.forEach(renderableObject => {
+        /** Transform */
+        const cameraMatrix = system.getCameraMatrix();
+        const projectionMatrix = system.getProjectionMatrix();
+        shaderProgram.writeUniformMat4(viewMatrixName, cameraMatrix);
+        shaderProgram.writeUniformMat4(projectionMatrixName, projectionMatrix);
+
+        /** Geomatery */
         const geometry = renderableObject.getGeometry();
+        shaderProgram.writeUniformMat4(modelMatrixName,geometry.get(modelMatrixName))
+        shaderProgram.useAttribForRendering(verticeName,geometry.get(verticeName));
+        shaderProgram.useAttribForRendering(normalsName,geometry.get(normalsName));
+        shaderProgram.useAttribForRendering(texCoordsName,geometry.get(texCoordsName));
 
-
-
-
-
+        /** Materials */
         const materials = renderableObject.getMaterials();
         const material = materials.getProperty<Material>("material");
         const variableMapping = shaderManager.getMaterialMapping(material);
@@ -84,6 +100,8 @@ export class TheOneRenderPass extends RenderPass {
               break;
           }
         }
+
+        /** DRAW */
         gl.drawArrays(gl.TRIANGLES,0,material.getSize())
       })
     });
