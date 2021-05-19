@@ -40,7 +40,7 @@ export class wireFrameMaterialProperties implements MaterialProperties {
   }
 }
 
-export class WireFrameRenderer extends RenderPass {
+export class WireFrameRenderPass extends RenderPass {
   protected SHADER_PROGRAM_NAME = "WireFrameShader";
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {

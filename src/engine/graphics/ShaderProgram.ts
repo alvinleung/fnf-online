@@ -20,7 +20,7 @@ export class ShaderProgram {
    * @param vert vertex shader code in string
    * @param frag fragment shader code in string
    */
-  constructor(gl: WebGLRenderingContext, vert: string, frag: string) {
+  constructor(gl: WebGLRenderingContext, vert: string, frag: string, ) {
     // compile the shader program
     this.shaderProgram = this.compileShaderProgram(gl, vert, frag);
     this.gl = gl;

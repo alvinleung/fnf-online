@@ -99,6 +99,42 @@ const cubeVertices = [
   [0.5,-0.5,-0.5],
 
 ]
+
+export function generateCustomCube(xMin:number,xMax:number,yMin:number,yMax:number,zMin:number,zMax:number){
+
+  const customCubeVertices = [
+    // Top anti-clockwise
+    [xMax,yMax,zMax], 
+    [xMin,yMax,zMax],
+    [xMin,yMax,zMin],
+    [xMax,yMax,zMin],
+
+    // bottom anti-clockwise
+    [xMax,yMin,zMax], 
+    [xMin,yMin,zMax],
+    [xMin,yMin,zMin],
+    [xMax,yMin,zMin],
+  ];
+
+  let vertices = [];
+  // 1 line per triangle
+  // Top
+  vertices.push(...rectangleFace(customCubeVertices,0,1,2,3));
+  // bottom
+  vertices.push(...rectangleFace(customCubeVertices,4,7,6,5));
+  // front
+  vertices.push(...rectangleFace(customCubeVertices,0,4,5,1));
+  // back
+  vertices.push(...rectangleFace(customCubeVertices,3,2,6,7));  
+  // left
+  vertices.push(...rectangleFace(customCubeVertices,0,3,7,4));
+  // right
+  vertices.push(...rectangleFace(customCubeVertices,2,1,5,6));
+  return {
+    verticeArray: spreadArrayRecusively(vertices),
+  }
+}
+
 function rectangleFace(allVertices:Array<Array<number>>,v1:number,v2:number,v3:number,v4:number){
   let vertices = [];
   

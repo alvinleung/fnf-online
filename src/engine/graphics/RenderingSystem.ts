@@ -11,6 +11,7 @@ import { RenderPass } from "./RenderPass";
 import { FrameBuffer } from "./FrameBuffer";
 import { cameraMatrixFromTransform } from "../utils/MatrixUtils";
 import { LightComponent } from "./Light";
+import { SelectableComponent } from "../core/SelectionSystem";
 
 /**
  * RENDERING CONFIG
@@ -29,6 +30,7 @@ export module RenderingConfig {
     );
   }
 }
+
 
 export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
@@ -232,6 +234,7 @@ export class RenderingSystem extends System {
   public getProjectionMatrix(): m4.Mat4 {
     return this.projectionMatrix;
   }
+
   public getCameraMatrix(): m4.Mat4 {
     return this.cameraMatrix;
   }

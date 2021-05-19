@@ -101,7 +101,7 @@ export class Normals implements MaterialProperties {
   }
 }
 
-export class PhongRenderer extends Renderer3D {
+export class PhongRenderPass extends Renderer3D {
   protected SHADER_PROGRAM_NAME = "phongShader";
   protected DEFAULT_PROPERTIES: PhongMaterialProperties;
 

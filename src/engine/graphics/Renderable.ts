@@ -3,8 +3,8 @@ import { m4, v3 } from "twgl.js";
 import { Component } from "../ecs";
 import { EditableField, Editor, Field, Instantiable } from "../editor";
 import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
-import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderer";
-import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderer";
+import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderPass";
+import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderPass";
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Image } from "./Image/Image";
 import { Texture } from "./Texture";
@@ -50,10 +50,11 @@ export class Materials {
   }
 }
 
-export class GeomatryProperties {}
+
 export class Geomatry {
-
-
+  private _vertices:number[];
+  private _normals:number[];
+  
 }
 
 /**
@@ -65,7 +66,6 @@ export class Geomatry {
 @Instantiable("RenderableObject")
 export class RenderableObject {
   constructor(
-    
     objectCoords: number[] = [],
     textureCoords: number[] = [],
     textureImage?: Image, // texture name
@@ -97,6 +97,7 @@ export class RenderableObject {
 
   @Field(Editor.CLASS)
   private _material: Materials;
+  private _geometry: Geomatry;
 
   @Field(Editor.ARRAY_NUMBER, { defaultValue: [] })
   public set objectCoords(val) {
@@ -146,6 +147,7 @@ export class RenderableObject {
   private _texCoordsBuffer: AttribDataBuffer;
   private _colorBuffer: AttribDataBuffer;
   private _texture: Texture;
+
 
   public loadIntoGPU(gl: WebGLRenderingContext) {
     this.createBufferObjectsInGPU(gl);
@@ -248,5 +250,8 @@ export class RenderableObject {
 
   public getMaterials(): Materials {
     return this._material;
+  }
+  public getGeometry(): Geomatry {
+    return this._geometry;
   }
 }

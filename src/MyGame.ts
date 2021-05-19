@@ -39,9 +39,21 @@ import { TouchInput } from "./engine/input/TouchInput";
 import { GizmoPass } from "./engine/graphics/3dRender/GizmoPass";
 import { SelectableComponent } from "./engine/core/SelectionSystem";
 import { EditorServerIO } from "./engine/editor/EditorServerIO";
+import { TestMaterial } from "./engine/graphics/3dRender/shaders/ShaderDecoratorsTest";
+import { ShaderManager } from "./engine/graphics/3dRender/shaders/ShaderManager";
+
 
 class MyGame extends Game {
   protected gameDidInit() {
+    let testmaterial = new TestMaterial();
+    console.log( ShaderManager.getInstance().shaderMaterialVariableNameMap)
+    let variableMapping = ShaderManager.getInstance().getMaterialMapping(testmaterial)
+    console.log(variableMapping)
+    //console.log(testmaterial)
+    for(let [key,value] of Object.entries(variableMapping)){
+      console.log(key,value)
+    }
+
     /**
      * Entity 1 - static
      */
