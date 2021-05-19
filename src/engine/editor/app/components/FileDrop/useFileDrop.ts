@@ -80,6 +80,8 @@ export const useSceneFileDrop = (game: Game) => {
     const handleDrop = (event) => {
       event.stopPropagation();
       event.preventDefault();
+
+      // setup for firefox
       const fileList = event.dataTransfer.files;
       const sceneFile = fileList[0];
 

@@ -48,29 +48,21 @@ export abstract class Game extends Engine implements IEventEmitter<GameEvent> {
 
     // wait for the setup is finished, because the implementation
     // might include fetching datasheet
-    this.setupAssets(this.assets).then(() => {
-      const handleLoadProgress = () => {
-        if (!this.assets.haveAllAssetLoaded()) return;
-        // continue the rest of initialisation after all the assets loaded
+    this.setupAssets(this.assets).then(async () => {
+      // wait for assets fully loaded
+      await this.assets.loadAll();
 
-        // setup the rendering system
-        this._rendering = this.setupRendering();
+      // setup the rendering system
+      this._rendering = this.setupRendering();
 
-        // setup other game systems
-        this.setupSystems();
+      // setup other game systems
+      this.setupSystems();
 
-        // finished setup
-        this.gameDidInit();
+      // finished setup
+      this.gameDidInit();
 
-        // init the game
-        this.tick();
-
-        // event listener clean up
-        this.assets.removeEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
-      };
-
-      this.assets.addEventListener(AssetLoaderEvent.COMPLETE, handleLoadProgress);
-      this.assets.loadAll();
+      // init the game
+      this.tick();
     });
   }
 
