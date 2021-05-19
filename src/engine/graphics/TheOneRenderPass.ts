@@ -1,5 +1,5 @@
 import { Shader, ShaderManager } from "./3dRender/shaders/ShaderManager";
-import { MaterialProperties } from "./Materials/Material";
+import { Material, MaterialProperties } from "./Materials/Material";
 import { RenderableObject } from "./Renderable";
 
 import { RenderingSystem } from "./RenderingSystem";
@@ -14,25 +14,6 @@ export class ShaderPlan implements MaterialProperties {
     this.plan = ShaderManager.getInstance().getDefaultPlan();
   }
 }
-
-// Shader set
-
-export class DataBufferHandler {
-
-}
-export class DataBufferPair {
-
-}
-
-export class Material implements MaterialProperties {
-  public get(propertyName):any{
-
-  }
-  public getSize():number{
-    return 0;
-  }
-}
-
 export class TheOneRenderPass extends RenderPass {
 
   private strategy:{shaderId: string, renderableList: RenderableObject[] }[] = [];
@@ -74,6 +55,7 @@ export class TheOneRenderPass extends RenderPass {
 
         /** Geomatery */
         const geometry = renderableObject.getGeometry();
+        geometry.prepareInGPU(gl);
         shaderProgram.writeUniformMat4(modelMatrixName,geometry.get(modelMatrixName))
         shaderProgram.useAttribForRendering(verticeName,geometry.get(verticeName));
         shaderProgram.useAttribForRendering(normalsName,geometry.get(normalsName));

@@ -39,8 +39,8 @@ import { TouchInput } from "./engine/input/TouchInput";
 import { GizmoPass } from "./engine/graphics/3dRender/GizmoPass";
 import { SelectableComponent } from "./engine/core/SelectionSystem";
 import { EditorServerIO } from "./engine/editor/EditorServerIO";
-import { TestMaterial } from "./engine/graphics/3dRender/shaders/ShaderDecoratorsTest";
 import { ShaderManager } from "./engine/graphics/3dRender/shaders/ShaderManager";
+import { TestMaterial } from "./engine/graphics/Materials/CustomMaterials";
 
 
 class MyGame extends Game {
@@ -121,7 +121,7 @@ class MyGame extends Game {
     let debugRenderable = debugEntity.getComponent(RenderableComponent).renderableObject;
     debugRenderable
       .getMaterials()
-      .addProperty("WireFrame", new wireFrameMaterialProperties(debugRenderable.objectCoords));
+      //.addProperty("WireFrame", new wireFrameMaterialProperties(debugRenderable.objectCoords));
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
     debugEntity.useComponent(SelectableComponent);
     cameraEntity.useComponent(EditorControlComponent);

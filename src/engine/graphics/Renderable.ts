@@ -8,7 +8,7 @@ import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderPass";
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Geomatry } from "./Geomatry/Geomatry";
 import { Image } from "./Image/Image";
-import { Materials } from "./Materials/Material";
+import { Material, Materials } from "./Materials/Material";
 import { Texture } from "./Texture";
 
 const VERBOSE = false;
@@ -26,20 +26,27 @@ export class RenderableComponent implements Component {
  */
 @Instantiable("RenderableObject")
 export class RenderableObject {
+
+  //private _objectCoords: number[];
+  private _textureImage: Image;
+  //private _textureCoords: number[];
+  private _objectColors: number[];
+  //public transform: m4.Mat4 = m4.translation(v3.create(0, 0, 0));
+
+
+  @Field(Editor.CLASS)
+  private _material: Materials;
+  private _geometry: Geomatry;
+
   constructor(
     objectCoords: number[] = [],
     textureCoords: number[] = [],
     textureImage?: Image, // texture name
     objectColors?: number[]
   ) {
-    this.objectCoords = objectCoords;
-    this.textureCoords = textureCoords;
+    //this.objectCoords = objectCoords;
+    //this.textureCoords = textureCoords;
     this.textureImage = textureImage;
-
-    this._material = new Materials()
-      .addProperty("Phong", new PhongMaterialProperties())
-      .addProperty("Normals", new Normals(objectCoords, false));
-    //.addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
 
     if (objectColors) {
       this.objectColors = objectColors;
@@ -48,25 +55,32 @@ export class RenderableObject {
       this.objectColors = COLORS_VEC4.grayColor(objectCoords.length / 3, 0.75);
     }
 
+    this._material = new Materials()
+    .addProperty("Phong", new PhongMaterialProperties())
+    .addProperty("Normals", new Normals(objectCoords, false))
+    .addProperty("material", new Material());
+  //.addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
+
+    this._geometry = new Geomatry({
+      vertices: objectCoords,
+      normals:(new Normals(objectCoords, false)).normals,
+      texCoords:textureCoords,
+      transform: m4.identity(),
+    })
+    
     return this;
   }
-
-  private _objectCoords: number[];
-  private _textureImage: Image;
-  private _textureCoords: number[];
-  private _objectColors: number[];
-
-  @Field(Editor.CLASS)
-  private _material: Materials;
-  private _geometry: Geomatry;
 
   @Field(Editor.ARRAY_NUMBER, { defaultValue: [] })
   public set objectCoords(val) {
     this._isLoadedIntoGPUMemory = false;
-    this._objectCoords = val;
+    console.log(this._geometry)
+    this._geometry.vertices = val;
+    //this._objectCoords = val;
   }
   public get objectCoords() {
-    return this._objectCoords;
+    return this._geometry.vertices;
+    //return this._objectCoords;
   }
 
   @Field(Editor.RESOURCE_IMAGE)
@@ -81,10 +95,12 @@ export class RenderableObject {
   @Field(Editor.ARRAY_NUMBER)
   public set textureCoords(val) {
     this._isLoadedIntoGPUMemory = false;
-    this._textureCoords = val;
+    //this._textureCoords = val;
+    this._geometry.texCoords = val;
   }
   public get textureCoords() {
-    return this._textureCoords;
+    //return this._textureCoords;
+    return this._geometry.texCoords;
   }
 
   @Field(Editor.ARRAY_NUMBER)
@@ -96,16 +112,14 @@ export class RenderableObject {
     return this._objectColors;
   }
 
-  public transform: m4.Mat4 = m4.translation(v3.create(0, 0, 0));
-
   /**
    * references for texture rendering
    */
   private _isLoadedIntoGPUMemory: boolean = false;
   private _needTextureReload: boolean = false;
 
-  private _coordsBuffer: AttribDataBuffer;
-  private _texCoordsBuffer: AttribDataBuffer;
+  //private _coordsBuffer: AttribDataBuffer;
+  //private _texCoordsBuffer: AttribDataBuffer;
   private _colorBuffer: AttribDataBuffer;
   private _texture: Texture;
 
@@ -133,8 +147,9 @@ export class RenderableObject {
 
   protected createBufferObjectsInGPU(gl: WebGLRenderingContext) {
     // load the object onto a buffer
-    this._coordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectCoords), 3);
-    this._texCoordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.textureCoords), 2);
+    //this._coordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectCoords), 3);
+    //this._texCoordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.textureCoords), 2);
+    this._geometry.prepareInGPU(gl);
     // colors defaulted to gray
     this._colorBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectColors), 4);
 
@@ -152,22 +167,13 @@ export class RenderableObject {
     this._needTextureReload = false;
   }
 
+  //TODO:toremove
   public getCoordsBuffer() {
-    if (!this.isLoadedIntoGPUMemory()) {
-      console.warn("Cant get coords buffer, this RenderableObject has not been loaded into gpu.");
-      return;
-    }
-    return this._coordsBuffer;
+    return this._geometry.get("vPosition");
   }
-
+  //TODO:toremove
   public getTextureCoordsBuffer() {
-    if (!this.isLoadedIntoGPUMemory()) {
-      console.warn(
-        "Cant get texture coords buffer, this RenderableObject has not been loaded into gpu."
-      );
-      return;
-    }
-    return this._texCoordsBuffer;
+    return this._geometry.get("vTexCoord");
   }
 
   public getColorBuffer() {

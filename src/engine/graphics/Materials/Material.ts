@@ -33,3 +33,12 @@ export class Materials {
     }
   }
 }
+
+export class Material implements MaterialProperties {
+  public get(propertyName):any{
+
+  }
+  public getSize():number{
+    return 0;
+  }
+}

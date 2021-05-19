@@ -61,7 +61,7 @@ export class PhongMaterialProperties implements MaterialProperties {
 }
 
 export class Normals implements MaterialProperties {
-  private normals: number[];
+  public normals: number[];
   private _normalBuffer: AttribDataBuffer;
   private _isLoadedIntoGPUMemory: boolean;
 
@@ -90,7 +90,7 @@ export class Normals implements MaterialProperties {
     this._isLoadedIntoGPUMemory = false;
   }
 
-  public getNormals(): AttribDataBuffer {
+  public getNormalsBuffer(): AttribDataBuffer {
     return this._normalBuffer;
   }
 
@@ -170,7 +170,7 @@ export class PhongRenderPass extends Renderer3D {
     phongShader.writeUniformFloat("ambientConstant", properties.ambientConstant);
     phongShader.writeUniformFloat("specularConstant", properties.specularConstant);
     phongShader.writeUniformFloat("diffuseConstant", properties.diffuseConstant);
-    phongShader.useAttribForRendering("vNormal", normals.getNormals());
+    phongShader.useAttribForRendering("vNormal", normals.getNormalsBuffer());
 
     return true;
   }
