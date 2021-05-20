@@ -3,14 +3,16 @@ import { AssetConfig, AssetLoader } from "./AssetLoader";
 
 export class ImageLoader extends AssetLoader<Image> {
   // implements loading function
-  protected loadItem({ name, path }: AssetConfig, onLoad: Function) {
-    const image = document.createElement("img");
-    image.src = path;
-    image.addEventListener("load", () => {
-      onLoad();
-    });
+  protected loadItem({ name, path }: AssetConfig): Promise<Image> {
+    return new Promise((resolve, reject) => {
+      const image = document.createElement("img");
+      image.src = path;
 
-    // return the factory instance
-    return new Image(name, path, image);
+      image.addEventListener("load", () => {
+        // return the factory instance
+        resolve(new Image(name, path, image));
+      });
+      image.addEventListener("error", () => reject);
+    });
   }
 }

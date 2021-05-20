@@ -18,7 +18,7 @@ export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoa
 
   private loadedCount: number = 0;
   private totalCount: number = 0;
-  private isDone: boolean = false;
+  private isDone: boolean = true;
 
   public add(config: AssetConfig) {
     if (this.assetsDict[config.name]) {
@@ -69,20 +69,23 @@ export abstract class AssetLoader<T extends Asset> extends EventEmitter<AssetLoa
     this.isDone = false;
 
     // load each assets
-    this.assetLoadingList.forEach((config: AssetConfig) => {
-      const onLoadCallback = () => {
-        this.loadedCount++;
-        this.onProgress();
-        this.fireEvent(AssetLoaderEvent.PROGRESS, this.assetsDict[config.name]);
-      };
-      this.assetsDict[config.name] = this.loadItem(config, onLoadCallback);
+    this.assetLoadingList.forEach(async (config: AssetConfig) => {
+      // wait for resource to load
+      const assetInstance = await this.loadItem(config);
+
+      // after the asset loaded...
+      this.assetsDict[config.name] = assetInstance;
+
+      this.loadedCount++;
+      this.onProgress();
+      this.fireEvent(AssetLoaderEvent.PROGRESS, this.assetsDict[config.name]);
     });
 
     // reset the loadint list
     this.assetLoadingList = [];
   }
 
-  protected abstract loadItem(config: AssetConfig, onLoadCallback: Function): T;
+  protected abstract loadItem(config: AssetConfig): Promise<T>;
 
   protected onProgress() {
     if (this.loadedCount === this.totalCount) {

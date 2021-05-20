@@ -9,7 +9,6 @@ import { cameraMatrixFromTransform, v4 } from "../utils/MatrixUtils";
 import { RayTriangle } from "../utils/RayTriangle";
 
 import { EditorControlComponent } from "./EditorControlComponent";
-import { SelectableComponent } from "./SelectionSystem";
 import { TransformComponent } from "./TransformComponent";
 
 export default class EditorSystem extends System {
@@ -29,12 +28,6 @@ export default class EditorSystem extends System {
     if (clicked) {
       let targetEntity = this.castRayOnCursor(game);
       game.fireEvent(GameEvent.ENTITY_SELECT, targetEntity);
-
-      if(targetEntity){
-        if(targetEntity.hasComponent(SelectableComponent)){
-          targetEntity.getComponent(SelectableComponent).isSelected = true;
-        }
-      }
     }
   }
 
