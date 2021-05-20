@@ -1,10 +1,10 @@
 import { m4, v3 } from "twgl.js";
+import CameraComponent from "../camera/CameraComponent";
 import { Entity } from "../ecs/Entity";
 import { Family, FamilyBuilder } from "../ecs/Family";
 import { System } from "../ecs/System";
 import { Game, GameEvent } from "../Game";
 import { RenderableComponent } from "../graphics/Renderable";
-import { RenderingConfig } from "../graphics/RenderingSystem";
 import { cameraMatrixFromTransform, v4 } from "../utils/MatrixUtils";
 import { RayTriangle } from "../utils/RayTriangle";
 
@@ -46,7 +46,9 @@ export default class EditorSystem extends System {
     const clientwidth = game.getCanvas().width;
     const clientHeight = game.getCanvas().height;
     const aspectRatio = clientwidth / clientHeight;
-    const perspectiveMatrix = RenderingConfig.getPerspectiveMatrix(aspectRatio);
+    const perspectiveMatrix = mainCamera
+      .getComponent(CameraComponent)
+      .getPerspectiveMatrix(aspectRatio);
     const cameraTransform = mainCamera.getComponent(TransformComponent);
     const cameraMatrix = cameraMatrixFromTransform(cameraTransform);
 

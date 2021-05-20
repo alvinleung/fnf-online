@@ -12,24 +12,6 @@ import { FrameBuffer } from "./FrameBuffer";
 import { cameraMatrixFromTransform } from "../utils/MatrixUtils";
 import { LightComponent } from "./Light";
 let halt = false;
-/**
- * RENDERING CONFIG
- */
-export module RenderingConfig {
-  const FOV = 54.4;
-  const CLIP_NEAR = 1;
-  const CLIP_FAR = 2000;
-
-  export function getPerspectiveMatrix(aspectRatio: number) {
-    return m4.perspective(
-      (FOV * Math.PI) / 180, // field of view
-      aspectRatio, // aspect ratio
-      CLIP_NEAR, // nearZ: clip space properties
-      CLIP_FAR // farZ: clip space properties
-    );
-  }
-}
-
 
 export class RenderingSystem extends System {
   private gl: WebGLRenderingContext;
@@ -58,9 +40,7 @@ export class RenderingSystem extends System {
 
   onAttach(game: Game) {
     // initialise webgl here
-    const gl = game
-      .getCanvas()
-      .getContext("webgl", { antialias: false, alpha: false }); // disable AA for pixel art
+    const gl = game.getCanvas().getContext("webgl", { antialias: false, alpha: false }); // disable AA for pixel art
     this.gl = gl;
 
     this._texturesRefs = this.convertAllImagesToTextures(
@@ -83,13 +63,9 @@ export class RenderingSystem extends System {
       .include(TransformComponent, RenderableComponent)
       .build();
 
-    this._cameras = new FamilyBuilder(game)
-      .include(TransformComponent, CameraComponent)
-      .build();
+    this._cameras = new FamilyBuilder(game).include(TransformComponent, CameraComponent).build();
 
-    this._lights = new FamilyBuilder(game)
-      .include(TransformComponent, LightComponent)
-      .build();
+    this._lights = new FamilyBuilder(game).include(TransformComponent, LightComponent).build();
   }
 
   /**
@@ -160,9 +136,7 @@ export class RenderingSystem extends System {
     }
 
     // camera matrix
-    this.cameraMatrix = cameraMatrixFromTransform(
-      mainCamera.getComponent(TransformComponent)
-    );
+    this.cameraMatrix = cameraMatrixFromTransform(mainCamera.getComponent(TransformComponent));
     const cameraSetting = mainCamera.getComponent(CameraComponent);
 
     // perspective matrix
@@ -175,31 +149,25 @@ export class RenderingSystem extends System {
     );
 
     // setup the renederableObject inside for rendering
-    this.renderableObjects = this._renderList.entities.reduce(
-      (filteredEntityList, entity) => {
-        const renderableObject =
-          entity.getComponent(RenderableComponent).renderableObject;
+    this.renderableObjects = this._renderList.entities.reduce((filteredEntityList, entity) => {
+      const renderableObject = entity.getComponent(RenderableComponent).renderableObject;
 
-        // only configure valid renderable object, don't render unset objects
-        if (renderableObject) {
-          // set the transform base on the entity's transform component
-          renderableObject.transform = entity
-            .getComponent(TransformComponent)
-            .getMatrix();
+      // only configure valid renderable object, don't render unset objects
+      if (renderableObject) {
+        // set the transform base on the entity's transform component
+        renderableObject.transform = entity.getComponent(TransformComponent).getMatrix();
 
-          filteredEntityList.push(renderableObject);
-        }
-        return filteredEntityList;
-      },
-      []
-    );
+        filteredEntityList.push(renderableObject);
+      }
+      return filteredEntityList;
+    }, []);
 
     // for each render pass
     this._renderPasses.forEach((renderPass) => {
       // render the scene
-      
+
       try {
-        if(!halt){
+        if (!halt) {
           renderPass.render(gl, this);
         }
       } catch (e) {
@@ -221,11 +189,7 @@ export class RenderingSystem extends System {
     }
 
     return this._cameras.entities.find((e: Entity) => {
-      if (
-        e.getComponent(CameraComponent) &&
-        e.getComponent(CameraComponent).isActive
-      )
-        return;
+      if (e.getComponent(CameraComponent) && e.getComponent(CameraComponent).isActive) return;
     });
   }
 

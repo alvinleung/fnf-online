@@ -1,3 +1,4 @@
+import { m4 } from "twgl.js";
 import { TransformComponent } from "../core/TransformComponent";
 import { Component, Entity } from "../ecs";
 import { EditableComponent, EditableField, Editor } from "../editor";
@@ -18,6 +19,15 @@ export default class CameraComponent implements Component {
 
   @EditableField(Editor.BOOLEAN)
   public isActive: boolean = true;
+
+  public getPerspectiveMatrix(aspectRatio: number) {
+    return m4.perspective(
+      (this.fov * Math.PI) / 180, // field of view
+      aspectRatio, // aspect ratio
+      this.clipNear, // nearZ: clip space properties
+      this.clipFar // farZ: clip space properties
+    );
+  }
 
   private _followingEntity: Entity = null;
 
