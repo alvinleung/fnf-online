@@ -10,7 +10,7 @@ export const useEntityEditing = (game: Game) => {
   const createEntity = (entityId: string) => {
     if (!entityId) return;
 
-    const newEntity = Entity.create(entityId);
+    const newEntity = Entity.createInstance(entityId);
 
     // add transform component
     newEntity.useComponent(TransformComponent);

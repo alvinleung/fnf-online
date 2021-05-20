@@ -24,11 +24,18 @@ class Entity extends Clonable<Entity> {
   } = {};
 
   /**
+   * Disable constructor
+   */
+  private constructor() {
+    super();
+  }
+
+  /**
    * A static factory function for creating an entity instance
    * @param id
    * @param components
    */
-  public static create(id: string, components?: ComponentClass<any>[]): Entity {
+  public static createInstance(id: string, components?: ComponentClass<any>[]): Entity {
     const entityInstance = new Entity();
     entityInstance.id = id;
 

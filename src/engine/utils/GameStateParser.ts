@@ -92,7 +92,7 @@ export class GameStateParser {
     const gameStateObject = JSON.parse(gameState) as EntityEntry[];
 
     const entities = gameStateObject.map((entityEntry) => {
-      const entity = Entity.create(entityEntry.id);
+      const entity = Entity.createInstance(entityEntry.id);
 
       // add components to the entity
       entityEntry.components.forEach((componentEntry) => {

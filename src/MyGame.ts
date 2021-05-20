@@ -40,15 +40,12 @@ import { PhongRenderPass } from "./engine/graphics/3dRender/PhongRenderPass";
 import { WireFrameRenderPass } from "./engine/graphics/3dRender/WireframeRenderPass";
 import { TheOneRenderPass } from "./engine/graphics/TheOneRenderPass";
 
-
 class MyGame extends Game {
   protected gameDidInit() {
-
     /**
      * Entity 1 - static
      */
-    const squareEntity = new Entity();
-    squareEntity.id = "square-entity-1";
+    const squareEntity = Entity.createInstance("square-entity-1");
     const image = this.assets.image.get("test");
     squareEntity.useComponent(TransformComponent);
     squareEntity.useComponent(RenderableComponent).renderableObject = new Plane(image);
@@ -62,12 +59,11 @@ class MyGame extends Game {
     /**
      * Entity 1 - static
      */
-    const squareEntity3 = new Entity();
+    const squareEntity3 = Entity.createInstance("square-entity-3");
     squareEntity3.useComponent(TransformComponent);
     squareEntity3.useComponent(RenderableComponent).renderableObject = new Plane(
       this.assets.image.get("test2")
     );
-    squareEntity3.id = "square-entity-3";
 
     const transform3 = squareEntity3.getComponent(TransformComponent);
     transform3.scale = [1, 1, 0];
@@ -83,8 +79,7 @@ class MyGame extends Game {
     spriteSheetAnimation.defineAnimation("jump", 14, 23);
     spriteSheetAnimation.loop("idle");
 
-    const squareEntity2 = new Entity();
-    squareEntity2.id = "square-entity-2";
+    const squareEntity2 = Entity.createInstance("square-entity-2");
     const transform2 = squareEntity2.useComponent(TransformComponent);
     transform2.position = [0, -1, -1];
     transform2.initialRotation = [0, 1, 1];
@@ -97,22 +92,20 @@ class MyGame extends Game {
      * Entity 3 - Camera Controller
      */
 
-    const cameraEntity = Entity.create("camera", [TransformComponent, CameraComponent]);
+    const cameraEntity = Entity.createInstance("camera", [TransformComponent, CameraComponent]);
     const cameraTransform = cameraEntity.getComponent(TransformComponent);
     cameraTransform.position = [0, 1, 5];
     cameraTransform.rotation = fromEulerAngles(0, 0, 0);
 
     //console.log(cameraEntity.listComponents());
 
-    const debugEntity = Entity.create("debug", [TransformComponent, DebugComponent]);
+    const debugEntity = Entity.createInstance("debug", [TransformComponent, DebugComponent]);
     debugEntity.useComponent(RenderableComponent).renderableObject = new Sphere(); //;
     debugEntity.getComponent(TransformComponent).position = [1, 1, 1];
-    let debugRenderable = debugEntity.getComponent(RenderableComponent).renderableObject;
-    debugRenderable
-      .getMaterials()
-      //.addProperty("WireFrame", new wireFrameMaterialProperties(debugRenderable.objectCoords));
+    // let debugRenderable = debugEntity.getComponent(RenderableComponent).renderableObject;
+    //.addProperty("WireFrame", new wireFrameMaterialProperties(debugRenderable.objectCoords));
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
-    debugRenderable.plan = ["Phong"]
+    // debugRenderable.plan = ["Phong"];
     cameraEntity.useComponent(EditorControlComponent);
 
     this.addEntity(cameraEntity);
@@ -133,8 +126,7 @@ class MyGame extends Game {
     // this.removeEntity(squareEntity2);
     // this.addEntity(entities[1]);
 
-    const light = new Entity();
-    light.id = "light";
+    const light = Entity.createInstance("light");
     let lightProperties = light.useComponent(LightComponent);
     lightProperties.color = [1, 1, 1];
     lightProperties.intensity = 1;
