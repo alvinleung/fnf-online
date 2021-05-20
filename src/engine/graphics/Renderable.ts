@@ -5,7 +5,7 @@ import { Normals } from "./3dRender/Normals";
 import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { Geometry } from "./Geometry/Geometry";
 import { Image } from "./Image/Image";
-import { BaseMaterial } from "./Materials/CustomMaterials";
+import { BaseMaterial } from "./Materials/BaseMaterial";
 import { Material } from "./Materials/Material";
 import { ShaderManager } from "./shader/ShaderManager";
 import { Texture } from "./Texture";

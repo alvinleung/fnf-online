@@ -6,7 +6,7 @@ import { ShaderSetLoader } from "../../assets/ShaderSetLoader";
 import { ShaderProgramLoader } from "../DataBufferPair";
 import { ShaderSet } from "./ShaderSet";
 import { ShaderProgram } from "../ShaderProgram";
-import { Material, MaterialProperties } from "../Materials/Material";
+import { Material } from "../Materials/Material";
 
 export namespace Shader {
   // variable storage qualifier -> variable type
@@ -82,7 +82,13 @@ export namespace Shader {
   }
 }
 
-export function shaderVariable(type: number, nameInShader?: string): any {
+/**
+ * Decorator function to declare a shader variable in Material
+ * @param type
+ * @param nameInShader
+ * @returns
+ */
+export function Uniform(type: number, nameInShader?: string): any {
   return function (target: any, property: string, descriptor: PropertyDescriptor) {
     const parent = target.constructor.name;
     ShaderManager.getInstance().addMaterialVariable(parent, property, type, nameInShader);
