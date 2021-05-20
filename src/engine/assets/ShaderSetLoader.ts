@@ -1,4 +1,4 @@
-import { ShaderSet } from "../graphics/Materials/ShaderManager";
+import { ShaderSet } from "../graphics/shader/ShaderSet";
 import { AssetConfig, AssetLoader } from "./AssetLoader";
 
 export class ShaderSetLoader extends AssetLoader<ShaderSet> {

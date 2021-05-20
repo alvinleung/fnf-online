@@ -1,5 +1,5 @@
 import { AttribDataBuffer } from "./AttribDataBuffer";
-import { Shader } from "./Materials/ShaderManager";
+import { Shader } from "./shader/ShaderManager";
 
 const twgl = require("twgl.js");
 
@@ -10,18 +10,18 @@ export class ShaderProgram {
   private cachedUniformLocation = {};
   private cachedAttribLocation = {};
 
-  private _uncleanAttrib:{[name:string]: number} = {};
+  private _uncleanAttrib: { [name: string]: number } = {};
 
   private attribBuffers = {};
 
-  public readonly variableNameMap:{
-    // name:type where type is webglenum 
-    attributeMap:{[attributeName:string]:number}
-    unfiromMap:{[unifromName:string]:number}
+  public readonly variableNameMap: {
+    // name:type where type is webglenum
+    attributeMap: { [attributeName: string]: number };
+    unfiromMap: { [unifromName: string]: number };
   } = {
-    attributeMap:{},
-    unfiromMap:{},
-  }
+    attributeMap: {},
+    unfiromMap: {},
+  };
 
   /**
    * Init and compile a shader program, wrapper of the shader API in webgl
@@ -30,7 +30,7 @@ export class ShaderProgram {
    * @param vert vertex shader code in string
    * @param frag fragment shader code in string
    */
-  constructor(gl: WebGLRenderingContext, vert: string, frag: string, ) {
+  constructor(gl: WebGLRenderingContext, vert: string, frag: string) {
     // compile the shader program
     this.shaderProgram = this.compileShaderProgram(gl, vert, frag);
     this.gl = gl;
@@ -47,14 +47,11 @@ export class ShaderProgram {
    * @param data
    */
   private logError = 0;
-  public useAttribForRendering(
-    attribName: string,
-    dataBuffer: AttribDataBuffer
-  ) {
+  public useAttribForRendering(attribName: string, dataBuffer: AttribDataBuffer) {
     const attribPointerLocation = this.getAttribLocation(attribName);
-    if(attribPointerLocation == -1){
-      if(this.logError <= 4){
-        console.warn("attributePointerLocation got -1 for: " + attribName)
+    if (attribPointerLocation == -1) {
+      if (this.logError <= 4) {
+        console.warn("attributePointerLocation got -1 for: " + attribName);
         this.logError++;
       }
       return;
@@ -76,13 +73,13 @@ export class ShaderProgram {
   }
 
   /**
-   * Usually called at the end of the render pass, the function 
+   * Usually called at the end of the render pass, the function
    * disable all the currently enabled vertex attributes.
-   * (enabled by the useAttribForRendering function) 
+   * (enabled by the useAttribForRendering function)
    */
   public cleanUpAttribs() {
     const uncleanAttribs = Object.values(this._uncleanAttrib);
-    for(let i = 0; i < uncleanAttribs.length; i++) {
+    for (let i = 0; i < uncleanAttribs.length; i++) {
       this.gl.disableVertexAttribArray(uncleanAttribs[i]);
     }
   }
@@ -116,73 +113,44 @@ export class ShaderProgram {
     if (uniformLocation) {
       return uniformLocation;
     } else {
-      return (this.cachedUniformLocation[
+      return (this.cachedUniformLocation[uniformName] = this.gl.getUniformLocation(
+        this.shaderProgram,
         uniformName
-      ] = this.gl.getUniformLocation(this.shaderProgram, uniformName));
+      ));
     }
   }
 
   public writeUniformVec2Float(uniformName: string, vec) {
-    this.gl.uniform2fv(
-      this.getUniformLocation(uniformName),
-      new Float32Array(vec)
-    );
+    this.gl.uniform2fv(this.getUniformLocation(uniformName), new Float32Array(vec));
   }
   public writeUniformVec3Float(uniformName: string, vec) {
-    this.gl.uniform3fv(
-      this.getUniformLocation(uniformName),
-      new Float32Array(vec)
-    );
+    this.gl.uniform3fv(this.getUniformLocation(uniformName), new Float32Array(vec));
   }
 
   public writeUniformVec4Float(uniformName: string, vec) {
-    this.gl.uniform4fv(
-      this.getUniformLocation(uniformName),
-      new Float32Array(vec)
-    );
+    this.gl.uniform4fv(this.getUniformLocation(uniformName), new Float32Array(vec));
   }
 
   public writeUniformVec2Int(uniformName: string, vec) {
-    this.gl.uniform2iv(
-      this.getUniformLocation(uniformName),
-      new Float32Array(vec)
-    );
+    this.gl.uniform2iv(this.getUniformLocation(uniformName), new Float32Array(vec));
   }
 
   public writeUniformVec3Int(uniformName: string, vec) {
-    this.gl.uniform3iv(
-      this.getUniformLocation(uniformName),
-      new Float32Array(vec)
-    );
+    this.gl.uniform3iv(this.getUniformLocation(uniformName), new Float32Array(vec));
   }
   public writeUniformVec4Int(uniformName: string, vec) {
-    this.gl.uniform4iv(
-      this.getUniformLocation(uniformName),
-      new Float32Array(vec)
-    );
+    this.gl.uniform4iv(this.getUniformLocation(uniformName), new Float32Array(vec));
   }
 
   public writeUniformMat4(uniformName: string, matrix) {
-    this.gl.uniformMatrix4fv(
-      this.getUniformLocation(uniformName),
-      false,
-      new Float32Array(matrix)
-    );
+    this.gl.uniformMatrix4fv(this.getUniformLocation(uniformName), false, new Float32Array(matrix));
   }
 
   public writeUniformMat2(uniformName: string, matrix) {
-    this.gl.uniformMatrix2fv(
-      this.getUniformLocation(uniformName),
-      false,
-      new Float32Array(matrix)
-    );
+    this.gl.uniformMatrix2fv(this.getUniformLocation(uniformName), false, new Float32Array(matrix));
   }
   public writeUniformMat3(uniformName: string, matrix) {
-    this.gl.uniformMatrix3fv(
-      this.getUniformLocation(uniformName),
-      false,
-      new Float32Array(matrix)
-    );
+    this.gl.uniformMatrix3fv(this.getUniformLocation(uniformName), false, new Float32Array(matrix));
   }
   public writeUniformInt(uniformName: string, value) {
     this.gl.uniform1i(this.getUniformLocation(uniformName), value);
@@ -210,18 +178,24 @@ export class ShaderProgram {
     this.gl.useProgram(this.shaderProgram);
   }
 
-  private generateVariableNameMap(){
+  private generateVariableNameMap() {
     const gl = this.gl;
     const attributeCount = gl.getProgramParameter(this.shaderProgram, gl.ACTIVE_ATTRIBUTES);
     for (let i = 0; i < attributeCount; ++i) {
       const info = gl.getActiveAttrib(this.shaderProgram, i);
-      this.variableNameMap.attributeMap[info.name] = Shader.resolveEnumFromGLType(info.type,"ATTRIBUTE"); 
+      this.variableNameMap.attributeMap[info.name] = Shader.resolveEnumFromGLType(
+        info.type,
+        "ATTRIBUTE"
+      );
     }
 
     const uniformCount = gl.getProgramParameter(this.shaderProgram, gl.ACTIVE_UNIFORMS);
     for (let i = 0; i < uniformCount; ++i) {
       const info = gl.getActiveUniform(this.shaderProgram, i);
-      this.variableNameMap.unfiromMap[info.name] = Shader.resolveEnumFromGLType(info.type,"UNIFORM");
+      this.variableNameMap.unfiromMap[info.name] = Shader.resolveEnumFromGLType(
+        info.type,
+        "UNIFORM"
+      );
     }
   }
 }

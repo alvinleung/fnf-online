@@ -7,7 +7,7 @@ import { Geometry } from "./Geometry/Geometry";
 import { Image } from "./Image/Image";
 import { BaseMaterial } from "./Materials/CustomMaterials";
 import { Material } from "./Materials/Material";
-import { ShaderManager, ShaderSet } from "./Materials/ShaderManager";
+import { ShaderManager } from "./shader/ShaderManager";
 import { Texture } from "./Texture";
 
 const VERBOSE = false;

@@ -29,7 +29,7 @@ import { LightComponent } from "./engine/graphics/Light";
 import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
 import { TouchInput } from "./engine/input/TouchInput";
 import { EditorServerIO } from "./engine/editor/EditorServerIO";
-import { Shader, ShaderManager } from "./engine/graphics/Materials/ShaderManager";
+import { Shader, ShaderManager } from "./engine/graphics/shader/ShaderManager";
 import { TestMaterial } from "./engine/graphics/Materials/CustomMaterials";
 import { v3 } from "twgl.js";
 import { Material } from "./engine/graphics/Materials/Material";

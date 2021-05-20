@@ -4,8 +4,9 @@ import { Asset, AssetManager } from "../../assets";
 import { AssetLoaderEvent } from "../../assets/AssetLoader";
 import { ShaderSetLoader } from "../../assets/ShaderSetLoader";
 import { ShaderProgramLoader } from "../DataBufferPair";
+import { ShaderSet } from "./ShaderSet";
 import { ShaderProgram } from "../ShaderProgram";
-import { Material, MaterialProperties } from "./Material";
+import { Material, MaterialProperties } from "../Materials/Material";
 
 export namespace Shader {
   // variable storage qualifier -> variable type
@@ -80,10 +81,7 @@ export namespace Shader {
     return Shader[namespace][enumName];
   }
 }
-export interface ShaderSet extends Asset {
-  fragmentShader: string;
-  vertexShader: string;
-}
+
 export function shaderVariable(type: number, nameInShader?: string): any {
   return function (target: any, property: string, descriptor: PropertyDescriptor) {
     const parent = target.constructor.name;

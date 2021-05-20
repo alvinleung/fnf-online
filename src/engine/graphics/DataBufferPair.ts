@@ -1,9 +1,9 @@
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Texture } from "./Texture";
 import { Image } from "./Image/Image";
-import { Shader, ShaderSet } from "./Materials/ShaderManager";
 import { ShaderProgram } from "./ShaderProgram";
 import { printProgramInfo } from "../utils/GLUtils";
+import { ShaderSet } from "./shader/ShaderSet";
 
 export interface IBufferLoader<D, B> {
   needUpdate: boolean;

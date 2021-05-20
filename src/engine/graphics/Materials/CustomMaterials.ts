@@ -2,7 +2,7 @@ import { v3 } from "twgl.js";
 import { COLORS_VEC4 } from "../3dRender/objects/Primitives";
 import { Material, MaterialProperties } from "./Material";
 import { Image } from "../Image/Image";
-import { Shader, shaderVariable } from "./ShaderManager";
+import { Shader, shaderVariable } from "../shader/ShaderManager";
 import { DataBufferLoader, TextureBufferLoader } from "../DataBufferPair";
 import { Texture } from "../Texture";
 
