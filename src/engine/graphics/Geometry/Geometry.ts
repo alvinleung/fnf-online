@@ -9,6 +9,11 @@ export interface GeometryTemplate {
   texCoords: number[];
   transform: m4.Mat4;
 }
+
+export interface CustomAttributes {
+  [attribName: string]: DataBufferLoader;
+}
+
 export class Geometry implements Asset {
   path: string;
   name: string;
@@ -17,28 +22,40 @@ export class Geometry implements Asset {
   private _normals: DataBufferLoader;
   private _texCoords: DataBufferLoader;
   private _transform: m4.Mat4;
-
   private _vertexCount: number;
 
+  private _customAttributes: CustomAttributes = {};
+
   constructor(template?: GeometryTemplate) {
+    const { vertices, normals, texCoords, transform, ...customAttributes } = template;
+
     if (template) {
-      this._vertices = new DataBufferLoader(template.vertices);
-      this._normals = new DataBufferLoader(template.normals);
-      this._transform = template.transform;
+      this._vertices = new DataBufferLoader(vertices, 3);
+      this._normals = new DataBufferLoader(normals, 3);
+      this._transform = transform;
       if (template.texCoords) {
-        this._texCoords = new DataBufferLoader(template.texCoords);
+        this._texCoords = new DataBufferLoader(texCoords, 2);
       } else {
         let zerosTexCoords = Array((template.vertices.length * 2) / 3).fill(0);
-        this._texCoords = new DataBufferLoader(zerosTexCoords);
+        this._texCoords = new DataBufferLoader(zerosTexCoords, 2);
       }
+
+      this._customAttributes = { ...customAttributes };
     } else {
-      this._vertices = new DataBufferLoader([]);
-      this._normals = new DataBufferLoader([]);
-      this._texCoords = new DataBufferLoader([]);
+      this._vertices = new DataBufferLoader([], 3);
+      this._normals = new DataBufferLoader([], 23);
+      this._texCoords = new DataBufferLoader([], 2);
       this._transform = m4.identity();
     }
 
     this.updateVertexCount();
+  }
+
+  public set attributes(attributes: CustomAttributes) {
+    this._customAttributes = attributes;
+  }
+  public get attributes() {
+    return this._customAttributes;
   }
 
   private updateVertexCount() {
@@ -47,20 +64,19 @@ export class Geometry implements Asset {
   public get vertexCount() {
     return this._vertexCount;
   }
-
   private validateDataVertexCount() {
     const normalVertexCount = this.normals.length / 3;
     const texCoordVertexCount = this.texCoords.length / 2;
 
     if (normalVertexCount !== this.vertexCount) {
       console.warn(
-        `Normal vertex count is incompatable, expected to be ${this.vertexCount}, provided ${normalVertexCount}`
+        `Normal count does not match vertex count, expected to be ${this.vertexCount}, provided ${normalVertexCount}`
       );
     }
 
     if (texCoordVertexCount !== this.vertexCount) {
       console.warn(
-        `TexCoord vertex count is incompatable, expected to be ${this.vertexCount}, provided ${texCoordVertexCount}`
+        `TexCoord count does not match vertex count, expected to be ${this.vertexCount}, provided ${texCoordVertexCount}`
       );
     }
   }
@@ -75,15 +91,15 @@ export class Geometry implements Asset {
     return this._texCoords.data;
   }
   public set vertices(data: number[]) {
-    this._vertices = new DataBufferLoader(data);
+    this._vertices = new DataBufferLoader(data, 3);
     this.updateVertexCount();
   }
   public set normals(data: number[]) {
-    this._normals = new DataBufferLoader(data);
+    this._normals = new DataBufferLoader(data, 3);
     this.validateDataVertexCount();
   }
   public set texCoords(data: number[]) {
-    this._texCoords = new DataBufferLoader(data);
+    this._texCoords = new DataBufferLoader(data, 2);
     this.validateDataVertexCount();
   }
   public get transform(): m4.Mat4 {
@@ -127,6 +143,10 @@ export class Geometry implements Asset {
       this._texCoords.load(gl, 2);
       updated = true;
     }
+
+    Object.values(this._customAttributes).forEach((attribute) => {
+      if (attribute.needUpdate) attribute.load(gl);
+    });
     return updated;
   }
 }

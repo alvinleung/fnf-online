@@ -36,12 +36,12 @@ export class RenderableObject {
     textureImage?: Image, // texture name
     objectColors?: number[]
   ) {
-    this._material = new BaseMaterial(objectCoords.length / 3, {
+    this._material = new BaseMaterial({
       specularConstant: 0.4,
       ambientConstant: 0.2,
       diffuseConstant: 0.8,
-      shininess: 5,
-      color: objectColors ? objectColors : null,
+      shininessConstant: 5,
+      materialColor: [0.5, 0.5, 0.5, 1],
       textureImage: textureImage,
     });
 
@@ -137,7 +137,7 @@ export class RenderableObject {
   protected createBufferObjectsInGPU(gl: WebGLRenderingContext) {
     // load the object onto a buffer
     this._geometry.prepareInGPU(gl);
-    this._material.prepareInGPU(gl);
+    // this._material.prepareInGPU(gl);
 
     // load image onto the gpu
     if (this.textureImage) {
@@ -149,7 +149,7 @@ export class RenderableObject {
   }
 
   private loadTextureIntoGPU(gl: WebGLRenderingContext) {
-    this._material.prepareInGPU(gl);
+    // this._material.prepareInGPU(gl);
     this._needTextureReload = false;
   }
 
@@ -187,7 +187,7 @@ export class RenderableObject {
   }
 
   public hasRenderingTexture(): boolean {
-    return (this._material as BaseMaterial).hasTexture();
+    return (this._material as BaseMaterial).useTexture;
   }
 
   public getObjectVerticeSize() {

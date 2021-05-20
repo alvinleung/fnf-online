@@ -35,6 +35,7 @@ import { v3 } from "twgl.js";
 import { Material } from "./engine/graphics/Materials/Material";
 import { TheOneRenderPass } from "./engine/graphics/TheOneRenderPass";
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
+import { DataBufferLoader } from "./engine/graphics/DataBufferPair";
 
 class MyGame extends Game {
   protected gameDidInit() {

@@ -82,10 +82,20 @@ export class TheOneRenderPass extends RenderPass {
         /** Geomatery */
         const geometry = renderableObject.getGeometry();
         geometry.prepareInGPU(gl);
+
         shaderProgram.writeUniformMat4(modelMatrixName, geometry.get(modelMatrixName));
         shaderProgram.useAttribForRendering(verticeName, geometry.get(verticeName));
         shaderProgram.useAttribForRendering(normalsName, geometry.get(normalsName));
         shaderProgram.useAttribForRendering(texCoordsName, geometry.get(texCoordsName));
+
+        // prepare attributes
+        Object.keys(geometry.attributes).forEach((key) => {
+          const attribute = geometry.attributes[key];
+          if (attribute.needUpdate) {
+            attribute.load(gl);
+          }
+          shaderProgram.useAttribForRendering(key, attribute.buffer);
+        });
 
         /** Materials */
         const material = renderableObject.getMaterial();
@@ -123,16 +133,6 @@ export class TheOneRenderPass extends RenderPass {
               textureLoader.load(gl);
               textureLoader.buffer.useForRendering();
               break;
-
-            // case Shader.ATTRIBUTE.FLOAT_VEC2:
-            //   console.log("vec2 not supported yet");
-            //   break;
-
-            // case Shader.ATTRIBUTE.FLOAT_VEC4:
-            //   const bufferLoader = material.get(variableName) as DataBufferLoader;
-            //   if (bufferLoader.needUpdate) bufferLoader.load(gl, 4);
-            //   shaderProgram.useAttribForRendering(nameInShader, bufferLoader.buffer);
-            //   break;
 
             default:
               console.warn(

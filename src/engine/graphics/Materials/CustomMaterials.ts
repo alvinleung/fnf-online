@@ -26,7 +26,7 @@ export interface BaseMaterialTemplate {
   ambientConstant: number;
   diffuseConstant: number;
   shininessConstant: number;
-  color: number[];
+  materialColor: number[];
   textureImage: Image;
 }
 /*
@@ -61,6 +61,9 @@ export class BaseMaterial extends Material {
   @shaderVariable(Shader.UNIFORM.FLOAT)
   public readonly shininessConstant: number;
 
+  @shaderVariable(Shader.UNIFORM.FLOAT_VEC4)
+  public readonly materialColor: number[];
+
   @shaderVariable(Shader.UNIFORM.BOOL)
   public get useTexture() {
     return this._textureImage.hasTexture;
@@ -68,7 +71,7 @@ export class BaseMaterial extends Material {
   @shaderVariable(Shader.UNIFORM.SAMPLER_2D, "uTexture")
   public _textureImage: TextureBufferLoader;
 
-  constructor(size: number, template?: BaseMaterialTemplate) {
+  constructor(template?: BaseMaterialTemplate) {
     super();
 
     if (template) {
@@ -76,11 +79,13 @@ export class BaseMaterial extends Material {
       this.diffuseConstant = template.diffuseConstant;
       this.shininessConstant = template.shininessConstant;
       this.specularConstant = template.specularConstant;
+      this.materialColor = template.materialColor;
     } else {
       this.specularConstant = 0.4;
       this.ambientConstant = 0.2;
       this.diffuseConstant = 0.8;
       this.shininessConstant = 5.0;
+      this.materialColor = [0.6, 0.6, 0.6, 1];
     }
 
     if (template.textureImage) {
@@ -126,7 +131,7 @@ export class PhongMaterialTwo extends Material {
       this._shininess = 5;
     }
 
-    this._colors = new DataBufferLoader(COLORS_VEC4.grayColor(size, 0.75));
+    this._colors = new DataBufferLoader(COLORS_VEC4.grayColor(size, 0.75), 4);
   }
   prepareInGPU(gl: WebGLRenderingContext): boolean {
     let updated = false;

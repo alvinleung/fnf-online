@@ -15,8 +15,11 @@ export class DataBufferLoader implements IBufferLoader<number[], AttribDataBuffe
   private _data: number[];
   private _buffer: AttribDataBuffer;
   public needUpdate: boolean;
+  private _elementSize: number;
 
-  constructor(data: any[], buffer?: AttribDataBuffer) {
+  constructor(data: any[], elementSize: number, buffer?: AttribDataBuffer) {
+    this._elementSize = elementSize;
+
     if (buffer) {
       this._data = data;
       this._buffer = buffer;
@@ -36,8 +39,12 @@ export class DataBufferLoader implements IBufferLoader<number[], AttribDataBuffe
     }
     return this._buffer;
   }
-  load(gl: WebGLRenderingContext, elementSize: number) {
-    this._buffer = AttribDataBuffer.fromData(gl, new Float32Array(this._data), elementSize);
+  load(gl: WebGLRenderingContext, elementSize?: number) {
+    this._buffer = AttribDataBuffer.fromData(
+      gl,
+      new Float32Array(this._data),
+      elementSize | this._elementSize
+    );
     this.needUpdate = false;
   }
 }
