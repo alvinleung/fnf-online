@@ -52,11 +52,12 @@ export class ShaderProgram {
     dataBuffer: AttribDataBuffer
   ) {
     const attribPointerLocation = this.getAttribLocation(attribName);
-    if(this.logError <= 4){
-      if(attribPointerLocation == -1){
-        console.error("attributePointerLocation got -1 for: " + attribName)
+    if(attribPointerLocation == -1){
+      if(this.logError <= 4){
+        console.warn("attributePointerLocation got -1 for: " + attribName)
         this.logError++;
       }
+      return;
     }
     // use the buffer for rendering
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, dataBuffer.buffer);

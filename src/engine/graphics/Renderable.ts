@@ -1,11 +1,7 @@
-import { connect } from "node:http2";
-import { m4, v3 } from "twgl.js";
+import { m4 } from "twgl.js";
 import { Component } from "../ecs";
 import { EditableField, Editor, Field, Instantiable } from "../editor";
-import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderPass";
-import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderPass";
-import { AttribDataBuffer } from "./AttribDataBuffer";
 import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { Geometry } from "./Geometry/Geometry";
 import { Image } from "./Image/Image";
@@ -90,14 +86,14 @@ export class RenderableObject {
 
     const material = this._material.getProperty<BaseMaterial>("material");
     let textureBuffer = material.get("_textureImage") as TextureBufferLoader;
-    textureBuffer.buffer = val;
+    textureBuffer.data = val;
   }
   public get textureImage() {
     return (
       this._material
         .getProperty<BaseMaterial>("material")
         .get("_textureImage") as TextureBufferLoader
-    ).buffer;
+    ).data;
   }
 
   @Field(Editor.ARRAY_NUMBER)
@@ -227,7 +223,10 @@ export class RenderableObject {
   public getGeometry(): Geometry {
     return this._geometry;
   }
-  public getRenderingPlan(): string[] {
+  public set plan(plan:string[]){
+    this._plan = plan;
+  }
+  public get plan(){
     return this._plan;
   }
 }

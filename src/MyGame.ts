@@ -112,6 +112,7 @@ class MyGame extends Game {
       .getMaterials()
       //.addProperty("WireFrame", new wireFrameMaterialProperties(debugRenderable.objectCoords));
     //debugEntity.getComponent(TransformComponent).scale = [0.1, 4, 0.1];
+    debugRenderable.plan = ["Phong"]
     cameraEntity.useComponent(EditorControlComponent);
 
     this.addEntity(cameraEntity);
