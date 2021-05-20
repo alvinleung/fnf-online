@@ -1,5 +1,5 @@
 import { AttribDataBuffer } from "./AttribDataBuffer";
-import { Shader } from "./shader/ShaderManager";
+import { Shader } from "./shader/ShaderConstants";
 
 const twgl = require("twgl.js");
 

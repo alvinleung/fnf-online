@@ -1,5 +1,5 @@
-import { Shader, ShaderManager } from "./shader/ShaderManager";
-import { Material, MaterialProperties } from "./Materials/Material";
+import { Shader } from "./shader/ShaderConstants";
+import { MaterialManager } from "./Materials/MaterialManager";
 import { RenderableObject } from "./Renderable";
 
 import { RenderingSystem } from "./RenderingSystem";
@@ -10,11 +10,11 @@ import { TransformComponent } from "../core/TransformComponent";
 import { m4 } from "twgl.js";
 import { PriorityQueue } from "../utils/DataStructUtils";
 
-export class ShaderPlan implements MaterialProperties {
+export class ShaderPlan {
   private plan: string[]; // a ordered list of strings(shaderID) each identifing a shader program
 
   constructor() {
-    this.plan = ShaderManager.getInstance().getDefaultPlan();
+    this.plan = MaterialManager.getInstance().getDefaultPlan();
   }
 }
 
@@ -36,7 +36,7 @@ export class TheOneRenderPass extends RenderPass {
     const cameraMatrix = system.getCameraMatrix();
     const projectionMatrix = system.getProjectionMatrix();
 
-    const shaderManager = ShaderManager.getInstance();
+    const shaderManager = MaterialManager.getInstance();
     this.strategy.forEach((subPass) => {
       //const shaderProgram = system.getShaderProgram(subPass.shaderId);
       const shaderProgram = shaderManager.getShaderFor(gl, subPass.shaderId);

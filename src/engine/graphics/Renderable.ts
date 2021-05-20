@@ -7,7 +7,7 @@ import { Geometry } from "./Geometry/Geometry";
 import { Image } from "./Image/Image";
 import { BaseMaterial } from "./Materials/BaseMaterial";
 import { Material } from "./Materials/Material";
-import { ShaderManager } from "./shader/ShaderManager";
+import { MaterialManager } from "./Materials/MaterialManager";
 import { Texture } from "./Texture";
 
 const VERBOSE = false;
@@ -52,7 +52,7 @@ export class RenderableObject {
       transform: m4.identity(),
     });
 
-    this._plan = ShaderManager.getInstance().getDefaultPlan();
+    this._plan = MaterialManager.getInstance().getDefaultPlan();
 
     return this;
   }

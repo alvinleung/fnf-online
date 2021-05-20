@@ -1,5 +1,6 @@
 import { TextureBufferLoader } from "../DataBufferPair";
-import { Shader, Uniform } from "../shader/ShaderManager";
+import { Shader } from "../shader/ShaderConstants";
+import { Uniform } from "./Uniform";
 import { Material } from "./Material";
 import { Image } from "../Image/Image";
 
