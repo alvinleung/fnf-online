@@ -1,4 +1,5 @@
 import { AttribDataBuffer } from "./AttribDataBuffer";
+import { Shader } from "./Materials/ShaderManager";
 
 const twgl = require("twgl.js");
 
@@ -17,9 +18,10 @@ export class ShaderProgram {
     // name:type where type is webglenum 
     attributeMap:{[attributeName:string]:number}
     unfiromMap:{[unifromName:string]:number}
+  } = {
+    attributeMap:{},
+    unfiromMap:{},
   }
-
-
 
   /**
    * Init and compile a shader program, wrapper of the shader API in webgl
@@ -32,6 +34,7 @@ export class ShaderProgram {
     // compile the shader program
     this.shaderProgram = this.compileShaderProgram(gl, vert, frag);
     this.gl = gl;
+    this.generateVariableNameMap();
   }
 
   public getShader() {
@@ -196,5 +199,20 @@ export class ShaderProgram {
 
   public useProgram() {
     this.gl.useProgram(this.shaderProgram);
+  }
+
+  private generateVariableNameMap(){
+    const gl = this.gl;
+    const attributeCount = gl.getProgramParameter(this.shaderProgram, gl.ACTIVE_ATTRIBUTES);
+    for (let i = 0; i < attributeCount; ++i) {
+      const info = gl.getActiveAttrib(this.shaderProgram, i);
+      this.variableNameMap.attributeMap[info.name] = Shader.resolveEnumFromGLType(info.type,"ATTRIBUTE"); 
+    }
+
+    const uniformCount = gl.getProgramParameter(this.shaderProgram, gl.ACTIVE_UNIFORMS);
+    for (let i = 0; i < uniformCount; ++i) {
+      const info = gl.getActiveUniform(this.shaderProgram, i);
+      this.variableNameMap.unfiromMap[info.name] = Shader.resolveEnumFromGLType(info.type,"UNIFORM");
+    }
   }
 }

@@ -28,6 +28,14 @@ export default class EditorSystem extends System {
     if (clicked) {
       let targetEntity = this.castRayOnCursor(game);
       game.fireEvent(GameEvent.ENTITY_SELECT, targetEntity);
+
+      /*
+      if(targetEntity){
+        if(targetEntity.hasComponent(SelectableComponent)){
+          targetEntity.getComponent(SelectableComponent).isSelected = true;
+        }
+      }
+      */
     }
   }
 

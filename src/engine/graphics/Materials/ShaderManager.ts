@@ -1,5 +1,5 @@
 import { string } from "prop-types";
-import { v3 } from "twgl.js";
+import { glEnumToString, v3 } from "twgl.js";
 import { Asset, AssetManager } from "../../assets";
 import { AssetLoaderEvent } from "../../assets/AssetLoader";
 import { ShaderSetLoader } from "../../assets/ShaderSetLoader";
@@ -9,26 +9,62 @@ import { MaterialProperties } from "./Material";
 
 export namespace Shader {
   // variable storage qualifier -> variable type
-  // ATTRIBUTE and UNIFORM **Not same value as webgl enums https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
-  // TODO: maybe make the enum consistent with webgl enums
+
   export enum ATTRIBUTE {
-    FLOAT_VEC3 = 100,
-    FLOAT_VEC4 = 101,
-  }
+    FLOAT_VEC2 = 100,
+    FLOAT_VEC3, 
+    FLOAT_VEC4,
+  };
   export enum UNIFORM {
-    VEC3,
-    VEC4,
-    MAT4,
+    FLOAT_VEC3 = 200,
+    FLOAT_VEC4,
+    FLOAT_MAT4,
     FLOAT,
-    BOOLEAN,
-  }
-  export enum NAMES {
-    VERTICES,
+    BOOL,
+    SAMPLER_2D,
+  };
+  export enum NAMES{
+    VERTICES = 300,
     NORMALS,
     TEXCOORDS,
     MODEL_MATRIX,
     VIEW_MATRIX,
     PROJECTION_MATRIX,
+  }
+  // translation for webglEnum 
+  // https://developer.mozilla.org/en-US//docs/Web/API/WebGL_API/Constants
+  const webGLenumMapLocal = {
+    0x8B51:"FLOAT_VEC3",
+    0x8B52:"FLOAT_VEC4",
+    0x8B50:"FLOAT_VEC2",
+    0x8B5C:"FLOAT_MAT4",
+    0x8B56:"BOOL",
+    0x1406:"FLOAT",
+    0x1404:"INT",
+    0x8B54:"INT_VEC3",
+    0x8B5E:"SAMPLER_2D",
+  }
+  /**
+   * Since Webgl types Enum does not distingush between attribute or unifrom, this function is used to translate (webglenum,attrib/unfirom) ,into a single enum 
+   * @param glEnum a webgl enum according to  // https://developer.mozilla.org/en-US//docs/Web/API/WebGL_API/Constants
+   * @param enumType a namespace string of either "ATTRIBUTE" or "UNIFORM"
+   * @returns local version of enum
+   */ 
+  export function resolveEnumFromGLType(glEnum:number,enumType:string){
+    const namespace = enumType.trim().toUpperCase();
+    const enumName = webGLenumMapLocal[glEnum];
+    if(!Shader[namespace]){
+      console.error("enum namespace not found: ["+enumType+"]");
+      return null;
+    }
+    if(!enumName ){
+      console.error("enum: ["+glEnum+"] not supported yet, if this is a valid WebGL type, please contact the developers")
+      return null;
+    } else if (!Shader[namespace][enumName]) {
+      console.error("enum: ["+glEnum+"] in namespace["+namespace+"] not supported yet, if this is a valid WebGL type, please contact the developers")
+      return null;
+    }
+    return Shader[namespace][enumName];
   }
 }
 export interface ShaderSet extends Asset {

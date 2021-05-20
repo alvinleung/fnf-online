@@ -11,7 +11,6 @@ import { RenderPass } from "./RenderPass";
 import { FrameBuffer } from "./FrameBuffer";
 import { cameraMatrixFromTransform } from "../utils/MatrixUtils";
 import { LightComponent } from "./Light";
-import { SelectableComponent } from "../core/SelectionSystem";
 let halt = false;
 /**
  * RENDERING CONFIG

@@ -4,6 +4,7 @@ import { Material, MaterialProperties } from "./Material";
 import { Image } from "../Image/Image";
 import { Shader, shaderVariable } from "./ShaderManager";
 import { DataBufferLoader, TextureBufferLoader } from "../DataBufferPair";
+import { Texture } from "../Texture";
 
 export class TestMaterial extends Material {
   //public shaders: ShaderSet = ShaderManager.getShader(shader3d);
@@ -25,17 +26,45 @@ export interface BaseMaterialTemplate{
   color:number[];
   textureImage:Image;
 }
+/*
+Attributes
+	0:vPosition [FLOAT_VEC3]
+	1:vColor [FLOAT_VEC4]
+	2:vTextureCoords [FLOAT_VEC2]
+	3:vNormal [FLOAT_VEC3]
+Uniforms
+	0:lightOrigin [FLOAT_VEC3]
+	1:cameraPosition [FLOAT_VEC3]
+	2:useTexture [BOOL]
+	3:modelMatrix [FLOAT_MAT4]
+	4:viewMatrix [FLOAT_MAT4]
+	5:projectionMatrix [FLOAT_MAT4]
+	6:shininessConstant [FLOAT]
+	7:ambientConstant [FLOAT]
+	8:specularConstant [FLOAT]
+	9:diffuseConstant [FLOAT]
+	10:uTexture [SAMPLER_2D]
+*/
 export class BaseMaterial extends Material {
   @shaderVariable(Shader.UNIFORM.FLOAT)
-  private _specularConstant: number;
+  private specularConstant: number;
   @shaderVariable(Shader.UNIFORM.FLOAT)
-  private _ambientConstant: number;
+  private ambientConstant: number;
   @shaderVariable(Shader.UNIFORM.FLOAT)
-  private _diffuseConstant: number;
+  private diffuseConstant: number;
   @shaderVariable(Shader.UNIFORM.FLOAT)
-  private _shininess: number;
-  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4)
+  private shininess: number;
+  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4,"vColor")
   private _colors:DataBufferLoader;
+  @shaderVariable(Shader.UNIFORM.BOOL)
+  private get useTexture(){
+    return this.hasTexture()
+  }
+  @shaderVariable(Shader.UNIFORM.SAMPLER_2D)
+  private get uTexture():Texture{
+    return this._textureImage.buffer;
+  }
+  
 
   private _textureImage: TextureBufferLoader;
   private size:number;
@@ -44,15 +73,15 @@ export class BaseMaterial extends Material {
     super();
     
     if(template){
-      this._ambientConstant = template.ambientConstant;
-      this._diffuseConstant = template.diffuseConstant;
-      this._shininess = template.shininess;
-      this._specularConstant = template.specularConstant;
+      this.ambientConstant = template.ambientConstant;
+      this.diffuseConstant = template.diffuseConstant;
+      this.shininess = template.shininess;
+      this.specularConstant = template.specularConstant;
     } else {
-      this._specularConstant = 0.4;
-      this._ambientConstant = 0.2;
-      this._diffuseConstant = 0.8;
-      this._shininess = 5;
+      this.specularConstant = 0.4;
+      this.ambientConstant = 0.2;
+      this.diffuseConstant = 0.8;
+      this.shininess = 5;
     }
 
     if(template.color){
@@ -67,6 +96,7 @@ export class BaseMaterial extends Material {
       this._textureImage = new TextureBufferLoader(null);
     }
   }
+  //TODO: duplicated 
   public hasTexture():boolean{
     return this._textureImage.hasTexture;
   }

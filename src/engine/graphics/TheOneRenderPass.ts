@@ -73,21 +73,26 @@ export class TheOneRenderPass extends RenderPass {
         const materials = renderableObject.getMaterials();
         const material = materials.getProperty<Material>("material");
         const variableMapping = shaderManager.getMaterialMapping(material);
+
+        if(this._frameRendered % 180 == 0) {
+          //console.log(variableMapping)
+        }
+
         for(let [variableName,type] of Object.entries(variableMapping)){
           switch(type){
-            case Shader.UNIFORM.BOOLEAN:
+            case Shader.UNIFORM.BOOL:
               shaderProgram.writeUniformBoolean(variableName,material.get(variableName))
               break;
             case Shader.UNIFORM.FLOAT:
               shaderProgram.writeUniformFloat(variableName,material.get(variableName))
               break;
-            case Shader.UNIFORM.MAT4:
+            case Shader.UNIFORM.FLOAT_MAT4:
               shaderProgram.writeUniformMat4(variableName,material.get(variableName))
               break;
-            case Shader.UNIFORM.VEC3:
+            case Shader.UNIFORM.FLOAT_VEC3:
               shaderProgram.writeUniformVec3Float(variableName,material.get(variableName))
               break;
-            case Shader.UNIFORM.VEC4:
+            case Shader.UNIFORM.FLOAT_VEC4:
               shaderProgram.writeUniformVec4Float(variableName,material.get(variableName))
               break;
             case type >= 100 && type < 200:
