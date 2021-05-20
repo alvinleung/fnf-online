@@ -4,7 +4,7 @@ import { EventEmitter, IEventEmitter } from "../events/EventEmitter";
 import { AssetLoader, AssetLoaderEvent } from "./AssetLoader";
 import { Asset } from ".";
 import { ShaderSetLoader } from "./ShaderSetLoader";
-import { GeomatryLoader } from "./GeomatryLoader";
+import { GeometryLoader } from "./GeometryLoader";
 
 export interface AssetEntry {
   name: string;
@@ -22,7 +22,7 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
   public readonly image: ImageLoader;
   public readonly sound: SoundLoader;
   public readonly shader: ShaderSetLoader;
-  public readonly geomatry: GeomatryLoader;
+  public readonly geometry: GeometryLoader;
 
   private assetLoaders: AssetLoader<any>[] = [];
 
@@ -30,9 +30,9 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
     this.image = new ImageLoader();
     this.sound = new SoundLoader();
     this.shader = new ShaderSetLoader();
-    this.geomatry = new GeomatryLoader();
+    this.geometry = new GeometryLoader();
 
-    this.assetLoaders = [this.image, this.sound, this.shader, this.geomatry];
+    this.assetLoaders = [this.image, this.sound, this.shader, this.geometry];
   }
 
   public async fetchAssetSheet(url: string): Promise<AssetSheet> {
@@ -54,8 +54,8 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
       this.shader.add({ name: item.name, path: item.path });
     });
 
-    assetSheetContent.geomatry.forEach((item) => {
-      this.geomatry.add({ name: item.name, path: item.path });
+    assetSheetContent.geometry.forEach((item) => {
+      this.geometry.add({ name: item.name, path: item.path });
     });
   }
 
@@ -82,7 +82,7 @@ export class AssetManager implements IEventEmitter<AssetLoaderEvent> {
       image: loaders[0],
       sound: loaders[1],
       shader: loaders[2],
-      geomatry: loaders[3],
+      geometry: loaders[3],
     };
   }
 

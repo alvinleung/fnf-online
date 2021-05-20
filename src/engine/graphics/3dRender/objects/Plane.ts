@@ -18,10 +18,10 @@ export class Plane extends RenderableObject {
     super(require("./Primitives").plane, require("./Primitives").quad_2d, textureImage);
   }
   @Field(Editor.RESOURCE_IMAGE)
-  public set textureImage(val) {
-    super.textureImage = val;
-  }
   public get textureImage() {
     return super.textureImage;
+  }
+  public set textureImage(val) {
+    super.textureImage = val;
   }
 }

@@ -1,27 +1,27 @@
 import { m4 } from "twgl.js";
-import { Geomatry, GeomatryTemplate } from "../graphics/Geomatry/Geomatry";
+import { Geometry, GeometryTemplate } from "../graphics/Geometry/Geometry";
 import { AssetConfig, AssetLoader } from "./AssetLoader";
 import { parseObjFileFormat } from "./parser/ObjParser";
 
-export class GeomatryLoader extends AssetLoader<Geomatry> {
+export class GeometryLoader extends AssetLoader<Geometry> {
   // implements loading function
-  protected async loadItem({ name, path }: AssetConfig): Promise<Geomatry> {
-    // load geomatry here
+  protected async loadItem({ name, path }: AssetConfig): Promise<Geometry> {
+    // load geometry here
     const objData = await fetch(path);
 
     const parsedData = parseObjFileFormat(objData);
 
-    const geomatryConfig: GeomatryTemplate = {
+    const geometryConfig: GeometryTemplate = {
       normals: parsedData.normals,
       texCoords: parsedData.textures,
       vertices: parsedData.vertices,
       transform: m4.identity(),
     };
 
-    const geomatry = new Geomatry(geomatryConfig);
-    geomatry.name = name;
-    geomatry.path = path;
+    const geometry = new Geometry(geometryConfig);
+    geometry.name = name;
+    geometry.path = path;
 
-    return geomatry;
+    return geometry;
   }
 }

@@ -3,13 +3,13 @@ import { m4 } from "twgl.js";
 import { DataBufferLoader } from "../DataBufferPair";
 import { Asset } from "../../assets/Asset";
 
-export interface GeomatryTemplate {
+export interface GeometryTemplate {
   vertices: number[];
   normals: number[];
   texCoords: number[];
   transform: m4.Mat4;
 }
-export class Geomatry implements Asset {
+export class Geometry implements Asset {
   path: string;
   name: string;
 
@@ -18,7 +18,7 @@ export class Geomatry implements Asset {
   private _texCoords: DataBufferLoader;
   private _transform: m4.Mat4;
 
-  constructor(template?: GeomatryTemplate) {
+  constructor(template?: GeometryTemplate) {
     if (template) {
       this._vertices = new DataBufferLoader(template.vertices);
       this._normals = new DataBufferLoader(template.normals);
