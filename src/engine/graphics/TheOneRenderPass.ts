@@ -49,12 +49,12 @@ export class TheOneRenderPass extends RenderPass {
       shaderProgram.useProgram();
 
       /** Get Naming scheme from shader manager */
-      const verticeName = shaderManager.getVariableName(Shader.NAMES.VERTICES);
-      const normalsName = shaderManager.getVariableName(Shader.NAMES.NORMALS);
-      const texCoordsName = shaderManager.getVariableName(Shader.NAMES.TEXCOORDS);
-      const modelMatrixName = shaderManager.getVariableName(Shader.NAMES.MODEL_MATRIX);
-      const viewMatrixName = shaderManager.getVariableName(Shader.NAMES.VIEW_MATRIX);
-      const projectionMatrixName = shaderManager.getVariableName(Shader.NAMES.PROJECTION_MATRIX);
+      const verticeName = Shader.NAMES.VERTICES;
+      const normalsName = Shader.NAMES.NORMALS;
+      const texCoordsName = Shader.NAMES.TEXCOORDS;
+      const modelMatrixName = Shader.NAMES.MODEL_MATRIX;
+      const viewMatrixName = Shader.NAMES.VIEW_MATRIX;
+      const projectionMatrixName = Shader.NAMES.PROJECTION_MATRIX;
 
       // make sure this pass, it render to canvas
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);

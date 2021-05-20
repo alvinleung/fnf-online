@@ -10,11 +10,13 @@ import { Material, MaterialProperties } from "./Material";
 export namespace Shader {
   // variable storage qualifier -> variable type
 
+  // attributes
   export enum ATTRIBUTE {
     FLOAT_VEC2 = 100,
     FLOAT_VEC3,
     FLOAT_VEC4,
   }
+  // materials
   export enum UNIFORM {
     FLOAT_VEC3 = 200,
     FLOAT_VEC4,
@@ -24,12 +26,13 @@ export namespace Shader {
     SAMPLER_2D,
   }
   export enum NAMES {
-    VERTICES = 300,
-    NORMALS,
-    TEXCOORDS,
-    MODEL_MATRIX,
-    VIEW_MATRIX,
-    PROJECTION_MATRIX,
+    // geometry
+    VERTICES = "vPosition",
+    NORMALS = "vNormal",
+    TEXCOORDS = "vTextureCoords",
+    MODEL_MATRIX = "modelMatrix",
+    VIEW_MATRIX = "viewMatrix",
+    PROJECTION_MATRIX = "projectionMatrix",
   }
   // translation for webglEnum
   // https://developer.mozilla.org/en-US//docs/Web/API/WebGL_API/Constants
@@ -90,7 +93,6 @@ export function shaderVariable(type: number, nameInShader?: string): any {
 }
 export class ShaderManager {
   private shaderMaterialVariableNameMap: { [materialName: string]: any } = {};
-  private geometryNames: { [variableName: string]: string } = {};
   //private shaderSets:{[name:string]:ShaderSet} = {};
   private shaders: { [name: string]: ShaderProgramLoader } = {};
 
@@ -127,29 +129,13 @@ export class ShaderManager {
       nameInShader: nameInShader ? nameInShader : variableName,
     };
   }
+
   public getMaterialVariables(materialClass: Material) {
     // @ts-ignore
     const materialName = materialClass.name ? materialClass.name : materialClass.constructor.name;
     return this.shaderMaterialVariableNameMap[materialName];
   }
-  public getVariableName(shaderVariable: Shader.NAMES): string {
-    switch (shaderVariable) {
-      case Shader.NAMES.VERTICES:
-        return this.geometryNames["vertices"];
-      case Shader.NAMES.NORMALS:
-        return this.geometryNames["normals"];
-      case Shader.NAMES.TEXCOORDS:
-        return this.geometryNames["texCoords"];
-      case Shader.NAMES.MODEL_MATRIX:
-        return "modelMatrix";
-      case Shader.NAMES.VIEW_MATRIX:
-        return "viewMatrix";
-      case Shader.NAMES.PROJECTION_MATRIX:
-        return "projectionMatrix";
-      default:
-        throw "no default variable name for enum[" + shaderVariable + "] was found";
-    }
-  }
+
   public callUpdateShaderSets() {
     const shaderLoader = AssetManager.getInstance().shader;
     shaderLoader.addEventListener(AssetLoaderEvent.COMPLETE, (loader: ShaderSetLoader) => {
@@ -181,11 +167,6 @@ export class ShaderManager {
   }
 
   private init() {
-    this.geometryNames = {
-      vertices: "vPosition",
-      normals: "vNormal",
-      texCoords: "vTextureCoords",
-    };
     this.callUpdateShaderSets();
   }
 }
