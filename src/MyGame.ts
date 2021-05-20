@@ -11,13 +11,10 @@ import { SoundLoader } from "./engine/assets/SoundLoader";
 
 import { Image } from "./engine/graphics/Image/Image";
 
-import ASSET_DECLARATION from "./MyGameAssets";
-import { Renderer3D } from "./engine/graphics/3dRender/Renderer3D";
 import CameraComponent from "./engine/camera/CameraComponent";
 import { RenderableComponent, RenderableObject } from "./engine/graphics/Renderable";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
-import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
 import { PhysicsSystem } from "./engine/core/PhysicsSystem";
 import { fromEulerAngles } from "./engine/utils/quaternion";
 import { DebugComponent } from "./engine/core/DebugComponent";
@@ -36,9 +33,8 @@ import { Shader, ShaderManager } from "./engine/graphics/Materials/ShaderManager
 import { TestMaterial } from "./engine/graphics/Materials/CustomMaterials";
 import { v3 } from "twgl.js";
 import { Material } from "./engine/graphics/Materials/Material";
-import { PhongRenderPass } from "./engine/graphics/3dRender/PhongRenderPass";
-import { WireFrameRenderPass } from "./engine/graphics/3dRender/WireframeRenderPass";
 import { TheOneRenderPass } from "./engine/graphics/TheOneRenderPass";
+import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
 
 class MyGame extends Game {
   protected gameDidInit() {
