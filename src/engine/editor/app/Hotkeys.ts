@@ -16,6 +16,7 @@ const HotkeyConfig = {
   PASTE: useBinding("cmd+v", "ctrl+v"),
   SAVE: useBinding("cmd+s", "ctrl+s"),
   OPEN: useBinding("cmd+o", "ctrl+o"),
+  ASSET_EXPLORER: useBinding("cmd+e", "ctrl+e"),
 };
 
 export { HotkeyConfig };

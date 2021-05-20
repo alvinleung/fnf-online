@@ -19,6 +19,11 @@ import useEditorHotkeys from "./hooks/useEditorHotkeys";
 import { EntityListView } from "./components/EntityListView";
 import useEntityListUpdate from "./hooks/GameEngineCommunication/useEntityListUpdate";
 import useTriggerViewportContextMenu from "./hooks/GameEngineCommunication/useTriggerViewportContextMenu";
+import { Modal } from "./components/Modal";
+import useModal from "./components/Modal/useModal";
+import { AssetExplorer } from "./components/AssetExplorer/AssetExplorer";
+import { useHotkeys } from "react-hotkeys-hook";
+import { HotkeyConfig } from "./Hotkeys";
 
 interface Props {
   game: Game;
@@ -43,6 +48,14 @@ const App = ({ game }: Props): JSX.Element => {
    */
   useEagerUpdate(game, selectedEntity, EAGER_ENGINE_REFRESH);
   useEntityListUpdate(game, setSelectedEntity, setEntities);
+
+  /**
+   * File Explorer
+   */
+  const [visible, showModal, hideModal] = useModal();
+  useHotkeys(HotkeyConfig.ASSET_EXPLORER, () => {
+    showModal();
+  });
 
   const entityContextMenuTriggerRef = useTriggerViewportContextMenu();
 
@@ -72,6 +85,9 @@ const App = ({ game }: Props): JSX.Element => {
           </ContextMenuTrigger>
         </Panel>
       </PanelGroup>
+      <Modal isVisible={visible} onHide={hideModal} canDismiss canDismissClickOutside noPadding>
+        <AssetExplorer />
+      </Modal>
     </EditorContextWrapper>
   );
 };
