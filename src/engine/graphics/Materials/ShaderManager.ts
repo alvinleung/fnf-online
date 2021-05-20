@@ -184,7 +184,7 @@ export class ShaderManager {
     this.geometryNames["any"] = {
       vertices: "vPosition",
       normals: "vNormal",
-      texCoords: "vTexCoord",
+      texCoords: "vTextureCoords",
     };
     this.callUpdateShaderSets();
   }

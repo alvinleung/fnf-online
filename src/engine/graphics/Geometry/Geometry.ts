@@ -22,8 +22,13 @@ export class Geometry implements Asset {
     if (template) {
       this._vertices = new DataBufferLoader(template.vertices);
       this._normals = new DataBufferLoader(template.normals);
-      this._texCoords = new DataBufferLoader(template.texCoords);
       this._transform = template.transform;
+      if(template.texCoords){
+        this._texCoords = new DataBufferLoader(template.texCoords);
+      } else {
+        let zerosTexCoords = Array(template.vertices.length * 2 / 3).fill(0);
+        this._texCoords = new DataBufferLoader(zerosTexCoords);
+      }
     } else {
       this._vertices = new DataBufferLoader([]);
       this._normals = new DataBufferLoader([]);
@@ -62,7 +67,9 @@ export class Geometry implements Asset {
         return this._vertices.buffer;
       case "vNormal":
         return this._normals.buffer;
-      case "vTexCoord":
+      case "vTextureCoords":
+        return this._texCoords.buffer;
+      case "vTexCoord": //TODO: NOT supposed to be named like this, artifact of refactoring
         return this._texCoords.buffer;
       case "modelMatrix":
         return this.transform;
@@ -75,15 +82,20 @@ export class Geometry implements Asset {
     }
   }
 
-  prepareInGPU(gl: WebGLRenderingContext) {
+  public prepareInGPU(gl: WebGLRenderingContext): boolean {
+    let updated = false;
     if (this._vertices.needUpdate) {
       this._vertices.load(gl, 3);
+      updated = true;
     }
     if (this._normals.needUpdate) {
       this._normals.load(gl, 3);
+      updated = true;
     }
     if (this._texCoords.needUpdate) {
       this._texCoords.load(gl, 2);
+      updated = true;
     }
+    return updated;
   }
 }

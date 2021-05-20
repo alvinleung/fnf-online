@@ -39,4 +39,5 @@ export abstract class Material implements MaterialProperties {
     return this[variableName];
   }
   public abstract getSize():number;
+  public abstract prepareInGPU(gl:WebGLRenderingContext):boolean;
 }

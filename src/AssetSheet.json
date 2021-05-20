@@ -31,6 +31,11 @@
     {
       "name": "Wireframe",
       "path": "assets/shaders/WireframeShader"
+    },
+    {
+      "name": "Render3d",
+      "path": "assets/shaders/3DShader"
     }
-  ]
+  ],
+  "geometry":[]
 }

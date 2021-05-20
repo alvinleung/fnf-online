@@ -4,7 +4,11 @@ import { RenderableObject } from "./Renderable";
 
 import { RenderingSystem } from "./RenderingSystem";
 import { RenderPass } from "./RenderPass";
-import { printProgramInfo } from "../utils/GLUtils";
+import { Texture } from "./Texture";
+import { TextureBufferLoader } from "./DataBufferPair";
+import { LightComponent } from "./Light";
+import { TransformComponent } from "../core/TransformComponent";
+import { m4 } from "twgl.js";
 
 
 export class ShaderPlan implements MaterialProperties {
@@ -33,6 +37,9 @@ export class TheOneRenderPass extends RenderPass {
       this.resolveStrategy(system.getRenderables());
       this.strategyNeedsUpdate = false;
     }
+    /* get variables from system */
+    const cameraMatrix = system.getCameraMatrix();
+    const projectionMatrix = system.getProjectionMatrix();
 
     const shaderManager = ShaderManager.getInstance();
     this.strategy.forEach( subPass=> {
@@ -45,7 +52,7 @@ export class TheOneRenderPass extends RenderPass {
         return;
       }
       shaderProgram.useProgram();
-      
+
       /** Get Naming scheme from shader manager */
       const verticeName = shaderManager.getVariableName(Shader.NAMES.VERTICES);
       const normalsName = shaderManager.getVariableName(Shader.NAMES.NORMALS);
@@ -54,13 +61,27 @@ export class TheOneRenderPass extends RenderPass {
       const viewMatrixName = shaderManager.getVariableName(Shader.NAMES.VIEW_MATRIX);
       const projectionMatrixName = shaderManager.getVariableName(Shader.NAMES.PROJECTION_MATRIX);
 
-      subPass.renderableList.forEach(renderableObject => {
-        /** Transform */
-        const cameraMatrix = system.getCameraMatrix();
-        const projectionMatrix = system.getProjectionMatrix();
-        shaderProgram.writeUniformMat4(viewMatrixName, cameraMatrix);
-        shaderProgram.writeUniformMat4(projectionMatrixName, projectionMatrix);
+      // make sure this pass, it render to canvas
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+      /** global */
+      shaderProgram.writeUniformMat4(viewMatrixName, cameraMatrix);
+      shaderProgram.writeUniformMat4(projectionMatrixName, projectionMatrix);
+      /** FIX THIS */
+      let light = system.getLights()[0];
+      let lightProperties = light.getComponent(LightComponent);
+      let lightOrigin = light.getComponent(TransformComponent).position;
 
+      shaderProgram.writeUniformBoolean("isDirection", lightProperties.isDirectional);
+      shaderProgram.writeUniformVec3Float("lightColor", lightProperties.color);
+      shaderProgram.writeUniformVec3Float("lightOrigin", lightOrigin);
+      
+      shaderProgram.writeUniformVec3Float(
+        "cameraPosition",
+        m4.getTranslation(m4.inverse(cameraMatrix))
+      );
+
+      subPass.renderableList.forEach(renderableObject => {
         /** Geomatery */
         const geometry = renderableObject.getGeometry();
         geometry.prepareInGPU(gl);
@@ -73,14 +94,12 @@ export class TheOneRenderPass extends RenderPass {
         const materials = renderableObject.getMaterials();
         const material = materials.getProperty<Material>("material");
         const variableMapping = shaderManager.getMaterialMapping(material);
-
-        if(this._frameRendered % 180 == 0) {
-          //console.log(variableMapping)
-        }
-
+        material.prepareInGPU(gl);
+        
         for(let [variableName,type] of Object.entries(variableMapping)){
           switch(type){
             case Shader.UNIFORM.BOOL:
+              //console.log(material.get(variableName))
               shaderProgram.writeUniformBoolean(variableName,material.get(variableName))
               break;
             case Shader.UNIFORM.FLOAT:
@@ -95,14 +114,36 @@ export class TheOneRenderPass extends RenderPass {
             case Shader.UNIFORM.FLOAT_VEC4:
               shaderProgram.writeUniformVec4Float(variableName,material.get(variableName))
               break;
-            case type >= 100 && type < 200:
+            case Shader.UNIFORM.SAMPLER_2D:
+              const texture = material.get(variableName) as TextureBufferLoader;
+              if(texture.hasTexture){
+                texture.buffer.useForRendering();
+              } 
+              break;
+            case Shader.ATTRIBUTE.FLOAT_VEC2:
+              console.log("vec2 not supported yet")
+              break;
+            case Shader.ATTRIBUTE.FLOAT_VEC4:
+              //console.log(variableName)
               shaderProgram.useAttribForRendering(variableName,material.get(variableName))
               break;
+            default:
+              console.error("variable Name [" + variableName + "] not found")
+              return;
+            /*
+            case type >= 100 && type < 200:
+              console.log( "100 ~ 200" +  variableName )
+              shaderProgram.useAttribForRendering(variableName,material.get0(variableName))
+              break;*/
           }
         }
 
         /** DRAW */
         gl.drawArrays(gl.TRIANGLES,0,material.getSize())
+        //shaderProgram.cleanUpAttribs()
+        if(this._frameRendered %240 == 0){
+          //console.log(geometry.get(verticeName))
+        }
       })
     });
     this._frameRendered++;

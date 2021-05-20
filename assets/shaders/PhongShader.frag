@@ -7,7 +7,6 @@ varying vec3 fWorldPosition;
 varying vec2 fTextureCoords;
 varying vec3 viewDirection;
 
-
 uniform sampler2D uTexture;
 uniform bool useTexture;
 uniform vec3 cameraPosition;
@@ -35,9 +34,11 @@ void main()
     if(normalDotLightDirection > 0.0){
         vec3 reflection = 2.0 * normalDotLightDirection * surfaceNormal - lightDirection;
         specular = pow(max(dot(normalViewDirection, reflection),0.0),shininessConstant);
+        //specular = pow(max(dot(normalViewDirection, reflection),0.0),1.0);
     }
     
-    float finalIntensity = ambientConstant + diffuseConstant * normalDotLightDirection + specularConstant * specular;
+    //float finalIntensity = ambientConstant + diffuseConstant * normalDotLightDirection + specularConstant * specular;
+    float finalIntensity =  ambientConstant + diffuseConstant * normalDotLightDirection + specularConstant * specular;
     finalIntensity = max(min(finalIntensity,1.0),0.0);
     vec3 intensityVec3 = vec3(finalIntensity,finalIntensity,finalIntensity);
 
@@ -47,10 +48,12 @@ void main()
     //gl_FragColor = vec4(fColor.rgb * intensityVec3, max(min(alpha,1.0),0.0));
     gl_FragColor = vec4(fColor.rgb * intensityVec3, 1.0);
     //gl_FragColor = vec4(intensityVec3,1.0); 
-
+    //gl_FragColor = vec4(fColor.rgb,1.0); 
     if(useTexture){
         gl_FragColor = texture2D(uTexture, fTextureCoords);
         if(gl_FragColor.a < .5) discard;
     }
+
+   
 
 }

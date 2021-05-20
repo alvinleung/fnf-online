@@ -80,7 +80,6 @@ export const COLORS_VEC4 = {
     for(let i = 0; i < size ; i++){
       colorArray.push(...grayColor);
     }
-
     return colorArray;
   }
 }

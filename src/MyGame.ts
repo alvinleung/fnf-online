@@ -223,11 +223,11 @@ class MyGame extends Game {
     const renderers = [
       // new ImageRendererSetup(),
       // new SpriteSheetRendererSetup(),
-      new SpriteSheetRenderPass(),
-      new PhongRenderPass(),
-      new WireFrameRenderPass(),
+      //new SpriteSheetRenderPass(),
+      //new PhongRenderPass(),
+      //new WireFrameRenderPass(),
+      new TheOneRenderPass(),
       new MetricsRenderPass(),
-      new TheOneRenderPass()
       //new GizmoPass(),
     ];
     const renderingSystem = new RenderingSystem(renderers);

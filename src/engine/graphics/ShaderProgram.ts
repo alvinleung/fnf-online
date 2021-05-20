@@ -46,11 +46,18 @@ export class ShaderProgram {
    * @param attribName
    * @param data
    */
+  private logError = 0;
   public useAttribForRendering(
     attribName: string,
     dataBuffer: AttribDataBuffer
   ) {
     const attribPointerLocation = this.getAttribLocation(attribName);
+    if(this.logError <= 4){
+      if(attribPointerLocation == -1){
+        console.error("attributePointerLocation got -1 for: " + attribName)
+        this.logError++;
+      }
+    }
     // use the buffer for rendering
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, dataBuffer.buffer);
     this.gl.enableVertexAttribArray(attribPointerLocation);
@@ -62,6 +69,7 @@ export class ShaderProgram {
       0,
       0
     );
+
     // add the used attribute to the clean up list
     this._uncleanAttrib[attribPointerLocation] = attribPointerLocation;
   }

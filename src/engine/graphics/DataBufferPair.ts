@@ -39,6 +39,7 @@ export class DataBufferLoader implements IBufferLoader<number[],AttribDataBuffer
   }
   load(gl: WebGLRenderingContext,elementSize:number) {
     this._buffer = AttribDataBuffer.fromData(gl,new Float32Array(this._data),elementSize);
+    this.needUpdate = false;
   }
 }
 
@@ -72,7 +73,6 @@ export class TextureBufferLoader implements IBufferLoader<Image,Texture> {
     this.needUpdate = true;
   }
   public get buffer(){
-    
     if(!this._buffer){
       console.log("warning: buffer not initialized");
       return;
@@ -87,6 +87,7 @@ export class TextureBufferLoader implements IBufferLoader<Image,Texture> {
   public load(gl: WebGLRenderingContext) {
     if(this.hasTexture && this.needUpdate){
       this._buffer = new Texture(gl, { image: this._data });
+      this.needUpdate = false;
     }
   }
 }

@@ -7,6 +7,7 @@ import { DataBufferLoader, TextureBufferLoader } from "../DataBufferPair";
 import { Texture } from "../Texture";
 
 export class TestMaterial extends Material {
+
   //public shaders: ShaderSet = ShaderManager.getShader(shader3d);
   @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC3)
   public testFieldOne:v3.Vec3;
@@ -14,6 +15,9 @@ export class TestMaterial extends Material {
   public testFieldTwo:v3.Vec3;
 
   public getSize(): number {
+    throw new Error("Method not implemented.");
+  }
+  public prepareInGPU(): boolean {
     throw new Error("Method not implemented.");
   }
 }
@@ -52,26 +56,32 @@ export class BaseMaterial extends Material {
   private ambientConstant: number;
   @shaderVariable(Shader.UNIFORM.FLOAT)
   private diffuseConstant: number;
-  @shaderVariable(Shader.UNIFORM.FLOAT)
   private shininess: number;
-  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4,"vColor")
+  @shaderVariable(Shader.UNIFORM.FLOAT,"shininessConstant")
+  private get shininessConstant(){
+    return this.shininess;
+  }
   private _colors:DataBufferLoader;
+  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4,"vColor")
+  private get vColor(){
+    return this._colors.buffer;
+  }
   @shaderVariable(Shader.UNIFORM.BOOL)
   private get useTexture(){
     return this.hasTexture()
   }
   @shaderVariable(Shader.UNIFORM.SAMPLER_2D)
-  private get uTexture():Texture{
-    return this._textureImage.buffer;
+  private get uTexture():TextureBufferLoader{
+    return this._textureImage;
   }
-  
 
   private _textureImage: TextureBufferLoader;
   private size:number;
 
   constructor(size:number,template?:BaseMaterialTemplate){
     super();
-    
+    this.size = size
+
     if(template){
       this.ambientConstant = template.ambientConstant;
       this.diffuseConstant = template.diffuseConstant;
@@ -81,10 +91,10 @@ export class BaseMaterial extends Material {
       this.specularConstant = 0.4;
       this.ambientConstant = 0.2;
       this.diffuseConstant = 0.8;
-      this.shininess = 5;
+      this.shininess = 5.0;
     }
 
-    if(template.color){
+    if(template.color && false){
       this._colors = new DataBufferLoader( template.color );
     } else {
       this._colors = new DataBufferLoader( COLORS_VEC4.grayColor(size, 0.75) );
@@ -100,17 +110,21 @@ export class BaseMaterial extends Material {
   public hasTexture():boolean{
     return this._textureImage.hasTexture;
   }
-  public prepareInGPU(gl: WebGLRenderingContext) {
+  public prepareInGPU(gl: WebGLRenderingContext):boolean {
+    let updated = false;
     if(this._colors.needUpdate){
       this._colors.load(gl,4);
+      updated = true;
     }
     if(this._textureImage.needUpdate){
       this._textureImage.load(gl);
+      updated = true;
     }
+    return updated;
   }
 
   public getSize(): number {
-    return 0;
+    return this.size;
   }
 }
 
@@ -151,10 +165,13 @@ export class PhongMaterialTwo extends Material {
     
     this._colors = new DataBufferLoader( COLORS_VEC4.grayColor(size, 0.75) );
   }
-  prepareInGPU(gl: WebGLRenderingContext) {
+  prepareInGPU(gl: WebGLRenderingContext):boolean {
+    let updated = false;
     if(this._colors.needUpdate){
       this._colors.load(gl,4);
+      updated = true;
     }
+    return updated;
   }
 
   public getSize(): number {
