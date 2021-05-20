@@ -96,26 +96,29 @@ export class TheOneRenderPass extends RenderPass {
         const variableMapping = shaderManager.getMaterialMapping(material);
         material.prepareInGPU(gl);
         
-        for(let [variableName,type] of Object.entries(variableMapping)){
+        for(let [variableName,variableInfo] of Object.entries(variableMapping)){
+          const info = variableInfo as any;
+          const type = info.type;
+          let nameInShader = info.nameInShader;
           switch(type){
             case Shader.UNIFORM.BOOL:
               //console.log(material.get(variableName))
-              shaderProgram.writeUniformBoolean(variableName,material.get(variableName))
+              shaderProgram.writeUniformBoolean(nameInShader,material.get(variableName))
               break;
             case Shader.UNIFORM.FLOAT:
-              shaderProgram.writeUniformFloat(variableName,material.get(variableName))
+              shaderProgram.writeUniformFloat(nameInShader,material.get(variableName))
               break;
             case Shader.UNIFORM.FLOAT_MAT4:
-              shaderProgram.writeUniformMat4(variableName,material.get(variableName))
+              shaderProgram.writeUniformMat4(nameInShader,material.get(variableName))
               break;
             case Shader.UNIFORM.FLOAT_VEC3:
-              shaderProgram.writeUniformVec3Float(variableName,material.get(variableName))
+              shaderProgram.writeUniformVec3Float(nameInShader,material.get(variableName))
               break;
             case Shader.UNIFORM.FLOAT_VEC4:
-              shaderProgram.writeUniformVec4Float(variableName,material.get(variableName))
+              shaderProgram.writeUniformVec4Float(nameInShader,material.get(variableName))
               break;
             case Shader.UNIFORM.SAMPLER_2D:
-              const texture = material.get(variableName) as TextureBufferLoader;
+              const texture = material.get(nameInShader) as TextureBufferLoader;
               if(texture.hasTexture){
                 texture.buffer.useForRendering();
               } 
@@ -125,7 +128,7 @@ export class TheOneRenderPass extends RenderPass {
               break;
             case Shader.ATTRIBUTE.FLOAT_VEC4:
               //console.log(variableName)
-              shaderProgram.useAttribForRendering(variableName,material.get(variableName))
+              shaderProgram.useAttribForRendering(nameInShader,material.get(variableName))
               break;
             default:
               console.error("variable Name [" + variableName + "] not found")

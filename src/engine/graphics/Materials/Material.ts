@@ -35,6 +35,8 @@ export class Materials {
 }
 
 export abstract class Material implements MaterialProperties {
+  public aliasMapping:{[name:string]:string} = {"a":"b"};
+
   public get(variableName:string):any{
     return this[variableName];
   }

@@ -56,11 +56,8 @@ export class BaseMaterial extends Material {
   private ambientConstant: number;
   @shaderVariable(Shader.UNIFORM.FLOAT)
   private diffuseConstant: number;
-  private shininess: number;
   @shaderVariable(Shader.UNIFORM.FLOAT,"shininessConstant")
-  private get shininessConstant(){
-    return this.shininess;
-  }
+  private shininess: number;
   private _colors:DataBufferLoader;
   @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4,"vColor")
   private get vColor(){

@@ -74,17 +74,14 @@ export interface ShaderSet extends Asset {
 export function shaderVariable(type: number, nameInShader?: string): any {
   return function (target: any, property: string, descriptor: PropertyDescriptor) {
     const parent = target.constructor.name;
-    if (!nameInShader) {
-      nameInShader = property;
-    }
-    ShaderManager.getInstance().addVariableToMapping(parent, nameInShader, type);
+    ShaderManager.getInstance().addVariableToMapping(parent, property, type, nameInShader);
     return descriptor;
   };
 }
 export class ShaderManager {
-  private shaderMaterialVariableNameMap: { [shaderName: string]: { [materialName: string]: any } } =
+  private shaderMaterialVariableNameMap: {[materialName: string]: any }  =
     {};
-  private geometryNames: { [shaderName: string]: { [variableName: string]: string } } = {};
+  private geometryNames: { [variableName: string]: string }  = {};
   //private shaderSets:{[name:string]:ShaderSet} = {};
   private shaders: { [name: string]: ShaderProgramLoader } = {};
 
@@ -108,38 +105,29 @@ export class ShaderManager {
     materialClassName: string,
     variableName: string,
     type: number,
-    shaderSetName?: string
+    nameInShader?: string
   ) {
-    if (!shaderSetName) {
-      shaderSetName = "any";
+    if (!this.shaderMaterialVariableNameMap) {
+      this.shaderMaterialVariableNameMap = {};
     }
-    if (!this.shaderMaterialVariableNameMap[shaderSetName]) {
-      this.shaderMaterialVariableNameMap[shaderSetName] = {};
+    if (!this.shaderMaterialVariableNameMap[materialClassName]) {
+      this.shaderMaterialVariableNameMap[materialClassName] = {};
     }
-    if (!this.shaderMaterialVariableNameMap[shaderSetName][materialClassName]) {
-      this.shaderMaterialVariableNameMap[shaderSetName][materialClassName] = {};
-    }
-    this.shaderMaterialVariableNameMap[shaderSetName][materialClassName][variableName] = type;
+    this.shaderMaterialVariableNameMap[materialClassName][variableName] = {type:type,nameInShader:nameInShader?nameInShader:variableName};
   }
-  public getMaterialMapping(materialClass: MaterialProperties, shaderSetName?: string) {
-    if (!shaderSetName) {
-      shaderSetName = "any";
-    }
+  public getMaterialMapping(materialClass: MaterialProperties) {
     // @ts-ignore
     const materialName = materialClass.name ? materialClass.name : materialClass.constructor.name;
-    return this.shaderMaterialVariableNameMap[shaderSetName][materialName];
+    return this.shaderMaterialVariableNameMap[materialName];
   }
-  public getVariableName(shaderVariable: Shader.NAMES, shaderSetName?: string): string {
-    if (!shaderSetName) {
-      shaderSetName = "any";
-    }
+  public getVariableName(shaderVariable: Shader.NAMES): string {
     switch (shaderVariable) {
       case Shader.NAMES.VERTICES:
-        return this.geometryNames[shaderSetName]["vertices"];
+        return this.geometryNames["vertices"];
       case Shader.NAMES.NORMALS:
-        return this.geometryNames[shaderSetName]["normals"];
+        return this.geometryNames["normals"];
       case Shader.NAMES.TEXCOORDS:
-        return this.geometryNames[shaderSetName]["texCoords"];
+        return this.geometryNames["texCoords"];
       case Shader.NAMES.MODEL_MATRIX:
         return "modelMatrix";
       case Shader.NAMES.VIEW_MATRIX:
@@ -181,7 +169,7 @@ export class ShaderManager {
   }
 
   private init() {
-    this.geometryNames["any"] = {
+    this.geometryNames = {
       vertices: "vPosition",
       normals: "vNormal",
       texCoords: "vTextureCoords",
