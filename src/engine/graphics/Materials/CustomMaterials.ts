@@ -58,25 +58,13 @@ export class BaseMaterial extends Material {
   @shaderVariable(Shader.UNIFORM.FLOAT)
   public readonly diffuseConstant: number;
 
-  @shaderVariable(Shader.UNIFORM.FLOAT, "shininessConstant")
+  @shaderVariable(Shader.UNIFORM.FLOAT)
   public readonly shininessConstant: number;
-
-  public readonly _colors: DataBufferLoader;
-
-  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4, "vColor")
-  public get vColor() {
-    return this._colors;
-  }
 
   @shaderVariable(Shader.UNIFORM.BOOL)
   public get useTexture() {
     return this._textureImage.hasTexture;
   }
-  /*
-  @shaderVariable(Shader.UNIFORM.SAMPLER_2D)
-  private get uTexture():TextureBufferLoader{
-    return this._textureImage;
-  }*/
   @shaderVariable(Shader.UNIFORM.SAMPLER_2D, "uTexture")
   public _textureImage: TextureBufferLoader;
 
@@ -93,12 +81,6 @@ export class BaseMaterial extends Material {
       this.ambientConstant = 0.2;
       this.diffuseConstant = 0.8;
       this.shininessConstant = 5.0;
-    }
-
-    if (template.color && false) {
-      this._colors = new DataBufferLoader(template.color);
-    } else {
-      this._colors = new DataBufferLoader(COLORS_VEC4.grayColor(size, 0.75));
     }
 
     if (template.textureImage) {

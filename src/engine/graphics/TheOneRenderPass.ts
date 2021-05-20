@@ -124,18 +124,20 @@ export class TheOneRenderPass extends RenderPass {
               textureLoader.buffer.useForRendering();
               break;
 
-            case Shader.ATTRIBUTE.FLOAT_VEC2:
-              console.log("vec2 not supported yet");
-              break;
+            // case Shader.ATTRIBUTE.FLOAT_VEC2:
+            //   console.log("vec2 not supported yet");
+            //   break;
 
-            case Shader.ATTRIBUTE.FLOAT_VEC4:
-              const bufferLoader = material.get(variableName) as DataBufferLoader;
-              if (bufferLoader.needUpdate) bufferLoader.load(gl, 4);
-              shaderProgram.useAttribForRendering(nameInShader, bufferLoader.buffer);
-              break;
+            // case Shader.ATTRIBUTE.FLOAT_VEC4:
+            //   const bufferLoader = material.get(variableName) as DataBufferLoader;
+            //   if (bufferLoader.needUpdate) bufferLoader.load(gl, 4);
+            //   shaderProgram.useAttribForRendering(nameInShader, bufferLoader.buffer);
+            //   break;
 
             default:
-              console.error("variable Name [" + variableName + "] not found");
+              console.warn(
+                `Variable [${variableName}] is using unsupported type, abort rendering.`
+              );
               return;
             /*
             case type >= 100 && type < 200:
