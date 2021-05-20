@@ -7,12 +7,11 @@ import { DataBufferLoader, TextureBufferLoader } from "../DataBufferPair";
 import { Texture } from "../Texture";
 
 export class TestMaterial extends Material {
-
   //public shaders: ShaderSet = ShaderManager.getShader(shader3d);
   @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC3)
-  public testFieldOne:v3.Vec3;
+  public testFieldOne: v3.Vec3;
   @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4)
-  public testFieldTwo:v3.Vec3;
+  public testFieldTwo: v3.Vec3;
 
   public getSize(): number {
     throw new Error("Method not implemented.");
@@ -22,13 +21,13 @@ export class TestMaterial extends Material {
   }
 }
 
-export interface BaseMaterialTemplate{
+export interface BaseMaterialTemplate {
   specularConstant: number;
   ambientConstant: number;
   diffuseConstant: number;
   shininess: number;
-  color:number[];
-  textureImage:Image;
+  color: number[];
+  textureImage: Image;
 }
 /*
 Attributes
@@ -56,31 +55,31 @@ export class BaseMaterial extends Material {
   private ambientConstant: number;
   @shaderVariable(Shader.UNIFORM.FLOAT)
   private diffuseConstant: number;
-  @shaderVariable(Shader.UNIFORM.FLOAT,"shininessConstant")
+  @shaderVariable(Shader.UNIFORM.FLOAT, "shininessConstant")
   private shininess: number;
-  private _colors:DataBufferLoader;
-  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4,"vColor")
-  private get vColor(){
+  private _colors: DataBufferLoader;
+  @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4, "vColor")
+  private get vColor() {
     return this._colors.buffer;
   }
   @shaderVariable(Shader.UNIFORM.BOOL)
-  private get useTexture(){
-    return this.hasTexture()
+  private get useTexture() {
+    return this.hasTexture();
   }
   /*
   @shaderVariable(Shader.UNIFORM.SAMPLER_2D)
   private get uTexture():TextureBufferLoader{
     return this._textureImage;
   }*/
-  @shaderVariable(Shader.UNIFORM.SAMPLER_2D,"uTexture")
+  @shaderVariable(Shader.UNIFORM.SAMPLER_2D, "uTexture")
   private _textureImage: TextureBufferLoader;
-  private size:number;
+  private size: number;
 
-  constructor(size:number,template?:BaseMaterialTemplate){
+  constructor(size: number, template?: BaseMaterialTemplate) {
     super();
-    this.size = size
+    this.size = size;
 
-    if(template){
+    if (template) {
       this.ambientConstant = template.ambientConstant;
       this.diffuseConstant = template.diffuseConstant;
       this.shininess = template.shininess;
@@ -92,29 +91,29 @@ export class BaseMaterial extends Material {
       this.shininess = 5.0;
     }
 
-    if(template.color && false){
-      this._colors = new DataBufferLoader( template.color );
+    if (template.color && false) {
+      this._colors = new DataBufferLoader(template.color);
     } else {
-      this._colors = new DataBufferLoader( COLORS_VEC4.grayColor(size, 0.75) );
+      this._colors = new DataBufferLoader(COLORS_VEC4.grayColor(size, 0.75));
     }
 
-    if(template.textureImage){
+    if (template.textureImage) {
       this._textureImage = new TextureBufferLoader(template.textureImage);
     } else {
       this._textureImage = new TextureBufferLoader(null);
     }
   }
-  //TODO: duplicated 
-  public hasTexture():boolean{
+  //TODO: duplicated
+  public hasTexture(): boolean {
     return this._textureImage.hasTexture;
   }
-  public prepareInGPU(gl: WebGLRenderingContext):boolean {
+  public prepareInGPU(gl: WebGLRenderingContext): boolean {
     let updated = false;
-    if(this._colors.needUpdate){
-      this._colors.load(gl,4);
+    if (this._colors.needUpdate) {
+      this._colors.load(gl, 4);
       updated = true;
     }
-    if(this._textureImage.needUpdate){
+    if (this._textureImage.needUpdate) {
       this._textureImage.load(gl);
       updated = true;
     }
@@ -126,12 +125,12 @@ export class BaseMaterial extends Material {
   }
 }
 
-export interface PhongMaterialTwoTemplate{
+export interface PhongMaterialTwoTemplate {
   specularConstant: number;
   ambientConstant: number;
   diffuseConstant: number;
   shininess: number;
-  vertexCount:number;
+  vertexCount: number;
 }
 export class PhongMaterialTwo extends Material {
   @shaderVariable(Shader.UNIFORM.FLOAT)
@@ -143,13 +142,13 @@ export class PhongMaterialTwo extends Material {
   @shaderVariable(Shader.UNIFORM.FLOAT)
   private _shininess: number;
   @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4)
-  private _colors:DataBufferLoader;
+  private _colors: DataBufferLoader;
 
-  private size:number;
-  constructor(size:number,template?:PhongMaterialTwoTemplate){
+  private size: number;
+  constructor(size: number, template?: PhongMaterialTwoTemplate) {
     super();
-    
-    if(template){
+
+    if (template) {
       this._ambientConstant = template.ambientConstant;
       this._diffuseConstant = template.diffuseConstant;
       this._shininess = template.shininess;
@@ -160,13 +159,13 @@ export class PhongMaterialTwo extends Material {
       this._diffuseConstant = 0.8;
       this._shininess = 5;
     }
-    
-    this._colors = new DataBufferLoader( COLORS_VEC4.grayColor(size, 0.75) );
+
+    this._colors = new DataBufferLoader(COLORS_VEC4.grayColor(size, 0.75));
   }
-  prepareInGPU(gl: WebGLRenderingContext):boolean {
+  prepareInGPU(gl: WebGLRenderingContext): boolean {
     let updated = false;
-    if(this._colors.needUpdate){
-      this._colors.load(gl,4);
+    if (this._colors.needUpdate) {
+      this._colors.load(gl, 4);
       updated = true;
     }
     return updated;
@@ -176,4 +175,3 @@ export class PhongMaterialTwo extends Material {
     return 0;
   }
 }
-

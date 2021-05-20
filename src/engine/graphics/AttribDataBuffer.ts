@@ -1,3 +1,6 @@
+/**
+ * Class for webgl data buffer wrapper with extra perks
+ */
 export class AttribDataBuffer {
   private _gl: WebGLRenderingContext;
   private _buffer: WebGLBuffer;

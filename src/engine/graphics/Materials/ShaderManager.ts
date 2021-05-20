@@ -5,16 +5,16 @@ import { AssetLoaderEvent } from "../../assets/AssetLoader";
 import { ShaderSetLoader } from "../../assets/ShaderSetLoader";
 import { ShaderProgramLoader } from "../DataBufferPair";
 import { ShaderProgram } from "../ShaderProgram";
-import { MaterialProperties } from "./Material";
+import { Material, MaterialProperties } from "./Material";
 
 export namespace Shader {
   // variable storage qualifier -> variable type
 
   export enum ATTRIBUTE {
     FLOAT_VEC2 = 100,
-    FLOAT_VEC3, 
+    FLOAT_VEC3,
     FLOAT_VEC4,
-  };
+  }
   export enum UNIFORM {
     FLOAT_VEC3 = 200,
     FLOAT_VEC4,
@@ -22,8 +22,8 @@ export namespace Shader {
     FLOAT,
     BOOL,
     SAMPLER_2D,
-  };
-  export enum NAMES{
+  }
+  export enum NAMES {
     VERTICES = 300,
     NORMALS,
     TEXCOORDS,
@@ -31,37 +31,47 @@ export namespace Shader {
     VIEW_MATRIX,
     PROJECTION_MATRIX,
   }
-  // translation for webglEnum 
+  // translation for webglEnum
   // https://developer.mozilla.org/en-US//docs/Web/API/WebGL_API/Constants
   const webGLenumMapLocal = {
-    0x8B51:"FLOAT_VEC3",
-    0x8B52:"FLOAT_VEC4",
-    0x8B50:"FLOAT_VEC2",
-    0x8B5C:"FLOAT_MAT4",
-    0x8B56:"BOOL",
-    0x1406:"FLOAT",
-    0x1404:"INT",
-    0x8B54:"INT_VEC3",
-    0x8B5E:"SAMPLER_2D",
-  }
+    0x8b51: "FLOAT_VEC3",
+    0x8b52: "FLOAT_VEC4",
+    0x8b50: "FLOAT_VEC2",
+    0x8b5c: "FLOAT_MAT4",
+    0x8b56: "BOOL",
+    0x1406: "FLOAT",
+    0x1404: "INT",
+    0x8b54: "INT_VEC3",
+    0x8b5e: "SAMPLER_2D",
+  };
   /**
-   * Since Webgl types Enum does not distingush between attribute or unifrom, this function is used to translate (webglenum,attrib/unfirom) ,into a single enum 
+   * Since Webgl types Enum does not distingush between attribute or unifrom, this function is used to translate (webglenum,attrib/unfirom) ,into a single enum
    * @param glEnum a webgl enum according to  // https://developer.mozilla.org/en-US//docs/Web/API/WebGL_API/Constants
    * @param enumType a namespace string of either "ATTRIBUTE" or "UNIFORM"
    * @returns local version of enum
-   */ 
-  export function resolveEnumFromGLType(glEnum:number,enumType:string){
+   */
+  export function resolveEnumFromGLType(glEnum: number, enumType: string) {
     const namespace = enumType.trim().toUpperCase();
     const enumName = webGLenumMapLocal[glEnum];
-    if(!Shader[namespace]){
-      console.error("enum namespace not found: ["+enumType+"]");
+    if (!Shader[namespace]) {
+      console.error("enum namespace not found: [" + enumType + "]");
       return null;
     }
-    if(!enumName ){
-      console.error("enum: ["+glEnum+"] not supported yet, if this is a valid WebGL type, please contact the developers")
+    if (!enumName) {
+      console.error(
+        "enum: [" +
+          glEnum +
+          "] not supported yet, if this is a valid WebGL type, please contact the developers"
+      );
       return null;
     } else if (!Shader[namespace][enumName]) {
-      console.error("enum: ["+glEnum+"] in namespace["+namespace+"] not supported yet, if this is a valid WebGL type, please contact the developers")
+      console.error(
+        "enum: [" +
+          glEnum +
+          "] in namespace[" +
+          namespace +
+          "] not supported yet, if this is a valid WebGL type, please contact the developers"
+      );
       return null;
     }
     return Shader[namespace][enumName];
@@ -74,14 +84,13 @@ export interface ShaderSet extends Asset {
 export function shaderVariable(type: number, nameInShader?: string): any {
   return function (target: any, property: string, descriptor: PropertyDescriptor) {
     const parent = target.constructor.name;
-    ShaderManager.getInstance().addVariableToMapping(parent, property, type, nameInShader);
+    ShaderManager.getInstance().addMaterialVariable(parent, property, type, nameInShader);
     return descriptor;
   };
 }
 export class ShaderManager {
-  private shaderMaterialVariableNameMap: {[materialName: string]: any }  =
-    {};
-  private geometryNames: { [variableName: string]: string }  = {};
+  private shaderMaterialVariableNameMap: { [materialName: string]: any } = {};
+  private geometryNames: { [variableName: string]: string } = {};
   //private shaderSets:{[name:string]:ShaderSet} = {};
   private shaders: { [name: string]: ShaderProgramLoader } = {};
 
@@ -101,7 +110,7 @@ export class ShaderManager {
    * @param variableName
    * @param shaderSetName
    */
-  public addVariableToMapping(
+  public addMaterialVariable(
     materialClassName: string,
     variableName: string,
     type: number,
@@ -113,9 +122,12 @@ export class ShaderManager {
     if (!this.shaderMaterialVariableNameMap[materialClassName]) {
       this.shaderMaterialVariableNameMap[materialClassName] = {};
     }
-    this.shaderMaterialVariableNameMap[materialClassName][variableName] = {type:type,nameInShader:nameInShader?nameInShader:variableName};
+    this.shaderMaterialVariableNameMap[materialClassName][variableName] = {
+      type: type,
+      nameInShader: nameInShader ? nameInShader : variableName,
+    };
   }
-  public getMaterialMapping(materialClass: MaterialProperties) {
+  public getMaterialVariables(materialClass: Material) {
     // @ts-ignore
     const materialName = materialClass.name ? materialClass.name : materialClass.constructor.name;
     return this.shaderMaterialVariableNameMap[materialName];
