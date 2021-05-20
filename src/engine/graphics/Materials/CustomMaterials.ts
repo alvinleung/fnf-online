@@ -67,11 +67,12 @@ export class BaseMaterial extends Material {
   private get useTexture(){
     return this.hasTexture()
   }
+  /*
   @shaderVariable(Shader.UNIFORM.SAMPLER_2D)
   private get uTexture():TextureBufferLoader{
     return this._textureImage;
-  }
-
+  }*/
+  @shaderVariable(Shader.UNIFORM.SAMPLER_2D,"uTexture")
   private _textureImage: TextureBufferLoader;
   private size:number;
 

@@ -118,7 +118,7 @@ export class TheOneRenderPass extends RenderPass {
               shaderProgram.writeUniformVec4Float(nameInShader,material.get(variableName))
               break;
             case Shader.UNIFORM.SAMPLER_2D:
-              const texture = material.get(nameInShader) as TextureBufferLoader;
+              const texture = material.get(variableName) as TextureBufferLoader;
               if(texture.hasTexture){
                 texture.buffer.useForRendering();
               } 
