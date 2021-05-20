@@ -4,7 +4,6 @@ import { RenderableObject } from "./Renderable";
 
 import { RenderingSystem } from "./RenderingSystem";
 import { RenderPass } from "./RenderPass";
-import { Texture } from "./Texture";
 import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { LightComponent } from "./Light";
 import { TransformComponent } from "../core/TransformComponent";
@@ -18,6 +17,7 @@ export class ShaderPlan implements MaterialProperties {
     this.plan = ShaderManager.getInstance().getDefaultPlan();
   }
 }
+
 export class TheOneRenderPass extends RenderPass {
   private strategy: { shaderId: string; renderableList: RenderableObject[] }[] = [];
   // store: object { shaderId, renderables }
@@ -72,7 +72,6 @@ export class TheOneRenderPass extends RenderPass {
       shaderProgram.writeUniformBoolean("isDirection", lightProperties.isDirectional);
       shaderProgram.writeUniformVec3Float("lightColor", lightProperties.color);
       shaderProgram.writeUniformVec3Float("lightOrigin", lightOrigin);
-
       shaderProgram.writeUniformVec3Float(
         "cameraPosition",
         m4.getTranslation(m4.inverse(cameraMatrix))
@@ -88,7 +87,7 @@ export class TheOneRenderPass extends RenderPass {
         shaderProgram.useAttribForRendering(normalsName, geometry.get(normalsName));
         shaderProgram.useAttribForRendering(texCoordsName, geometry.get(texCoordsName));
 
-        // prepare attributes
+        // prepare custom attributes
         Object.keys(geometry.attributes).forEach((key) => {
           const attribute = geometry.attributes[key];
           if (attribute.needUpdate) {
