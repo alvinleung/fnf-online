@@ -23,7 +23,6 @@ interface Props {
 }
 
 // get the resource list here
-const assetList = require("../../../../../MyGameAssets").default;
 
 export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
   const containerRef = useRef();

@@ -40,6 +40,4 @@ export abstract class Material {
   public get(variableName: string): any {
     return this[variableName];
   }
-  public abstract getSize(): number;
-  public abstract prepareInGPU(gl: WebGLRenderingContext): boolean;
 }

@@ -5,7 +5,7 @@ import { RenderableObject } from "./Renderable";
 import { RenderingSystem } from "./RenderingSystem";
 import { RenderPass } from "./RenderPass";
 import { Texture } from "./Texture";
-import { TextureBufferLoader } from "./DataBufferPair";
+import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { LightComponent } from "./Light";
 import { TransformComponent } from "../core/TransformComponent";
 import { m4 } from "twgl.js";
@@ -90,42 +90,50 @@ export class TheOneRenderPass extends RenderPass {
         /** Materials */
         const material = renderableObject.getMaterial();
         const variableMapping = shaderManager.getMaterialVariables(material);
-        material.prepareInGPU(gl);
 
         for (let [variableName, variableInfo] of Object.entries(variableMapping)) {
           const info = variableInfo as any;
           const type = info.type;
           let nameInShader = info.nameInShader;
+
           switch (type) {
             case Shader.UNIFORM.BOOL:
-              //console.log(material.get(variableName))
               shaderProgram.writeUniformBoolean(nameInShader, material.get(variableName));
               break;
+
             case Shader.UNIFORM.FLOAT:
               shaderProgram.writeUniformFloat(nameInShader, material.get(variableName));
               break;
+
             case Shader.UNIFORM.FLOAT_MAT4:
               shaderProgram.writeUniformMat4(nameInShader, material.get(variableName));
               break;
+
             case Shader.UNIFORM.FLOAT_VEC3:
               shaderProgram.writeUniformVec3Float(nameInShader, material.get(variableName));
               break;
+
             case Shader.UNIFORM.FLOAT_VEC4:
               shaderProgram.writeUniformVec4Float(nameInShader, material.get(variableName));
               break;
+
             case Shader.UNIFORM.SAMPLER_2D:
-              const texture = material.get(variableName) as TextureBufferLoader;
-              if (texture.hasTexture) {
-                texture.buffer.useForRendering();
-              }
+              const textureLoader = material.get(variableName) as TextureBufferLoader;
+              if (!textureLoader.hasTexture) break;
+              textureLoader.load(gl);
+              textureLoader.buffer.useForRendering();
               break;
+
             case Shader.ATTRIBUTE.FLOAT_VEC2:
               console.log("vec2 not supported yet");
               break;
+
             case Shader.ATTRIBUTE.FLOAT_VEC4:
-              //console.log(variableName)
-              shaderProgram.useAttribForRendering(nameInShader, material.get(variableName));
+              const bufferLoader = material.get(variableName) as DataBufferLoader;
+              if (bufferLoader.needUpdate) bufferLoader.load(gl, 4);
+              shaderProgram.useAttribForRendering(nameInShader, bufferLoader.buffer);
               break;
+
             default:
               console.error("variable Name [" + variableName + "] not found");
               return;

@@ -25,7 +25,7 @@ export interface BaseMaterialTemplate {
   specularConstant: number;
   ambientConstant: number;
   diffuseConstant: number;
-  shininess: number;
+  shininessConstant: number;
   color: number[];
   textureImage: Image;
 }
@@ -50,21 +50,27 @@ Uniforms
 */
 export class BaseMaterial extends Material {
   @shaderVariable(Shader.UNIFORM.FLOAT)
-  private specularConstant: number;
+  public readonly specularConstant: number;
+
   @shaderVariable(Shader.UNIFORM.FLOAT)
-  private ambientConstant: number;
+  public readonly ambientConstant: number;
+
   @shaderVariable(Shader.UNIFORM.FLOAT)
-  private diffuseConstant: number;
+  public readonly diffuseConstant: number;
+
   @shaderVariable(Shader.UNIFORM.FLOAT, "shininessConstant")
-  private shininess: number;
-  private _colors: DataBufferLoader;
+  public readonly shininessConstant: number;
+
+  public readonly _colors: DataBufferLoader;
+
   @shaderVariable(Shader.ATTRIBUTE.FLOAT_VEC4, "vColor")
-  private get vColor() {
-    return this._colors.buffer;
+  public get vColor() {
+    return this._colors;
   }
+
   @shaderVariable(Shader.UNIFORM.BOOL)
-  private get useTexture() {
-    return this.hasTexture();
+  public get useTexture() {
+    return this._textureImage.hasTexture;
   }
   /*
   @shaderVariable(Shader.UNIFORM.SAMPLER_2D)
@@ -72,23 +78,21 @@ export class BaseMaterial extends Material {
     return this._textureImage;
   }*/
   @shaderVariable(Shader.UNIFORM.SAMPLER_2D, "uTexture")
-  private _textureImage: TextureBufferLoader;
-  private size: number;
+  public _textureImage: TextureBufferLoader;
 
   constructor(size: number, template?: BaseMaterialTemplate) {
     super();
-    this.size = size;
 
     if (template) {
       this.ambientConstant = template.ambientConstant;
       this.diffuseConstant = template.diffuseConstant;
-      this.shininess = template.shininess;
+      this.shininessConstant = template.shininessConstant;
       this.specularConstant = template.specularConstant;
     } else {
       this.specularConstant = 0.4;
       this.ambientConstant = 0.2;
       this.diffuseConstant = 0.8;
-      this.shininess = 5.0;
+      this.shininessConstant = 5.0;
     }
 
     if (template.color && false) {
@@ -102,26 +106,6 @@ export class BaseMaterial extends Material {
     } else {
       this._textureImage = new TextureBufferLoader(null);
     }
-  }
-  //TODO: duplicated
-  public hasTexture(): boolean {
-    return this._textureImage.hasTexture;
-  }
-  public prepareInGPU(gl: WebGLRenderingContext): boolean {
-    let updated = false;
-    if (this._colors.needUpdate) {
-      this._colors.load(gl, 4);
-      updated = true;
-    }
-    if (this._textureImage.needUpdate) {
-      this._textureImage.load(gl);
-      updated = true;
-    }
-    return updated;
-  }
-
-  public getSize(): number {
-    return this.size;
   }
 }
 
