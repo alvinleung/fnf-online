@@ -93,7 +93,7 @@ export class ShaderManager {
   }
   public getDefaultPlan(): any[] {
     //TODO: return a default plan for rendering object
-    return ["Phong"];
+    return ["Render3d"];
   }
   /**
    * add and store relation between a materialClass, a shader, and a variable that exist in both places

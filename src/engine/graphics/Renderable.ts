@@ -1,11 +1,7 @@
-import { connect } from "node:http2";
-import { m4, v3 } from "twgl.js";
+import { m4 } from "twgl.js";
 import { Component } from "../ecs";
 import { EditableField, Editor, Field, Instantiable } from "../editor";
-import { COLORS_VEC4 } from "./3dRender/objects/Primitives";
 import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderPass";
-import { wireFrameMaterialProperties } from "./3dRender/WireframeRenderPass";
-import { AttribDataBuffer } from "./AttribDataBuffer";
 import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { Geometry } from "./Geometry/Geometry";
 import { Image } from "./Image/Image";
@@ -29,14 +25,8 @@ export class RenderableComponent implements Component {
  */
 @Instantiable("RenderableObject")
 export class RenderableObject {
-  //private _objectCoords: number[];
-  //private _textureImage: Image;
-  //private _textureCoords: number[];
-  //private _objectColors: number[];
-  //public transform: m4.Mat4 = m4.translation(v3.create(0, 0, 0));
-  private _plan: any[] = [];
-  //public shaderSet: ShaderSet;
 
+  private _plan: any[] = [];
   @Field(Editor.CLASS)
   private _material: Materials;
   private _geometry: Geometry;
@@ -47,22 +37,9 @@ export class RenderableObject {
     textureImage?: Image, // texture name
     objectColors?: number[]
   ) {
-    //this.objectCoords = objectCoords;
-    //this.textureCoords = textureCoords;
-    //this.textureImage = textureImage;
-
-    /*
-    if (objectColors) {
-      this.objectColors = objectColors;
-    } else {
-      //this.objectColors = COLORS_VEC4.randomColor(objectCoords.length / 3, 3);
-      this.objectColors = COLORS_VEC4.grayColor(objectCoords.length / 3, 0.75);
-    }*/
-
     this._material = new Materials()
       .addProperty("Phong", new PhongMaterialProperties())
       .addProperty("Normals", new Normals(objectCoords, false))
-      //.addProperty("WireFrame", new wireFrameMaterialProperties(objectCoords))
       .addProperty(
         "material",
         new BaseMaterial(objectCoords.length / 3, {
@@ -98,11 +75,9 @@ export class RenderableObject {
     this._isLoadedIntoGPUMemory = false;
     console.log(this._geometry);
     this._geometry.vertices = val;
-    //this._objectCoords = val;
   }
   public get objectCoords() {
     return this._geometry.vertices;
-    //return this._objectCoords;
   }
 
   @Field(Editor.RESOURCE_IMAGE)
@@ -111,31 +86,28 @@ export class RenderableObject {
 
     const material = this._material.getProperty<BaseMaterial>("material");
     let textureBuffer = material.get("_textureImage") as TextureBufferLoader;
-    textureBuffer.buffer = val;
+    textureBuffer.data = val;
   }
   public get textureImage() {
     return (
       this._material
         .getProperty<BaseMaterial>("material")
         .get("_textureImage") as TextureBufferLoader
-    ).buffer;
+    ).data;
   }
 
   @Field(Editor.ARRAY_NUMBER)
   public set textureCoords(val) {
     this._isLoadedIntoGPUMemory = false;
-    //this._textureCoords = val;
     this._geometry.texCoords = val;
   }
   public get textureCoords() {
-    //return this._textureCoords;
     return this._geometry.texCoords;
   }
 
   @Field(Editor.ARRAY_NUMBER)
   public set objectColors(val) {
     this._isLoadedIntoGPUMemory = false;
-    //this._objectColors = val;
     const material = this._material.getProperty<BaseMaterial>("material");
     material.get("_textureImage");
   }
@@ -151,11 +123,6 @@ export class RenderableObject {
    */
   private _isLoadedIntoGPUMemory: boolean = false;
   private _needTextureReload: boolean = false;
-
-  //private _coordsBuffer: AttribDataBuffer;
-  //private _texCoordsBuffer: AttribDataBuffer;
-  //private _colorBuffer: AttribDataBuffer;
-  //private _texture: Texture;
 
   public loadIntoGPU(gl: WebGLRenderingContext) {
     this.createBufferObjectsInGPU(gl);
@@ -180,11 +147,7 @@ export class RenderableObject {
 
   protected createBufferObjectsInGPU(gl: WebGLRenderingContext) {
     // load the object onto a buffer
-    //this._coordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectCoords), 3);
-    //this._texCoordsBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.textureCoords), 2);
     this._geometry.prepareInGPU(gl);
-    // colors defaulted to gray
-    //this._colorBuffer = AttribDataBuffer.fromData(gl, new Float32Array(this.objectColors), 4);
     this._material.getProperty<BaseMaterial>("material").prepareInGPU(gl);
 
     // load image onto the gpu
@@ -197,7 +160,6 @@ export class RenderableObject {
   }
 
   private loadTextureIntoGPU(gl: WebGLRenderingContext) {
-    //this._texture = new Texture(gl, { image: this.textureImage });
     this._material.getProperty<BaseMaterial>("material").prepareInGPU(gl);
     this._needTextureReload = false;
   }
@@ -261,7 +223,10 @@ export class RenderableObject {
   public getGeometry(): Geometry {
     return this._geometry;
   }
-  public getRenderingPlan(): string[] {
+  public set plan(plan:string[]){
+    this._plan = plan;
+  }
+  public get plan(){
     return this._plan;
   }
 }
