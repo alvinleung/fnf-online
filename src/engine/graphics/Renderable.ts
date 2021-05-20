@@ -1,7 +1,7 @@
 import { m4 } from "twgl.js";
 import { Component } from "../ecs";
 import { EditableField, Editor, Field, Instantiable } from "../editor";
-import { Normals, PhongMaterialProperties } from "./3dRender/PhongRenderPass";
+import { Normals } from "./3dRender/Normals";
 import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { Geometry } from "./Geometry/Geometry";
 import { Image } from "./Image/Image";
