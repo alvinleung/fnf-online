@@ -138,7 +138,7 @@ export class TheOneRenderPass extends RenderPass {
         }
 
         /** DRAW */
-        gl.drawArrays(gl.TRIANGLES, 0, material.getSize());
+        gl.drawArrays(gl.TRIANGLES, 0, geometry.vertexCount);
         //shaderProgram.cleanUpAttribs()
         if (this._frameRendered % 240 == 0) {
           //console.log(geometry.get(verticeName))

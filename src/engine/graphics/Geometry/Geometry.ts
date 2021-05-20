@@ -18,15 +18,17 @@ export class Geometry implements Asset {
   private _texCoords: DataBufferLoader;
   private _transform: m4.Mat4;
 
+  private _vertexCount: number;
+
   constructor(template?: GeometryTemplate) {
     if (template) {
       this._vertices = new DataBufferLoader(template.vertices);
       this._normals = new DataBufferLoader(template.normals);
       this._transform = template.transform;
-      if(template.texCoords){
+      if (template.texCoords) {
         this._texCoords = new DataBufferLoader(template.texCoords);
       } else {
-        let zerosTexCoords = Array(template.vertices.length * 2 / 3).fill(0);
+        let zerosTexCoords = Array((template.vertices.length * 2) / 3).fill(0);
         this._texCoords = new DataBufferLoader(zerosTexCoords);
       }
     } else {
@@ -34,6 +36,32 @@ export class Geometry implements Asset {
       this._normals = new DataBufferLoader([]);
       this._texCoords = new DataBufferLoader([]);
       this._transform = m4.identity();
+    }
+
+    this.updateVertexCount();
+  }
+
+  private updateVertexCount() {
+    this._vertexCount = this.vertices.length / 3;
+  }
+  public get vertexCount() {
+    return this._vertexCount;
+  }
+
+  private validateDataVertexCount() {
+    const normalVertexCount = this.normals.length / 3;
+    const texCoordVertexCount = this.texCoords.length / 2;
+
+    if (normalVertexCount !== this.vertexCount) {
+      console.warn(
+        `Normal vertex count is incompatable, expected to be ${this.vertexCount}, provided ${normalVertexCount}`
+      );
+    }
+
+    if (texCoordVertexCount !== this.vertexCount) {
+      console.warn(
+        `TexCoord vertex count is incompatable, expected to be ${this.vertexCount}, provided ${texCoordVertexCount}`
+      );
     }
   }
 
@@ -48,12 +76,15 @@ export class Geometry implements Asset {
   }
   public set vertices(data: number[]) {
     this._vertices = new DataBufferLoader(data);
+    this.updateVertexCount();
   }
   public set normals(data: number[]) {
     this._normals = new DataBufferLoader(data);
+    this.validateDataVertexCount();
   }
   public set texCoords(data: number[]) {
     this._texCoords = new DataBufferLoader(data);
+    this.validateDataVertexCount();
   }
   public get transform(): m4.Mat4 {
     return this._transform;
