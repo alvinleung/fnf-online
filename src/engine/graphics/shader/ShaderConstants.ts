@@ -1,7 +1,3 @@
-import { string } from "prop-types";
-import { glEnumToString, v3 } from "twgl.js";
-import { Asset } from "../../assets";
-
 export namespace Shader {
   // variable storage qualifier -> variable type
 

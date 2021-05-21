@@ -6,10 +6,28 @@ import { ShaderSet } from "../shader/ShaderSet";
 import { ShaderProgram } from "../ShaderProgram";
 import { Material } from "./Material";
 
+interface ShaderProgramMap {
+  [name: string]: ShaderProgram;
+}
+
 export class MaterialManager {
   private shaderMaterialVariableNameMap: { [materialName: string]: any } = {};
   //private shaderSets:{[name:string]:ShaderSet} = {};
   private shaders: { [name: string]: ShaderProgramLoader } = {};
+
+  private _shaderProgramInstances: ShaderProgramMap = {};
+
+  public getShaderProgram(gl: WebGLRenderingContext, shaderSet: ShaderSet): ShaderProgram {
+    // if the program already created, use the created one
+    if (this._shaderProgramInstances[shaderSet.name]) {
+      return this._shaderProgramInstances[shaderSet.name];
+    }
+
+    // if not then we compile the program
+    const programInstance = new ShaderProgram(gl, shaderSet.vertexShader, shaderSet.fragmentShader);
+    this._shaderProgramInstances[shaderSet.name] = programInstance;
+    return programInstance;
+  }
 
   public getShaderFor(gl: WebGLRenderingContext, shaderName: string): ShaderProgram {
     if (!this.shaders[shaderName]) {

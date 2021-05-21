@@ -18,8 +18,14 @@ export class ShaderPlan {
   }
 }
 
+interface SubPass {
+  shaderId: string;
+  renderableList: RenderableObject[];
+}
+
 export class TheOneRenderPass extends RenderPass {
-  private strategy: { shaderId: string; renderableList: RenderableObject[] }[] = [];
+  private strategy: SubPass[] = [];
+
   // store: object { shaderId, renderables }
   private strategyNeedsUpdate: boolean = true;
   private _frameRendered: number = 0;
@@ -36,10 +42,10 @@ export class TheOneRenderPass extends RenderPass {
     const cameraMatrix = system.getCameraMatrix();
     const projectionMatrix = system.getProjectionMatrix();
 
-    const shaderManager = MaterialManager.getInstance();
+    const materialManager = MaterialManager.getInstance();
     this.strategy.forEach((subPass) => {
       //const shaderProgram = system.getShaderProgram(subPass.shaderId);
-      const shaderProgram = shaderManager.getShaderFor(gl, subPass.shaderId);
+      const shaderProgram = materialManager.getShaderFor(gl, subPass.shaderId);
       if (!shaderProgram) {
         if (this._frameRendered % 30 == 0) {
           console.log("shader not found in cache, skipping:[" + subPass.shaderId + "]");
@@ -98,7 +104,7 @@ export class TheOneRenderPass extends RenderPass {
 
         /** Materials */
         const material = renderableObject.getMaterial();
-        const variableMapping = shaderManager.getMaterialVariables(material);
+        const variableMapping = materialManager.getMaterialVariables(material);
 
         for (let [variableName, variableInfo] of Object.entries(variableMapping)) {
           const info = variableInfo as any;
