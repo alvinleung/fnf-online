@@ -7,7 +7,6 @@ import { Geometry } from "./geometry/Geometry";
 import { Image } from "./image/Image";
 import { BaseMaterial } from "./materials/BaseMaterial";
 import { Material } from "./materials/Material";
-import { MaterialManager } from "./materials/MaterialManager";
 import { Texture } from "./Texture";
 
 const VERBOSE = false;
@@ -51,8 +50,6 @@ export class RenderableObject {
       texCoords: textureCoords,
       transform: m4.identity(),
     });
-
-    this._plan = MaterialManager.getInstance().getDefaultPlan();
 
     return this;
   }
@@ -100,12 +97,6 @@ export class RenderableObject {
     // const material = this._material.getProperty<BaseMaterial>("material");
     this._material.get("_textureImage");
   }
-  //TODO:remove
-  public get objectColors() {
-    // const material = this._material.getProperty<BaseMaterial>("material");
-    //console.log(material.get("_colors"))
-    return (this._material.get("_colors") as DataBufferLoader).data; // this._objectColors;
-  }
 
   /**
    * references for texture rendering
@@ -137,7 +128,6 @@ export class RenderableObject {
   protected createBufferObjectsInGPU(gl: WebGLRenderingContext) {
     // load the object onto a buffer
     this._geometry.prepareInGPU(gl);
-    // this._material.prepareInGPU(gl);
 
     // load image onto the gpu
     if (this.textureImage) {
