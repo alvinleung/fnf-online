@@ -1,4 +1,4 @@
-export namespace Shader {
+export namespace ShaderConstants {
   // variable storage qualifier -> variable type
 
   // attributes
@@ -16,7 +16,7 @@ export namespace Shader {
     BOOL,
     SAMPLER_2D,
   }
-  export enum NAMES {
+  export enum GEOMETRY {
     // geometry
     VERTICES = "vPosition",
     NORMALS = "vNormal",
@@ -47,7 +47,7 @@ export namespace Shader {
   export function resolveEnumFromGLType(glEnum: number, enumType: string) {
     const namespace = enumType.trim().toUpperCase();
     const enumName = webGLenumMapLocal[glEnum];
-    if (!Shader[namespace]) {
+    if (!ShaderConstants[namespace]) {
       console.error("enum namespace not found: [" + enumType + "]");
       return null;
     }
@@ -58,7 +58,7 @@ export namespace Shader {
           "] not supported yet, if this is a valid WebGL type, please contact the developers"
       );
       return null;
-    } else if (!Shader[namespace][enumName]) {
+    } else if (!ShaderConstants[namespace][enumName]) {
       console.error(
         "enum: [" +
           glEnum +
@@ -68,6 +68,6 @@ export namespace Shader {
       );
       return null;
     }
-    return Shader[namespace][enumName];
+    return ShaderConstants[namespace][enumName];
   }
 }

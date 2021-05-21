@@ -1,5 +1,5 @@
 import { TextureBufferLoader } from "../DataBufferPair";
-import { Shader } from "../shader/ShaderConstants";
+import { ShaderConstants } from "../shader/ShaderConstants";
 import { Uniform } from "./Uniform";
 import { Material } from "./Material";
 import { Image } from "../image/Image";
@@ -16,26 +16,26 @@ export interface BaseMaterialTemplate {
 }
 
 export class BaseMaterial extends Material {
-  @Uniform(Shader.UNIFORM.FLOAT)
+  @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly specularConstant: number;
 
-  @Uniform(Shader.UNIFORM.FLOAT)
+  @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly ambientConstant: number;
 
-  @Uniform(Shader.UNIFORM.FLOAT)
+  @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly diffuseConstant: number;
 
-  @Uniform(Shader.UNIFORM.FLOAT)
+  @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly shininessConstant: number;
 
-  @Uniform(Shader.UNIFORM.FLOAT_VEC4)
+  @Uniform(ShaderConstants.UNIFORM.FLOAT_VEC4)
   public readonly materialColor: number[];
 
-  @Uniform(Shader.UNIFORM.BOOL)
+  @Uniform(ShaderConstants.UNIFORM.BOOL)
   public get useTexture() {
     return this._textureImage.hasTexture;
   }
-  @Uniform(Shader.UNIFORM.SAMPLER_2D, "uTexture")
+  @Uniform(ShaderConstants.UNIFORM.SAMPLER_2D, "uTexture")
   public _textureImage: TextureBufferLoader;
 
   constructor(template?: BaseMaterialTemplate) {

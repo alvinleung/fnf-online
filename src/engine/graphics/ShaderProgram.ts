@@ -1,5 +1,5 @@
 import { AttribDataBuffer } from "./AttribDataBuffer";
-import { Shader } from "./shader/ShaderConstants";
+import { ShaderConstants } from "./shader/ShaderConstants";
 
 const twgl = require("twgl.js");
 
@@ -183,7 +183,7 @@ export class ShaderProgram {
     const attributeCount = gl.getProgramParameter(this.shaderProgram, gl.ACTIVE_ATTRIBUTES);
     for (let i = 0; i < attributeCount; ++i) {
       const info = gl.getActiveAttrib(this.shaderProgram, i);
-      this.variableNameMap.attributeMap[info.name] = Shader.resolveEnumFromGLType(
+      this.variableNameMap.attributeMap[info.name] = ShaderConstants.resolveEnumFromGLType(
         info.type,
         "ATTRIBUTE"
       );
@@ -192,7 +192,7 @@ export class ShaderProgram {
     const uniformCount = gl.getProgramParameter(this.shaderProgram, gl.ACTIVE_UNIFORMS);
     for (let i = 0; i < uniformCount; ++i) {
       const info = gl.getActiveUniform(this.shaderProgram, i);
-      this.variableNameMap.unfiromMap[info.name] = Shader.resolveEnumFromGLType(
+      this.variableNameMap.unfiromMap[info.name] = ShaderConstants.resolveEnumFromGLType(
         info.type,
         "UNIFORM"
       );

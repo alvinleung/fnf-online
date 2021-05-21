@@ -1,4 +1,4 @@
-import { Shader } from "./shader/ShaderConstants";
+import { ShaderConstants } from "./shader/ShaderConstants";
 import { MaterialManager } from "./materials/MaterialManager";
 import { RenderableObject } from "./Renderable";
 
@@ -8,16 +8,7 @@ import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { LightComponent } from "./Light";
 import { TransformComponent } from "../core/TransformComponent";
 import { m4 } from "twgl.js";
-import { PriorityQueue } from "../utils/DataStructUtils";
 import { ShaderProgram } from "./ShaderProgram";
-
-export class ShaderPlan {
-  private plan: string[]; // a ordered list of strings(shaderID) each identifing a shader program
-
-  constructor() {
-    // this.plan = MaterialManager.getInstance().getDefaultPlan();
-  }
-}
 
 interface SubPass {
   shaderName: string;
@@ -68,12 +59,12 @@ export class TheOneRenderPass extends RenderPass {
       shaderProgram.useProgram();
 
       /** Get Naming scheme from shader manager */
-      const verticeName = Shader.NAMES.VERTICES;
-      const normalsName = Shader.NAMES.NORMALS;
-      const texCoordsName = Shader.NAMES.TEXCOORDS;
-      const modelMatrixName = Shader.NAMES.MODEL_MATRIX;
-      const viewMatrixName = Shader.NAMES.VIEW_MATRIX;
-      const projectionMatrixName = Shader.NAMES.PROJECTION_MATRIX;
+      const verticeName = ShaderConstants.GEOMETRY.VERTICES;
+      const normalsName = ShaderConstants.GEOMETRY.NORMALS;
+      const texCoordsName = ShaderConstants.GEOMETRY.TEXCOORDS;
+      const modelMatrixName = ShaderConstants.GEOMETRY.MODEL_MATRIX;
+      const viewMatrixName = ShaderConstants.GEOMETRY.VIEW_MATRIX;
+      const projectionMatrixName = ShaderConstants.GEOMETRY.PROJECTION_MATRIX;
 
       // make sure this pass, it render to canvas
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -125,27 +116,27 @@ export class TheOneRenderPass extends RenderPass {
           let nameInShader = info.nameInShader;
 
           switch (type) {
-            case Shader.UNIFORM.BOOL:
+            case ShaderConstants.UNIFORM.BOOL:
               shaderProgram.writeUniformBoolean(nameInShader, material.get(variableName));
               break;
 
-            case Shader.UNIFORM.FLOAT:
+            case ShaderConstants.UNIFORM.FLOAT:
               shaderProgram.writeUniformFloat(nameInShader, material.get(variableName));
               break;
 
-            case Shader.UNIFORM.FLOAT_MAT4:
+            case ShaderConstants.UNIFORM.FLOAT_MAT4:
               shaderProgram.writeUniformMat4(nameInShader, material.get(variableName));
               break;
 
-            case Shader.UNIFORM.FLOAT_VEC3:
+            case ShaderConstants.UNIFORM.FLOAT_VEC3:
               shaderProgram.writeUniformVec3Float(nameInShader, material.get(variableName));
               break;
 
-            case Shader.UNIFORM.FLOAT_VEC4:
+            case ShaderConstants.UNIFORM.FLOAT_VEC4:
               shaderProgram.writeUniformVec4Float(nameInShader, material.get(variableName));
               break;
 
-            case Shader.UNIFORM.SAMPLER_2D:
+            case ShaderConstants.UNIFORM.SAMPLER_2D:
               const textureLoader = material.get(variableName) as TextureBufferLoader;
               if (!textureLoader.hasTexture) break;
               textureLoader.load(gl);
