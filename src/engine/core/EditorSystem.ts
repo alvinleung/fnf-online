@@ -69,7 +69,7 @@ export default class EditorSystem extends System {
     // cast ray onto the world with direction and cameraPosition
     this.systemRenderables.entities.forEach((renderableEntity) => {
       const renderableObject = renderableEntity.getComponent(RenderableComponent).renderableObject;
-      const vertices = renderableObject.objectCoords;
+      const vertices = renderableObject.getGeometry().vertices;
       const objectTransform = renderableObject.transform;
 
       for (var i = 0; i < vertices.length; i += 9) {

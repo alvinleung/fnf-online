@@ -5,6 +5,7 @@ import { Material } from "./Material";
 import { Image } from "../image/Image";
 import { ShaderSet } from "../shader/ShaderSet";
 import { AssetManager } from "../../assets";
+import { Editor, Field, Instantiable } from "../../editor";
 
 export interface BaseMaterialTemplate {
   specularConstant?: number;
@@ -24,22 +25,28 @@ const DEFAULT_CONFIG: BaseMaterialTemplate = {
   textureImage: null,
 };
 
+@Instantiable("Material")
 export class BaseMaterial extends Material {
+  @Field(Editor.NUMBER)
   @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly specularConstant: number;
 
+  @Field(Editor.NUMBER)
   @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly ambientConstant: number;
 
+  @Field(Editor.NUMBER)
   @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly diffuseConstant: number;
 
+  @Field(Editor.NUMBER)
   @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly shininessConstant: number;
 
   @Uniform(ShaderConstants.UNIFORM.FLOAT_VEC4, "materialColor")
   public readonly materialColor: number[];
 
+  @Field(Editor.BOOLEAN)
   @Uniform(ShaderConstants.UNIFORM.BOOL)
   public get useTexture() {
     return this._textureImage.hasTexture;

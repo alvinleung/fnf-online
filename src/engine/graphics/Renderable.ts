@@ -26,7 +26,10 @@ export class RenderableComponent implements Component {
 export class RenderableObject {
   private _plan: any[] = [];
   // private _lal: Materials;
+
+  @Field(Editor.CLASS, { category: "Material" })
   private _material: Material;
+  @Field(Editor.CLASS, { category: "Geometry" })
   private _geometry: Geometry;
 
   constructor(geometry: Geometry, material: Material) {
@@ -56,16 +59,6 @@ export class RenderableObject {
     this._geometry.transform = matrix;
   }
 
-  @Field(Editor.ARRAY_NUMBER, { defaultValue: [] })
-  public set objectCoords(val) {
-    this._isLoadedIntoGPUMemory = false;
-    console.log(this._geometry);
-    this._geometry.vertices = val;
-  }
-  public get objectCoords() {
-    return this._geometry.vertices;
-  }
-
   @Field(Editor.RESOURCE_IMAGE)
   public set textureImage(val) {
     this._isLoadedIntoGPUMemory = false;
@@ -76,22 +69,6 @@ export class RenderableObject {
   }
   public get textureImage() {
     return (this._material.get("_textureImage") as TextureBufferLoader).data;
-  }
-
-  @Field(Editor.ARRAY_NUMBER)
-  public set textureCoords(val) {
-    this._isLoadedIntoGPUMemory = false;
-    this._geometry.texCoords = val;
-  }
-  public get textureCoords() {
-    return this._geometry.texCoords;
-  }
-
-  @Field(Editor.ARRAY_NUMBER)
-  public set objectColors(val) {
-    this._isLoadedIntoGPUMemory = false;
-    // const material = this._material.getProperty<BaseMaterial>("material");
-    this._material.get("_textureImage");
   }
 
   /**
@@ -174,10 +151,6 @@ export class RenderableObject {
 
   public hasRenderingTexture(): boolean {
     return (this._material as BaseMaterial).useTexture;
-  }
-
-  public getObjectVerticeSize() {
-    return this.objectCoords.length / 3;
   }
 
   // public getMaterials(): Materials {
