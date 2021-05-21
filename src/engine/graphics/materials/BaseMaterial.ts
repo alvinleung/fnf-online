@@ -15,7 +15,7 @@ export interface BaseMaterialTemplate {
   textureImage?: Image;
 }
 
-const BASE_MATERIAL_TEMPLATE_DEFAULT: BaseMaterialTemplate = {
+const DEFAULT_CONFIG: BaseMaterialTemplate = {
   specularConstant: 0.4,
   ambientConstant: 0.2,
   diffuseConstant: 0.8,
@@ -47,27 +47,22 @@ export class BaseMaterial extends Material {
   @Uniform(ShaderConstants.UNIFORM.SAMPLER_2D, "uTexture")
   public _textureImage: TextureBufferLoader;
 
-  constructor({
-    ambientConstant,
-    diffuseConstant,
-    shininessConstant,
-    specularConstant,
-    materialColor,
-    textureImage,
-  }: BaseMaterialTemplate = BASE_MATERIAL_TEMPLATE_DEFAULT) {
+  constructor(template?: BaseMaterialTemplate) {
     super();
 
     // BaseMaterial basically Phong
     this.shader = AssetManager.getInstance().shader.get("Phong");
 
-    this.ambientConstant = ambientConstant;
-    this.diffuseConstant = diffuseConstant;
-    this.shininessConstant = shininessConstant;
-    this.specularConstant = specularConstant;
-    this.materialColor = materialColor;
+    template = template || {};
 
-    if (textureImage) {
-      this._textureImage = new TextureBufferLoader(textureImage);
+    this.ambientConstant = template.ambientConstant || DEFAULT_CONFIG.ambientConstant;
+    this.diffuseConstant = template.diffuseConstant || DEFAULT_CONFIG.diffuseConstant;
+    this.shininessConstant = template.shininessConstant || DEFAULT_CONFIG.shininessConstant;
+    this.specularConstant = template.specularConstant || DEFAULT_CONFIG.specularConstant;
+    this.materialColor = template.materialColor || DEFAULT_CONFIG.materialColor;
+
+    if (template.textureImage) {
+      this._textureImage = new TextureBufferLoader(template.textureImage);
     } else {
       this._textureImage = new TextureBufferLoader(null);
     }

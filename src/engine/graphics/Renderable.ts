@@ -44,9 +44,7 @@ export class RenderableObject {
     if (material) {
       this._material = material;
     } else {
-      this._material = new BaseMaterial({
-        textureImage: null,
-      });
+      this._material = new BaseMaterial();
     }
 
     return this;

@@ -39,6 +39,7 @@ import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass"
 import { DataBufferLoader } from "./engine/graphics/DataBufferPair";
 import { SphereGeometry } from "./engine/graphics/geometry/SphereGeometry";
 import { BaseMaterial } from "./engine/graphics/materials/BaseMaterial";
+import { PlaneGeometry } from "./engine/graphics/geometry/PlaneGeometry";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -61,8 +62,14 @@ class MyGame extends Game {
      */
     const squareEntity3 = Entity.createInstance("square-entity-3");
     squareEntity3.useComponent(TransformComponent);
-    squareEntity3.useComponent(RenderableComponent).renderableObject = new Plane(
-      this.assets.image.get("test2")
+    // squareEntity3.useComponent(RenderableComponent).renderableObject = new Plane(
+    //   this.assets.image.get("test2")
+    // );
+    squareEntity3.useComponent(RenderableComponent).renderableObject = new RenderableObject(
+      new PlaneGeometry(),
+      new BaseMaterial({
+        textureImage: this.assets.image.get("test2"),
+      })
     );
 
     const transform3 = squareEntity3.getComponent(TransformComponent);
@@ -104,9 +111,8 @@ class MyGame extends Game {
 
     renderableComponent.renderableObject = new RenderableObject(
       new SphereGeometry(),
-      new BaseMaterial()
+      new BaseMaterial({ textureImage: this.assets.image.get("test") })
     );
-    renderableComponent.renderableObject.getMaterial().shader = this.assets.shader.get("Phong");
 
     debugEntity.getComponent(TransformComponent).position = [1, 1, 1];
     // let debugRenderable = debugEntity.getComponent(RenderableComponent).renderableObject;

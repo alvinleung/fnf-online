@@ -162,6 +162,8 @@ export class TheOneRenderPass extends RenderPass {
           //console.log(geometry.get(verticeName))
         }
       });
+
+      shaderProgram.cleanUpAttribs();
     });
     this._frameRendered++;
   }
