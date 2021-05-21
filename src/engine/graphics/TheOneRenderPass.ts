@@ -9,6 +9,7 @@ import { LightComponent } from "./Light";
 import { TransformComponent } from "../core/TransformComponent";
 import { m4 } from "twgl.js";
 import { PriorityQueue } from "../utils/DataStructUtils";
+import { ShaderProgram } from "./ShaderProgram";
 
 export class ShaderPlan {
   private plan: string[]; // a ordered list of strings(shaderID) each identifing a shader program
@@ -19,36 +20,48 @@ export class ShaderPlan {
 }
 
 interface SubPass {
-  shaderId: string;
+  shaderName: string;
   renderableList: RenderableObject[];
+  shaderProgram: ShaderProgram;
 }
 
 export class TheOneRenderPass extends RenderPass {
-  private strategy: SubPass[] = [];
-
   // store: object { shaderId, renderables }
-  private strategyNeedsUpdate: boolean = true;
   private _frameRendered: number = 0;
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {}
 
   // this will be called per frame
   public render(gl: WebGLRenderingContext, system: RenderingSystem) {
-    if (this.strategyNeedsUpdate) {
-      this.resolveStrategy(system.getRenderables());
-      this.strategyNeedsUpdate = false;
-    }
+    const materialManager = MaterialManager.getInstance();
+    const renderables = system.getRenderables();
+
+    // sort the renderables into the shader list for each shader
+    const renderList = renderables.reduce((renderList, renderable) => {
+      const shaderSet = renderable.getMaterial().shader;
+
+      if (!renderList[shaderSet.name])
+        renderList[shaderSet.name] = {
+          shaderName: shaderSet.name,
+          shaderProgram: materialManager.getShaderProgram(gl, shaderSet),
+          renderableList: [],
+        };
+
+      renderList[shaderSet.name].renderableList.push(renderable);
+
+      return renderList;
+    }, {} as { [name: string]: SubPass });
+
     /* get variables from system */
     const cameraMatrix = system.getCameraMatrix();
     const projectionMatrix = system.getProjectionMatrix();
 
-    const materialManager = MaterialManager.getInstance();
-    this.strategy.forEach((subPass) => {
+    Object.values(renderList).forEach((subPass) => {
       //const shaderProgram = system.getShaderProgram(subPass.shaderId);
-      const shaderProgram = materialManager.getShaderFor(gl, subPass.shaderId);
+      const shaderProgram = materialManager.getShaderFor(gl, subPass.shaderName);
       if (!shaderProgram) {
         if (this._frameRendered % 30 == 0) {
-          console.log("shader not found in cache, skipping:[" + subPass.shaderId + "]");
+          console.log("shader not found in cache, skipping:[" + subPass.shaderName + "]");
         }
         return;
       }
@@ -161,53 +174,5 @@ export class TheOneRenderPass extends RenderPass {
       });
     });
     this._frameRendered++;
-  }
-  /*
-    resolve shader strategy
-  */
-  public resolveStrategy(renderableObjects: RenderableObject[]) {
-    let plans = [];
-    renderableObjects.forEach((renderableObject) => {
-      for (let i = 0; i < renderableObject.plan.length; i++) {
-        if (!plans[i]) {
-          // add new layer of plans for the renderable's plan length
-          plans[i] = {};
-        }
-        if (!plans[i][renderableObject.plan[i]]) {
-          // add namespace for plan
-          plans[i][renderableObject.plan[i]] = [];
-        }
-        plans[i][renderableObject.plan[i]].push(renderableObject);
-      }
-    });
-    const shaderQueue = new PriorityQueue((a, b) => a[1] > b[1]);
-    for (let i = 0; i < plans.length; i++) {
-      for (const shaderName in plans[i]) {
-        console.log(plans[i][shaderName].length);
-      }
-    }
-    // Pairwise comparison semantics
-    const pairwiseQueue = new PriorityQueue((a, b) => a[1] > b[1]);
-    pairwiseQueue.push(["low", 0], ["medium", 5], ["high", 6]);
-    console.log("value:" + pairwiseQueue.peekVal("low"));
-    while (!pairwiseQueue.isEmpty()) {
-      console.log(pairwiseQueue.pop()[0]); //=> 'high', 'medium', 'low'
-    }
-    /*
-    let cache:string;
-    this.strategy = [];
-    for(let i = 0; i < plans.length; i++){
-      cache = plans[i];
-      let strategy = {
-        shaderId:cache,
-        renderableList: renderableObjects
-      };
-    }
-*/
-    //console.log(plans)
-    this.strategy.push({
-      shaderId: renderableObjects[0].plan[0],
-      renderableList: renderableObjects,
-    });
   }
 }

@@ -3,6 +3,8 @@ import { Shader } from "../shader/ShaderConstants";
 import { Uniform } from "./Uniform";
 import { Material } from "./Material";
 import { Image } from "../image/Image";
+import { ShaderSet } from "../shader/ShaderSet";
+import { AssetManager } from "../../assets";
 
 export interface BaseMaterialTemplate {
   specularConstant: number;
@@ -39,6 +41,9 @@ export class BaseMaterial extends Material {
   constructor(template?: BaseMaterialTemplate) {
     super();
 
+    // BaseMaterial basically Phong
+    this.shader = AssetManager.getInstance().shader.get("Phong");
+
     if (template) {
       this.ambientConstant = template.ambientConstant;
       this.diffuseConstant = template.diffuseConstant;
@@ -51,6 +56,7 @@ export class BaseMaterial extends Material {
       this.diffuseConstant = 0.8;
       this.shininessConstant = 5.0;
       this.materialColor = [0.6, 0.6, 0.6, 1];
+      // get from asset manager
     }
 
     if (template.textureImage) {

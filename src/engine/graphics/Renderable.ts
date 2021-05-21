@@ -26,7 +26,7 @@ export class RenderableComponent implements Component {
 @Instantiable("RenderableObject")
 export class RenderableObject {
   private _plan: any[] = [];
-  // private _material: Materials;
+  // private _lal: Materials;
   private _material: Material;
   private _geometry: Geometry;
 

@@ -98,7 +98,10 @@ class MyGame extends Game {
     //console.log(cameraEntity.listComponents());
 
     const debugEntity = Entity.createInstance("debug", [TransformComponent, DebugComponent]);
-    debugEntity.useComponent(RenderableComponent).renderableObject = new Sphere(); //;
+    const renderableComponent = debugEntity.useComponent(RenderableComponent); //;
+    renderableComponent.renderableObject = new Sphere();
+    renderableComponent.renderableObject.getMaterial().shader = this.assets.shader.get("Render3d");
+
     debugEntity.getComponent(TransformComponent).position = [1, 1, 1];
     // let debugRenderable = debugEntity.getComponent(RenderableComponent).renderableObject;
     //.addProperty("WireFrame", new wireFrameMaterialProperties(debugRenderable.objectCoords));
