@@ -2,16 +2,16 @@ import { v3 } from "twgl.js";
 import { COLORS_VEC4 } from "../3dRender/objects/Primitives";
 import { Material } from "./Material";
 import { Image } from "../image/Image";
-import { Shader } from "../shader/ShaderConstants";
+import { ShaderConstants } from "../shader/ShaderConstants";
 import { Uniform } from "./Uniform";
 import { DataBufferLoader, TextureBufferLoader } from "../DataBufferPair";
 import { Texture } from "../Texture";
 
 export class TestMaterial extends Material {
   //public shaders: ShaderSet = ShaderManager.getShader(shader3d);
-  @Uniform(Shader.ATTRIBUTE.FLOAT_VEC3)
+  @Uniform(ShaderConstants.ATTRIBUTE.FLOAT_VEC3)
   public testFieldOne: v3.Vec3;
-  @Uniform(Shader.ATTRIBUTE.FLOAT_VEC4)
+  @Uniform(ShaderConstants.ATTRIBUTE.FLOAT_VEC4)
   public testFieldTwo: v3.Vec3;
 
   public getSize(): number {
