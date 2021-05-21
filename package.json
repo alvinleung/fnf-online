@@ -6,7 +6,8 @@
   "scripts": {
     "start": "parcel watch ./src/index.html | nodemon EditorServer.js --ignore 'assets/'",
     "serve": "parcel ./src/index.html | node EditorServer.js",
-    "build": "parcel build ./src/index.html --dist-dir ./dist --no-optimize && cp ./src/AssetSheet.json ./dist/asset-sheet"
+    "build": "parcel build ./src/index.html --dist-dir ./dist --no-optimize && cp ./src/AssetSheet.json ./dist/asset-sheet",
+    "clean": "rm -rf dist/ | rm -rf .parcel-cache"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.13.0",
