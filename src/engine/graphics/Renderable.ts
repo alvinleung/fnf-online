@@ -4,7 +4,7 @@ import { EditableField, Editor, Field, Instantiable } from "../editor";
 import { Normals } from "./3dRender/Normals";
 import { DataBufferLoader, TextureBufferLoader } from "./DataBufferPair";
 import { Geometry } from "./Geometry/Geometry";
-import { Image } from "./Image/Image";
+import { Image } from "./_image/Image";
 import { BaseMaterial } from "./Materials/BaseMaterial";
 import { Material } from "./Materials/Material";
 import { MaterialManager } from "./Materials/MaterialManager";

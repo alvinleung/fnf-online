@@ -1,5 +1,5 @@
 import { m4 } from "twgl.js";
-import { Geometry, GeometryTemplate } from "../graphics/Geometry/Geometry";
+import { Geometry, GeometryTemplate } from "../graphics/geometry/Geometry";
 import { AssetConfig, AssetLoader } from "./AssetLoader";
 import { parseObjFileFormat } from "./parser/ObjParser";
 

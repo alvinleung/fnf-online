@@ -1,5 +1,5 @@
 import { Shader } from "./shader/ShaderConstants";
-import { MaterialManager } from "./Materials/MaterialManager";
+import { MaterialManager } from "./materials/MaterialManager";
 import { RenderableObject } from "./Renderable";
 
 import { RenderingSystem } from "./RenderingSystem";

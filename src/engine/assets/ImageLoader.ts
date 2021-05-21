@@ -1,4 +1,4 @@
-import { Image } from "../graphics/Image/Image";
+import { Image } from "../graphics/_image/Image";
 import { AssetConfig, AssetLoader } from "./AssetLoader";
 
 export class ImageLoader extends AssetLoader<Image> {

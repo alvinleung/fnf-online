@@ -3,7 +3,7 @@ import path from "path";
 import React, { ButtonHTMLAttributes, useEffect, useMemo, useRef, useState } from "react";
 import { AssetManager, ImageLoader } from "../../../../assets";
 import { AssetLoaderEvent } from "../../../../assets/AssetLoader";
-import { Image as GameImage, Image } from "../../../../graphics/Image/Image";
+import { Image as GameImage, Image } from "../../../../graphics/_image/Image";
 import { useGameContext } from "../../EditorContextWrapper";
 import useClickOutside from "../../hooks/useClickOutside";
 import { AssetExplorer } from "../AssetExplorer/AssetExplorer";

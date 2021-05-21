@@ -1,6 +1,6 @@
 import { AttribDataBuffer } from "./AttribDataBuffer";
 import { Texture } from "./Texture";
-import { Image } from "./Image/Image";
+import { Image } from "./_image/Image";
 import { ShaderProgram } from "./ShaderProgram";
 import { printProgramInfo } from "../utils/GLUtils";
 import { ShaderSet } from "./shader/ShaderSet";
