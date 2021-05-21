@@ -3,7 +3,7 @@
  */
 
 import { Editor, Instantiable, Field } from "../../../editor";
-import { Image } from "../../_image/Image";
+import { Image } from "../../image/Image";
 import { RenderableObject } from "../../Renderable";
 
 // @InstantiableObject([

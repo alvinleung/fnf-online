@@ -1,6 +1,6 @@
 import { Entity, Family, FamilyBuilder, System } from "../ecs";
 import { Game } from "../Game";
-import { Image } from "./_image/Image";
+import { Image } from "./image/Image";
 import { ShaderProgram } from "./ShaderProgram";
 import { TransformComponent } from "../core/TransformComponent";
 import { m4 } from "twgl.js";

@@ -9,7 +9,7 @@ import { SpriteSheetRenderable } from "./engine/graphics/SpriteSheet/SpriteSheet
 import { TransformComponent } from "./engine/core/TransformComponent";
 import { SoundLoader } from "./engine/assets/SoundLoader";
 
-import { Image } from "./engine/graphics/_image/Image";
+import { Image } from "./engine/graphics/image/Image";
 
 import CameraComponent from "./engine/camera/CameraComponent";
 import { RenderableComponent, RenderableObject } from "./engine/graphics/Renderable";
@@ -30,10 +30,10 @@ import { Sphere } from "./engine/graphics/3dRender/objects/Sphere";
 import { TouchInput } from "./engine/input/TouchInput";
 import { EditorServerIO } from "./engine/editor/EditorServerIO";
 import { Shader } from "./engine/graphics/shader/ShaderConstants";
-import { MaterialManager } from "./engine/graphics/_materials/MaterialManager";
-import { TestMaterial } from "./engine/graphics/_materials/CustomMaterials";
+import { MaterialManager } from "./engine/graphics/materials/MaterialManager";
+import { TestMaterial } from "./engine/graphics/materials/CustomMaterials";
 import { v3 } from "twgl.js";
-import { Material } from "./engine/graphics/_materials/Material";
+import { Material } from "./engine/graphics/materials/Material";
 import { TheOneRenderPass } from "./engine/graphics/TheOneRenderPass";
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
 import { DataBufferLoader } from "./engine/graphics/DataBufferPair";

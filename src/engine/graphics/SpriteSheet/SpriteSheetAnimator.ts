@@ -1,7 +1,7 @@
 import { SpriteSheet } from ".";
 import { Editor, Field, Instantiable } from "../../editor";
 import { AbstractObservable } from "../../events/Observable";
-import { Image } from "../_image/Image";
+import { Image } from "../image/Image";
 
 /**
  * This is a state machine for controlling spritesheet animation

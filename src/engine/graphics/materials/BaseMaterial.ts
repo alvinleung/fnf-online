@@ -2,7 +2,7 @@ import { TextureBufferLoader } from "../DataBufferPair";
 import { Shader } from "../shader/ShaderConstants";
 import { Uniform } from "./Uniform";
 import { Material } from "./Material";
-import { Image } from "../_image/Image";
+import { Image } from "../image/Image";
 
 export interface BaseMaterialTemplate {
   specularConstant: number;

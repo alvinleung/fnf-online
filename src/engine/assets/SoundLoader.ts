@@ -1,4 +1,4 @@
-import { Image } from "../graphics/_image/Image";
+import { Image } from "../graphics/image/Image";
 import Sound from "../sounds/Sound";
 import { AssetConfig, AssetLoader } from "./AssetLoader";
 

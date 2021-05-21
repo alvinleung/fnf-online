@@ -1,4 +1,4 @@
-import { Image } from "./_image/Image";
+import { Image } from "./image/Image";
 
 export interface ITexture {
   webglTexture: WebGLTexture;
