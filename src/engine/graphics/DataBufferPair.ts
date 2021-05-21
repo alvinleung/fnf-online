@@ -58,6 +58,7 @@ export class TextureBufferLoader implements IBufferLoader<Image, Texture> {
   constructor(data: Image, buffer?: Texture) {
     if (data) {
       this.hasTexture = true;
+      this._data = data;
     } else {
       this.hasTexture = false;
     }

@@ -29,27 +29,25 @@ export class RenderableObject {
   private _material: Material;
   private _geometry: Geometry;
 
-  constructor(
-    objectCoords: number[] = [],
-    textureCoords: number[] = [],
-    textureImage?: Image, // texture name
-    objectColors?: number[]
-  ) {
-    this._material = new BaseMaterial({
-      specularConstant: 0.4,
-      ambientConstant: 0.2,
-      diffuseConstant: 0.8,
-      shininessConstant: 5,
-      materialColor: [0.5, 0.5, 0.5, 1],
-      textureImage: textureImage,
-    });
+  constructor(geometry: Geometry, material: Material) {
+    if (geometry) {
+      this._geometry = geometry;
+    } else {
+      this._geometry = new Geometry({
+        vertices: [],
+        normals: new Normals([], false).normals,
+        texCoords: [],
+        transform: m4.identity(),
+      });
+    }
 
-    this._geometry = new Geometry({
-      vertices: objectCoords,
-      normals: new Normals(objectCoords, false).normals,
-      texCoords: textureCoords,
-      transform: m4.identity(),
-    });
+    if (material) {
+      this._material = material;
+    } else {
+      this._material = new BaseMaterial({
+        textureImage: null,
+      });
+    }
 
     return this;
   }

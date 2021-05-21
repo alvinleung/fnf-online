@@ -37,6 +37,8 @@ import { Material } from "./engine/graphics/materials/Material";
 import { TheOneRenderPass } from "./engine/graphics/TheOneRenderPass";
 import { MetricsRenderPass } from "./engine/graphics/3dRender/MetricsRenderPass";
 import { DataBufferLoader } from "./engine/graphics/DataBufferPair";
+import { SphereGeometry } from "./engine/graphics/geometry/SphereGeometry";
+import { BaseMaterial } from "./engine/graphics/materials/BaseMaterial";
 
 class MyGame extends Game {
   protected gameDidInit() {
@@ -82,9 +84,9 @@ class MyGame extends Game {
     transform2.position = [0, -1, -1];
     transform2.initialRotation = [0, 1, 1];
 
-    squareEntity2.useComponent(RenderableComponent).renderableObject = new SpriteSheetRenderable(
-      spriteSheetAnimation
-    );
+    // squareEntity2.useComponent(RenderableComponent).renderableObject = new SpriteSheetRenderable(
+    //   spriteSheetAnimation
+    // );
 
     /**
      * Entity 3 - Camera Controller
@@ -99,7 +101,11 @@ class MyGame extends Game {
 
     const debugEntity = Entity.createInstance("debug", [TransformComponent, DebugComponent]);
     const renderableComponent = debugEntity.useComponent(RenderableComponent); //;
-    renderableComponent.renderableObject = new Sphere();
+
+    renderableComponent.renderableObject = new RenderableObject(
+      new SphereGeometry(),
+      new BaseMaterial()
+    );
     renderableComponent.renderableObject.getMaterial().shader = this.assets.shader.get("Phong");
 
     debugEntity.getComponent(TransformComponent).position = [1, 1, 1];

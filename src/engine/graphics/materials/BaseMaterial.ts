@@ -7,13 +7,22 @@ import { ShaderSet } from "../shader/ShaderSet";
 import { AssetManager } from "../../assets";
 
 export interface BaseMaterialTemplate {
-  specularConstant: number;
-  ambientConstant: number;
-  diffuseConstant: number;
-  shininessConstant: number;
-  materialColor: number[];
-  textureImage: Image;
+  specularConstant?: number;
+  ambientConstant?: number;
+  diffuseConstant?: number;
+  shininessConstant?: number;
+  materialColor?: number[];
+  textureImage?: Image;
 }
+
+const BASE_MATERIAL_TEMPLATE_DEFAULT: BaseMaterialTemplate = {
+  specularConstant: 0.4,
+  ambientConstant: 0.2,
+  diffuseConstant: 0.8,
+  shininessConstant: 5.0,
+  materialColor: [0.6, 0.6, 0.6, 1],
+  textureImage: null,
+};
 
 export class BaseMaterial extends Material {
   @Uniform(ShaderConstants.UNIFORM.FLOAT)
@@ -28,7 +37,7 @@ export class BaseMaterial extends Material {
   @Uniform(ShaderConstants.UNIFORM.FLOAT)
   public readonly shininessConstant: number;
 
-  @Uniform(ShaderConstants.UNIFORM.FLOAT_VEC4)
+  @Uniform(ShaderConstants.UNIFORM.FLOAT_VEC4, "materialColor")
   public readonly materialColor: number[];
 
   @Uniform(ShaderConstants.UNIFORM.BOOL)
@@ -38,29 +47,27 @@ export class BaseMaterial extends Material {
   @Uniform(ShaderConstants.UNIFORM.SAMPLER_2D, "uTexture")
   public _textureImage: TextureBufferLoader;
 
-  constructor(template?: BaseMaterialTemplate) {
+  constructor({
+    ambientConstant,
+    diffuseConstant,
+    shininessConstant,
+    specularConstant,
+    materialColor,
+    textureImage,
+  }: BaseMaterialTemplate = BASE_MATERIAL_TEMPLATE_DEFAULT) {
     super();
 
     // BaseMaterial basically Phong
     this.shader = AssetManager.getInstance().shader.get("Phong");
 
-    if (template) {
-      this.ambientConstant = template.ambientConstant;
-      this.diffuseConstant = template.diffuseConstant;
-      this.shininessConstant = template.shininessConstant;
-      this.specularConstant = template.specularConstant;
-      this.materialColor = template.materialColor;
-    } else {
-      this.specularConstant = 0.4;
-      this.ambientConstant = 0.2;
-      this.diffuseConstant = 0.8;
-      this.shininessConstant = 5.0;
-      this.materialColor = [0.6, 0.6, 0.6, 1];
-      // get from asset manager
-    }
+    this.ambientConstant = ambientConstant;
+    this.diffuseConstant = diffuseConstant;
+    this.shininessConstant = shininessConstant;
+    this.specularConstant = specularConstant;
+    this.materialColor = materialColor;
 
-    if (template.textureImage) {
-      this._textureImage = new TextureBufferLoader(template.textureImage);
+    if (textureImage) {
+      this._textureImage = new TextureBufferLoader(textureImage);
     } else {
       this._textureImage = new TextureBufferLoader(null);
     }

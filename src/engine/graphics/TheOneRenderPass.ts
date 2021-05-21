@@ -86,7 +86,6 @@ export class TheOneRenderPass extends RenderPass {
         "cameraPosition",
         m4.getTranslation(m4.inverse(cameraMatrix))
       );
-
       subPass.renderableList.forEach((renderableObject) => {
         /** Geomatery */
         const geometry = renderableObject.getGeometry();
