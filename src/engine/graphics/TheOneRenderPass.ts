@@ -15,7 +15,7 @@ export class ShaderPlan {
   private plan: string[]; // a ordered list of strings(shaderID) each identifing a shader program
 
   constructor() {
-    this.plan = MaterialManager.getInstance().getDefaultPlan();
+    // this.plan = MaterialManager.getInstance().getDefaultPlan();
   }
 }
 
@@ -58,10 +58,10 @@ export class TheOneRenderPass extends RenderPass {
 
     Object.values(renderList).forEach((subPass) => {
       //const shaderProgram = system.getShaderProgram(subPass.shaderId);
-      const shaderProgram = materialManager.getShaderFor(gl, subPass.shaderName);
+      const shaderProgram = subPass.shaderProgram;
       if (!shaderProgram) {
         if (this._frameRendered % 30 == 0) {
-          console.log("shader not found in cache, skipping:[" + subPass.shaderName + "]");
+          console.log("Shader program not provided:[" + subPass.shaderName + "]");
         }
         return;
       }

@@ -1,7 +1,3 @@
-import { AssetManager } from "../../assets";
-import { AssetLoaderEvent } from "../../assets/AssetLoader";
-import { ShaderSetLoader } from "../../assets/ShaderSetLoader";
-import { ShaderProgramLoader } from "../DataBufferPair";
 import { ShaderSet } from "../shader/ShaderSet";
 import { ShaderProgram } from "../ShaderProgram";
 import { Material } from "./Material";
@@ -12,8 +8,6 @@ interface ShaderProgramMap {
 
 export class MaterialManager {
   private shaderMaterialVariableNameMap: { [materialName: string]: any } = {};
-  //private shaderSets:{[name:string]:ShaderSet} = {};
-  private shaders: { [name: string]: ShaderProgramLoader } = {};
 
   private _shaderProgramInstances: ShaderProgramMap = {};
 
@@ -29,17 +23,6 @@ export class MaterialManager {
     return programInstance;
   }
 
-  public getShaderFor(gl: WebGLRenderingContext, shaderName: string): ShaderProgram {
-    if (!this.shaders[shaderName]) {
-      return null;
-    }
-    return this.shaders[shaderName].getProgram(gl);
-  }
-
-  public getDefaultPlan(): any[] {
-    //TODO: return a default plan for rendering object
-    return ["Phong"];
-  }
   /**
    * add and store relation between a materialClass, a shader, and a variable that exist in both places
    * @param materialClassName
@@ -70,37 +53,13 @@ export class MaterialManager {
     return this.shaderMaterialVariableNameMap[materialName];
   }
 
-  public callUpdateShaderSets() {
-    const shaderLoader = AssetManager.getInstance().shader;
-    shaderLoader.addEventListener(AssetLoaderEvent.COMPLETE, (loader: ShaderSetLoader) => {
-      const shaderDict = loader.getAssetDictionary();
-      for (const shaderName in shaderDict) {
-        MaterialManager.getInstance().addShader(shaderDict[shaderName]);
-      }
-    });
-  }
-
-  public addShader(shaderSet: ShaderSet, program?: ShaderProgram): boolean {
-    const name = shaderSet.name;
-    if (this.shaders[name]) {
-      return false;
-    }
-    this.shaders[name] = new ShaderProgramLoader(shaderSet, program);
-    return true;
-  }
-
   /* Singleton */
   private constructor() {}
   private static _instance: MaterialManager;
   public static getInstance() {
     if (!MaterialManager._instance) {
       MaterialManager._instance = new MaterialManager();
-      MaterialManager._instance.init();
     }
     return MaterialManager._instance;
-  }
-
-  private init() {
-    this.callUpdateShaderSets();
   }
 }

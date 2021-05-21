@@ -100,7 +100,7 @@ class MyGame extends Game {
     const debugEntity = Entity.createInstance("debug", [TransformComponent, DebugComponent]);
     const renderableComponent = debugEntity.useComponent(RenderableComponent); //;
     renderableComponent.renderableObject = new Sphere();
-    renderableComponent.renderableObject.getMaterial().shader = this.assets.shader.get("Render3d");
+    renderableComponent.renderableObject.getMaterial().shader = this.assets.shader.get("Phong");
 
     debugEntity.getComponent(TransformComponent).position = [1, 1, 1];
     // let debugRenderable = debugEntity.getComponent(RenderableComponent).renderableObject;
