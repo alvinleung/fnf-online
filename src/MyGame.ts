@@ -88,8 +88,12 @@ class MyGame extends Game {
 
     const squareEntity2 = Entity.createInstance("square-entity-2");
     const transform2 = squareEntity2.useComponent(TransformComponent);
-    transform2.position = [0, -1, -1];
+    transform2.position = [0, 0, 0];
     transform2.initialRotation = [0, 1, 1];
+    squareEntity2.useComponent(RenderableComponent).renderableObject = new RenderableObject(
+      this.assets.geometry.get("ham"),
+      new BaseMaterial()
+    );
 
     // squareEntity2.useComponent(RenderableComponent).renderableObject = new SpriteSheetRenderable(
     //   spriteSheetAnimation
@@ -123,8 +127,8 @@ class MyGame extends Game {
     cameraEntity.useComponent(EditorControlComponent);
 
     this.addEntity(cameraEntity);
-    this.addEntity(squareEntity);
     this.addEntity(squareEntity2);
+    this.addEntity(squareEntity);
     this.addEntity(squareEntity3);
     this.addEntity(debugEntity);
     // this.assets.sound.get("action-theme").play();

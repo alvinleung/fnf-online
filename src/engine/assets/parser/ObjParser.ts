@@ -10,9 +10,9 @@ export function parseObjFileFormat(fileText) {
 
   const lines = fileText.split("\n");
 
-  const vertices = [];
-  const textureCoords = [];
-  const normals = [];
+  const vertices = [[0, 0, 0]];
+  const textureCoords = [[0, 0]];
+  const normals = [[0, 0, 0]];
   const faces = [];
 
   for (let lineNo = 0; lineNo < lines.length; lineNo++) {
@@ -43,7 +43,7 @@ export function parseObjFileFormat(fileText) {
         ]);
         break;
       case "vt":
-        textureCoords.push([parseFloat(rowContent[0]), parseFloat(rowContent[1])]);
+        textureCoords.push([1 - parseFloat(rowContent[0]), parseFloat(rowContent[1])]);
         break;
       case "vn":
         normals.push([
@@ -60,7 +60,11 @@ export function parseObjFileFormat(fileText) {
     }
   }
 
+  console.log(vertices);
+  console.log(textureCoords);
+
   // find max in each direction and normailze model to between -1 and 1
+  /*
   let max = 0;
   let min = 0;
 
@@ -80,7 +84,7 @@ export function parseObjFileFormat(fileText) {
       vertices[i][j] = vertices[i][j] / furthestValue;
     }
   }
-
+*/
   // build object from face
   const objVertices = [];
   const objTextures = [];
@@ -97,23 +101,24 @@ export function parseObjFileFormat(fileText) {
     for (var triangleNo = 0; triangleNo < currentFace.length - 2; triangleNo++) {
       // Same vertex through out tht face
       var vertOnePos = currentFace[0].split("/");
-      objVertices.push(vertices[parseInt(vertOnePos[0]) - 1]);
-      objTextures.push(textureCoords[parseInt(vertOnePos[1]) - 1]);
-      objNormals.push(normals[parseInt(vertOnePos[2]) - 1]);
+      objVertices.push(vertices[parseInt(vertOnePos[0])]);
+      objTextures.push(textureCoords[parseInt(vertOnePos[1])]);
+      objNormals.push(normals[parseInt(vertOnePos[2])]);
 
       // vertex n + 1
       var vertTwoPos = currentFace[triangleNo + 1].split("/");
-      objVertices.push(vertices[parseInt(vertTwoPos[0]) - 1]);
-      objTextures.push(textureCoords[parseInt(vertTwoPos[1]) - 1]);
-      objNormals.push(normals[parseInt(vertTwoPos[2]) - 1]);
+      objVertices.push(vertices[parseInt(vertTwoPos[0])]);
+      objTextures.push(textureCoords[parseInt(vertTwoPos[1])]);
+      objNormals.push(normals[parseInt(vertTwoPos[2])]);
 
       // vertex n + 2
       var vertThree = currentFace[triangleNo + 2].split("/");
-      objVertices.push(vertices[parseInt(vertThree[0]) - 1]);
-      objTextures.push(textureCoords[parseInt(vertThree[1]) - 1]);
-      objNormals.push(normals[parseInt(vertThree[2]) - 1]);
+      objVertices.push(vertices[parseInt(vertThree[0])]);
+      objTextures.push(textureCoords[parseInt(vertThree[1])]);
+      objNormals.push(normals[parseInt(vertThree[2])]);
     }
   }
+  console.log(objTextures);
 
   const object = {
     vertices: objVertices,
@@ -121,6 +126,5 @@ export function parseObjFileFormat(fileText) {
     normals: objNormals,
     textures: objTextures,
   };
-
   return object;
 }

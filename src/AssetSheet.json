@@ -37,5 +37,14 @@
       "path": "assets/shaders/3DShader"
     }
   ],
-  "geometry": []
+  "geometry": [
+    {
+      "name": "rock",
+      "path": "assets/3dObjects/Rock_9.obj"
+    },
+    {
+      "name": "ham",
+      "path": "assets/3dObjects/ham.obj"
+    }
+  ]
 }
