@@ -33,19 +33,22 @@ export const useFileDrop = (acceptFileTypes: string[], fileDropHandler: (file: F
       for (let i = 0; i < droppedFiles.length; i++) {
         const droppedFile = droppedFiles[i];
 
-        // typecheck the scene file
-        if (!droppedFile.type) {
-          console.warn("File type undefined, abort handling file drop.");
-          return;
-        }
+        const needFileTypeCheck = acceptFileTypes !== null && acceptFileTypes[0] !== "*";
 
-        const isFileTypeAcceptable = acceptFileTypes.some((fileType) =>
-          droppedFile.type.startsWith(fileType)
-        );
+        if (needFileTypeCheck) {
+          // typecheck the scene file
+          if (!droppedFile.type) {
+            console.warn("File type undefined, abort handling file drop.");
+            return;
+          }
+          const isFileTypeAcceptable = acceptFileTypes.some((fileType) =>
+            droppedFile.type.startsWith(fileType)
+          );
 
-        if (!isFileTypeAcceptable) {
-          console.log(`File is not a ${acceptFileTypes} file.`, droppedFile.type, droppedFile);
-          return;
+          if (!isFileTypeAcceptable) {
+            console.log(`File is not a ${acceptFileTypes} file.`, droppedFile.type, droppedFile);
+            return;
+          }
         }
 
         fileDropHandler && fileDropHandler(droppedFile);

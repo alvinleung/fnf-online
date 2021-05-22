@@ -213,7 +213,7 @@ export const AssetExplorer = ({ onChange }: Props) => {
     [selectedItemPath]
   );
 
-  const dropAreaRef = useFileDrop(["image/png", "image/jpeg"], fileDropHandler);
+  const dropAreaRef = useFileDrop(["*"], fileDropHandler);
 
   return (
     <div className="asset-explorer">
