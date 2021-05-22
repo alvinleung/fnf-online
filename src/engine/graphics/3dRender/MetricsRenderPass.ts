@@ -1,6 +1,6 @@
 import { m4, v3 } from "twgl.js";
 import { AttribDataBuffer } from "../AttribDataBuffer";
-import { RenderableObject } from "../Renderable";
+import { RenderableObject } from "../RenderableObject";
 import { RenderingSystem } from "../RenderingSystem";
 import { RenderPass } from "../RenderPass";
 import { ShaderProgram } from "../ShaderProgram";
@@ -24,11 +24,7 @@ export class MetricsRenderPass extends RenderPass {
 
   public setup(gl: WebGLRenderingContext, system: RenderingSystem) {
     if (!system.getShaderProgram(this.SHADER_PROGRAM_NAME)) {
-      const renderer3DShader = new ShaderProgram(
-        gl,
-        RENDER3D_SHADER_VERT,
-        RENDER3D_SHADER_FRAG
-      );
+      const renderer3DShader = new ShaderProgram(gl, RENDER3D_SHADER_VERT, RENDER3D_SHADER_FRAG);
       system.useShaderProgram(this.SHADER_PROGRAM_NAME, renderer3DShader);
     }
 
@@ -80,16 +76,8 @@ export class MetricsRenderPass extends RenderPass {
 
     this.verticeSize = gridVertices.length / 3;
     // init the buffer
-    this.positionBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(gridVertices),
-      3
-    );
-    this.colorBuffer = AttribDataBuffer.fromData(
-      gl,
-      new Float32Array(gridColors),
-      4
-    );
+    this.positionBuffer = AttribDataBuffer.fromData(gl, new Float32Array(gridVertices), 3);
+    this.colorBuffer = AttribDataBuffer.fromData(gl, new Float32Array(gridColors), 4);
   }
 
   // this will be called per frame

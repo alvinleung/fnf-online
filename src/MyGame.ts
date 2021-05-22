@@ -5,14 +5,14 @@ import InputSystem, { KeyboardInput, MouseInput } from "./engine/input";
 import { RenderingSystem } from "./engine/graphics/RenderingSystem";
 import PlayerControlSystem from "./engine/core/PlayerControlSystem";
 import { PlayerControlComponent } from "./engine/core/PlayerControlComponent";
-import { SpriteSheetRenderable } from "./engine/graphics/SpriteSheet/SpriteSheetRenderable";
 import { TransformComponent } from "./engine/core/TransformComponent";
 import { SoundLoader } from "./engine/assets/SoundLoader";
 
 import { Image } from "./engine/graphics/image/Image";
 
 import CameraComponent from "./engine/camera/CameraComponent";
-import { RenderableComponent, RenderableObject } from "./engine/graphics/Renderable";
+import { RenderableComponent } from "./engine/graphics/RenderableComponent";
+import { RenderableObject } from "./engine/graphics/RenderableObject";
 import { Plane } from "./engine/graphics/3dRender/objects/Plane";
 import { SpriteSheetRenderPass } from "./engine/graphics/SpriteSheet/SpriteSheetRenderPass";
 import { PhysicsSystem } from "./engine/core/PhysicsSystem";
@@ -79,12 +79,12 @@ class MyGame extends Game {
     /**
      * Entity 2 - animated entity
      */
-    const spriteSheetAnimation = new SpriteSheetAnimator(image, 12, 50, 37);
-    spriteSheetAnimation.defineAnimation("idle", 0, 3);
-    spriteSheetAnimation.defineAnimation("crouch", 4, 7);
-    spriteSheetAnimation.defineAnimation("run", 8, 13);
-    spriteSheetAnimation.defineAnimation("jump", 14, 23);
-    spriteSheetAnimation.loop("idle");
+    // const spriteSheetAnimation = new SpriteSheetAnimator(image, 12, 50, 37);
+    // spriteSheetAnimation.defineAnimation("idle", 0, 3);
+    // spriteSheetAnimation.defineAnimation("crouch", 4, 7);
+    // spriteSheetAnimation.defineAnimation("run", 8, 13);
+    // spriteSheetAnimation.defineAnimation("jump", 14, 23);
+    // spriteSheetAnimation.loop("idle");
 
     const squareEntity2 = Entity.createInstance("square-entity-2");
     const transform2 = squareEntity2.useComponent(TransformComponent);
@@ -111,7 +111,8 @@ class MyGame extends Game {
 
     renderableComponent.renderableObject = new RenderableObject(
       new SphereGeometry(),
-      new BaseMaterial({ textureImage: this.assets.image.get("test") })
+      // new BaseMaterial({ textureImage: this.assets.image.get("test") })
+      new BaseMaterial({ textureImage: null })
     );
 
     debugEntity.getComponent(TransformComponent).position = [1, 1, 1];

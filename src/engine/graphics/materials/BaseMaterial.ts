@@ -46,13 +46,22 @@ export class BaseMaterial extends Material {
   @Uniform(ShaderConstants.UNIFORM.FLOAT_VEC4, "materialColor")
   public readonly materialColor: number[];
 
-  @Field(Editor.BOOLEAN)
   @Uniform(ShaderConstants.UNIFORM.BOOL)
   public get useTexture() {
-    return this._textureImage.hasTexture;
+    if (!this._textureImageBuffer) return false;
+    return this._textureImageBuffer.hasTexture;
   }
+
+  @Field(Editor.RESOURCE_IMAGE)
+  public set textureImage(val: Image) {
+    this._textureImageBuffer = new TextureBufferLoader(val);
+  }
+  public get textureImage() {
+    return this._textureImageBuffer.data;
+  }
+
   @Uniform(ShaderConstants.UNIFORM.SAMPLER_2D, "uTexture")
-  public _textureImage: TextureBufferLoader;
+  public _textureImageBuffer: TextureBufferLoader;
 
   constructor(template?: BaseMaterialTemplate) {
     super();
@@ -69,9 +78,9 @@ export class BaseMaterial extends Material {
     this.materialColor = template.materialColor || DEFAULT_CONFIG.materialColor;
 
     if (template.textureImage) {
-      this._textureImage = new TextureBufferLoader(template.textureImage);
+      this._textureImageBuffer = new TextureBufferLoader(template.textureImage);
     } else {
-      this._textureImage = new TextureBufferLoader(null);
+      this._textureImageBuffer = new TextureBufferLoader(null);
     }
   }
 }

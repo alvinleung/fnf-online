@@ -8,7 +8,7 @@ import { Geometry } from "../../geometry/Geometry";
 import { Image } from "../../image/Image";
 import { BaseMaterial } from "../../materials/BaseMaterial";
 import { Material } from "../../materials/Material";
-import { RenderableObject } from "../../Renderable";
+import { RenderableObject } from "../../RenderableObject";
 
 // @InstantiableObject([
 //   {
@@ -31,11 +31,11 @@ export class Plane extends RenderableObject {
       })
     );
   }
-  @Field(Editor.RESOURCE_IMAGE)
-  public get textureImage() {
-    return super.textureImage;
-  }
-  public set textureImage(val) {
-    super.textureImage = val;
-  }
+  // @Field(Editor.RESOURCE_IMAGE)
+  // public get textureImage() {
+  //   return super.textureImage;
+  // }
+  // public set textureImage(val) {
+  //   super.textureImage = val;
+  // }
 }

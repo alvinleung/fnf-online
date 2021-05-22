@@ -7,7 +7,7 @@ export interface GeometryTemplate {
   vertices: number[];
   normals: number[];
   texCoords: number[];
-  transform: m4.Mat4;
+  transform?: m4.Mat4;
 }
 
 export interface CustomAttributes {
@@ -32,7 +32,7 @@ export class Geometry implements Asset {
     if (template) {
       this._vertices = new DataBufferLoader(vertices, 3);
       this._normals = new DataBufferLoader(normals, 3);
-      this._transform = transform;
+      this._transform = transform || m4.identity();
       if (template.texCoords) {
         this._texCoords = new DataBufferLoader(texCoords, 2);
       } else {

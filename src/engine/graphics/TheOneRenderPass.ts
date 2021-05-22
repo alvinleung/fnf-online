@@ -1,6 +1,6 @@
 import { ShaderConstants } from "./shader/ShaderConstants";
 import { MaterialManager } from "./materials/MaterialManager";
-import { RenderableObject } from "./Renderable";
+import { RenderableObject } from "./RenderableObject";
 
 import { RenderingSystem } from "./RenderingSystem";
 import { RenderPass } from "./RenderPass";

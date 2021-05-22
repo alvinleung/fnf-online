@@ -5,7 +5,8 @@ import { ShaderProgram } from "./ShaderProgram";
 import { TransformComponent } from "../core/TransformComponent";
 import { m4 } from "twgl.js";
 import CameraComponent from "../camera/CameraComponent";
-import { RenderableComponent, RenderableObject } from "./Renderable";
+import { RenderableComponent } from "./RenderableComponent";
+import { RenderableObject } from "./RenderableObject";
 import { Texture } from "./Texture";
 import { RenderPass } from "./RenderPass";
 import { FrameBuffer } from "./FrameBuffer";
@@ -155,7 +156,9 @@ export class RenderingSystem extends System {
       // only configure valid renderable object, don't render unset objects
       if (renderableObject) {
         // set the transform base on the entity's transform component
-        renderableObject.transform = entity.getComponent(TransformComponent).getMatrix();
+        renderableObject.getGeometry().transform = entity
+          .getComponent(TransformComponent)
+          .getMatrix();
 
         filteredEntityList.push(renderableObject);
       }

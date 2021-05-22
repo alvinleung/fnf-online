@@ -4,7 +4,7 @@ import { Entity } from "../ecs/Entity";
 import { Family, FamilyBuilder } from "../ecs/Family";
 import { System } from "../ecs/System";
 import { Game, GameEvent } from "../Game";
-import { RenderableComponent } from "../graphics/Renderable";
+import { RenderableComponent } from "../graphics/RenderableComponent";
 import { cameraMatrixFromTransform, v4 } from "../utils/MatrixUtils";
 import { RayTriangle } from "../utils/RayTriangle";
 
@@ -70,7 +70,7 @@ export default class EditorSystem extends System {
     this.systemRenderables.entities.forEach((renderableEntity) => {
       const renderableObject = renderableEntity.getComponent(RenderableComponent).renderableObject;
       const vertices = renderableObject.getGeometry().vertices;
-      const objectTransform = renderableObject.transform;
+      const objectTransform = renderableObject.getGeometry().transform;
 
       for (var i = 0; i < vertices.length; i += 9) {
         if (!vertices[i + 8] && vertices[i + 8] != 0) {

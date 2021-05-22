@@ -3,7 +3,7 @@
  * a Sphere object with dimension 2x2x2(model units) centered at 0,0,0
  *
  */
-import { RenderableObject } from "../../Renderable";
+import { RenderableObject } from "../../RenderableObject";
 import { m4, primitives } from "twgl.js";
 import { Instantiable } from "../../../editor";
 import { Geometry } from "../../geometry/Geometry";
