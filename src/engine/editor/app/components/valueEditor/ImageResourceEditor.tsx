@@ -4,6 +4,7 @@ import React, { ButtonHTMLAttributes, useEffect, useMemo, useRef, useState } fro
 import { AssetManager, ImageLoader } from "../../../../assets";
 import { AssetLoaderEvent } from "../../../../assets/AssetLoader";
 import { Image as GameImage, Image } from "../../../../graphics/image/Image";
+import { config } from "../../AnimationConfig";
 import { useGameContext } from "../../EditorContextWrapper";
 import useClickOutside from "../../hooks/useClickOutside";
 import { AssetExplorer } from "../AssetExplorer/AssetExplorer";
@@ -21,6 +22,8 @@ interface Props {
   value: Image;
   onChange: (val: any) => void;
 }
+
+const ICON_DELETE = require("url:../../images/asset-explorer-icons/delete_white_24dp.svg");
 
 // get the resource list here
 
@@ -137,13 +140,20 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
     imageLoader.loadAll();
   };
 
+  const clearSelectionButton = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelected(null);
+    onChange(null);
+  };
+
   return (
     <>
       <div className="value-editor" ref={containerRef}>
         <div className="value-editor__group-container">
           <label className="value-editor__field">
             <div className="value-editor__group-name">{name}</div>
-            <motion.button
+            <motion.div
               style={{
                 width: "100%",
                 backgroundColor: "var(--clr-bg-lighter)",
@@ -151,6 +161,9 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
                 border: "1px solid rgba(255,255,255, .2)",
                 color: "var(--clr-text)",
                 padding: "var(--spacing-xs)",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
               }}
               whileHover={{
                 border: "1px solid rgba(255,255,255, .5)",
@@ -160,7 +173,28 @@ export const ImageResourceEditor = ({ name, value, onChange }: Props) => {
               }}
             >
               {selected || "\u00A0"}
-            </motion.button>
+              {selected && (
+                <motion.button
+                  style={{
+                    cursor: "pointer",
+                    marginLeft: "auto",
+                    backgroundColor: "transparent",
+                    border: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    opacity: 0.25,
+                  }}
+                  whileHover={{
+                    opacity: 0.7,
+                  }}
+                  transition={config.DEFAULT_TRANSITION}
+                  onClickCapture={clearSelectionButton}
+                >
+                  <img style={{ width: "16px" }} src={ICON_DELETE} />
+                </motion.button>
+              )}
+            </motion.div>
           </label>
         </div>
       </div>
