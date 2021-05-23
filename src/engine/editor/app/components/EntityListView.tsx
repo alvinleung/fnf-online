@@ -21,6 +21,11 @@ export const EntityListView = () => {
 
   const [entityNameEditIndex, setEntityNameEditIndex] = useState<number>(null);
 
+  // stop editing entity when the user click away
+  useEffect(() => {
+    setEntityNameEditIndex(null);
+  }, [selectedEntity]);
+
   useEffect(() => {
     if (isCreatingEntity) {
       let entityNameInitial = "new-entity";

@@ -62,10 +62,9 @@ export const DraftEditField = ({
 
   // onabort editing
   useEffect(() => {
-    const keyDownHandler = (e) => {
+    const keyDownHandler = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        e.stopPropagation();
         onDiscard && onDiscard(textfieldDraft);
         setIsEditing(false);
       }
