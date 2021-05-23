@@ -2,6 +2,7 @@ import { m4 } from "twgl.js";
 
 import { DataBufferLoader } from "../DataBufferPair";
 import { Asset } from "../../assets/Asset";
+import { Instantiable } from "../../editor";
 
 export interface GeometryTemplate {
   vertices: number[];
@@ -14,6 +15,7 @@ export interface CustomAttributes {
   [attribName: string]: DataBufferLoader;
 }
 
+@Instantiable("Geometry")
 export class Geometry implements Asset {
   path: string;
   name: string;
