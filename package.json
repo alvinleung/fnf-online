@@ -4,7 +4,7 @@
   "author": "Alvin Leung",
   "license": "MIT",
   "scripts": {
-    "start": "parcel watch ./src/index.html | nodemon EditorServer.js --ignore 'assets/'",
+    "start": "parcel watch ./src/index.html --no-hmr & nodemon EditorServer.js --ignore 'assets/'",
     "serve": "parcel ./src/index.html | node EditorServer.js",
     "build": "parcel build ./src/index.html --dist-dir ./dist --no-optimize && cp ./src/AssetSheet.json ./dist/asset-sheet",
     "clean": "rm -rf dist/ | rm -rf .parcel-cache"

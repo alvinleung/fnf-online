@@ -161,6 +161,12 @@ app.post("/createFolder", (req, res) => {
 const server = http.createServer(app);
 
 const serverListen = () => {
+  // check if dist exist
+  if (!fs.existsSync(path.join(__dirname, "dist"))) {
+    console.log("Parcel is compiling project...");
+    return;
+  }
+
   const serverURL = `http://localhost:${app.get("port")}`;
 
   const log = console.log;
