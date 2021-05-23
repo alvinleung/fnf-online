@@ -60,9 +60,6 @@ export function parseObjFileFormat(fileText) {
     }
   }
 
-  console.log(vertices);
-  console.log(textureCoords);
-
   // find max in each direction and normailze model to between -1 and 1
   /*
   let max = 0;
@@ -118,7 +115,6 @@ export function parseObjFileFormat(fileText) {
       objNormals.push(normals[parseInt(vertThree[2])]);
     }
   }
-  console.log(objTextures);
 
   const object = {
     vertices: objVertices,
